@@ -92,7 +92,7 @@ module Decoder(
             ALUOp = 00;
             ALUsel = 0;
             PCWrite = 1;
-            Extra = 0;
+            Extra = 0; 
         end
         else if (state == DECODE) begin           
             AluSrcA = 0;
