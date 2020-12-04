@@ -2,7 +2,10 @@ module mips_cpu_bus_tb;
     timeunit 1ns / 10ps;
 
     parameter RAM_INIT_FILE = "test/01-binary/countdown.hex.txt";
+    //why is this just one preset input file?
+    // possibly as on Friday's class
     parameter TIMEOUT_CYCLES = 10000;
+    //look at the $readmemh from the RAM file and search about that
 
     // inputs
     logic clk;
@@ -21,9 +24,12 @@ module mips_cpu_bus_tb;
     logic[3:0] byteenable;
     logic[31:0] readdata;
 
-    /*RAM module name*/ #(RAM_INIT_FILE) ramInst(clk, address, write, read, writedata, readdata);
+    // instianting everything and making the needed connections
+    // might have to make all of the relevant connections including ALU, multiplexers, etc.
+    RAM_8x4096 #(RAM_INIT_FILE) ramInst(clk, address, write, read, writedata, readdata);
     // instantiating the RAM
-    [/*CPU module name*/] cpuInst(clk, rst, active, register_v0, address, write, read, waitrequest, writedata, byteenable, readdata);
+    [/*CPU module name*/] cpuInst(clk, rst, active, register_v0, address, \
+      write, read, waitrequest, writedata, byteenable, readdata);
     // instantiating the CPU
 
     //might need to instantiate a cache here if present
@@ -53,18 +59,31 @@ module mips_cpu_bus_tb;
         rst <= 0;
 
         @(posedge clk);
-        assert(running==1)
-        else $display("TB : CPU did not set running=1 after reset.");
+        assert(active==1)
+        else $display("TB : CPU did not set active=1 after reset.");
 
-        while (running) begin
+        while (active) begin
             @(posedge clk);
         end
-        // checking if running is still = 1 at every positive clock edge.
-        // this means that if the program stops running meaning we've reached
+        // checking if active is still = 1 at every positive clock edge.
+        // this means that if the program stops active meaning we've reached
         // the end of the instructions, we can $finish
-        $display("TB : finished; running=0");
+        $display("TB : finished; active=0");
 
-        $finish;
+        // identifying the output and outputting to a stdout file
+        $display("RESULT : %d", register_v0);
+
+        // needs to verify if the we have returned to address 0 before finishing
+        // should be fine placing this here at the end since we have supposedly
+        // finished
+        assert(address==0)
+        else $display("TB : CPU did not return to address 0 at the end")
+
+        // also needs to check if every register (including the PC has been set to 0)
+
+
+        $finish; //makes the simulator exit and passes control back to the host
+        // operating system
 
     end
 

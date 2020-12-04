@@ -7,7 +7,7 @@
 # 1. Replace templates with actual file names
 # 2. Complete the test bench verilog file
 # 3. Make the OUT instruction and test how it operates with general test cases
-# 4. 
+# 4.
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
@@ -52,11 +52,12 @@ if [$# -eq 2] # if there are two input arguments
       # RAM;
       for i in ${TESTCASES} ; do
           iverilog -g 2012 \
-          [cpu file.v] [cpu file tb.v] [ram.v] [any components we have separate] \
-          -s [cpu file tb.v] # set the test-bench as top level since this instantiates everything
-          -P [cpu file tb.v].[ram file] =\"test/1-binary/${i}.hex.txt\" # having the test case file input into the RAM
-          -o test/2-simulator/CPU_MU0_bus_tb_${i} # output executable file for this instruction testcase
+          ${source_directory}[cpu file.v] [cpu file tb.v] RAM_file.v [any components we have separate] \
+          -s test/[cpu file tb.v] \ # set the test-bench as top level since this instantiates everything
+          -P test/[cpu file tb.v].[ram file] =\"test/1-binary/${i}.hex.txt\" \ # having the test case file input into the RAM
+          -o test/2-simulator/CPU_MU0_bus_tb_${i} \ # output executable file for this instruction testcase
       done
+      # MAKE SURE TO ADJUST THIS BLOCK OF CODE FOR POSSIBLE CHANGES IN DIRECTORY
       >&2 echo " Successfully compiled test-bench"
 
       >&2 echo " 3 - Running the test-bench"
@@ -65,8 +66,22 @@ if [$# -eq 2] # if there are two input arguments
       # If we just use $display for the OUT instruction, we can output the value
       # at the destination register
 
-      test/2-simulator/CPU_MU0_bus_tb_${i} > test/3-output/CPU_MU0_bus_${i}.stdout
-      # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
+      for i in ${TESTCASES} ; do
+          set +e
+
+          test/2-simulator/CPU_MU0_bus_tb_${i} > test/3-output/CPU_MU0_bus_${i}.stdout
+          # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
+
+          RESULT = $?
+          set -e
+
+          if [[ "${RESULT}" -ne 0 ]] ; then
+            # fail condition
+            # need to find a way to obtain the word 'instruction'
+             echo "${i} ${instruction} Fail"
+             exit
+          fi
+      done
 
       >&2 echo " Successfully ran the test-bench"
 
@@ -74,17 +89,21 @@ if [$# -eq 2] # if there are two input arguments
       # Here we compare the generated output files from part 3 with the pre-generated
       # output files in 4-reference
 
-      set +e # +e used to stop the script failing if an error occurs
-      diff -w test/4-reference/${i}.out test/3-output/CPU_MU0_bus_${i}.out
-      RESULT=$? # output of this diff line stored in RESULT
-      set -e
+      for i in ${TESTCASES} ; do
+          set +e # +e used to stop the script failing if an error occurs
+          diff -w test/4-reference/${i}.out test/3-output/CPU_MU0_bus_${i}.out
+          RESULT=$? # output of this diff line stored in RESULT
+          set -e
 
-      # Based on whether differences were found, either pass or fail
-      if [[ "${RESULT}" -ne 0 ]] ; then
-         echo "  ${instruction}, ${i}, FAIL"
-      else
-         echo "  ${instruction}, ${i}, pass"
-      fi
+          # Based on whether differences were found, either pass or fail
+          if [[ "${RESULT}" -ne 0 ]] ; then
+            # fail condition
+             echo "${i} ${instruction} Fail"
+          else
+            # pass condition
+             echo "${i} ${instruction} Pass"
+          fi
+      done
 
     else # if nothing is specified for $2, all test-cases should be run
       >%2 echo "Testing CPU : ${source_directory} for all instructions"
@@ -123,8 +142,24 @@ if [$# -eq 2] # if there are two input arguments
       # If we just use $display for the OUT instruction, we can output the value
       # at the destination register
 
-      test/2-simulator/CPU_MU0_bus_tb_${i} > test/3-output/CPU_MU0_bus_${i}.stdout
-      # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
+      for i in ${TESTCASES} ; do
+          set +e
+
+          test/2-simulator/CPU_MU0_bus_tb_${i} > test/3-output/CPU_MU0_bus_${i}.stdout
+          # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
+          # this contains the printed lines from running the testbench verilog,
+
+          RESULT = $?
+          set -e
+
+          if [[ "${RESULT}" -ne 0 ]] ; then
+            # fail condition
+            # need to find a way to obtain the word 'instruction'
+             echo "${i} ${instruction} Fail"
+             exit
+          fi
+          # we now need to extract the necessary lines with the prefix "RESULT : "
+      done
 
       >&2 echo " Successfully ran the test-bench"
 
@@ -132,15 +167,22 @@ if [$# -eq 2] # if there are two input arguments
       # Here we compare the generated output files from part 3 with the pre-generated
       # output files in 4-reference
 
-      set +e # +e used to stop the script failing if an error occurs
-      diff -w test/4-reference/${i}.out test/3-output/CPU_MU0_bus_${i}.out
-      RESULT=$? # output of this diff line stored in RESULT
-      set -e
+      for i in ${TESTCASES} ; do
+          set +e # +e used to stop the script failing if an error occurs
+          diff -w test/4-reference/${i}.out test/3-output/CPU_MU0_bus_${i}.out
+          RESULT=$? # output of this diff line stored in RESULT
+          set -e
 
-      # Based on whether differences were found, either pass or fail
-      if [[ "${RESULT}" -ne 0 ]] ; then
-         echo "  ${instruction}, ${i}, FAIL"
-      else
-         echo "  ${instruction}, ${i}, pass"
-      fi
+          # need to capture the instruction name we are testing
+
+
+          # Based on whether differences were found, either pass or fail
+          if [[ "${RESULT}" -ne 0 ]] ; then
+            # fail condition
+             echo "${i} ${instruction} Fail"
+          else
+            # pass condition
+             echo "${i} ${instruction} Pass"
+          fi
+      done
 fi
