@@ -65,7 +65,7 @@ def decode(line,parameters,line_names):
         "MTHI":["m","010001"],
         "MTLO":["m","010011"],
         "MULT":["md","011000"],
-        "MULTU":["","011001"],
+        "MULTU":["md","011001"],
         "OR":["a","100101"],
         "SLL":["s","000000"], #shift syntax
         "SLLV":["a","000100"],
