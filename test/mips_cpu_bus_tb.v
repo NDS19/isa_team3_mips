@@ -3,9 +3,8 @@ module mips_cpu_bus_tb;
 
     parameter RAM_INIT_FILE = "test/01-binary/countdown.hex.txt";
     //why is this just one preset input file?
-    // possibly as on Friday's class
+    // possibly ask on Friday's class
     parameter TIMEOUT_CYCLES = 10000;
-    //look at the $readmemh from the RAM file and search about that
 
     // inputs
     logic clk;
