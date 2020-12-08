@@ -59,8 +59,10 @@ module ALU_all(
     always_comb begin
         if(ALU_opcode[3] == 0)begin
             ALUControl = ALU_opcode[2:0];
+            validIn_mul = 0;
+            validIn_div = 0;
         end
-        else if(ALU_opcode == 4'b0000) begin
+        else if(ALU_opcode == 4'b1111) begin
 
             case(funct) /* R-type */
             6'b000000: begin
@@ -81,16 +83,19 @@ module ALU_all(
             //6'b001001: ALUControl <= 3'b00111; /* JALR */
             6'b010001: begin
                 ALUControl = 3'bxxx; /* MTHI */
-                Hi = SrcA;
+                //TO DO 
             end
             6'b010011: begin
                 ALUControl = 3'bxxx; /* MTLO */
-                Lo = SrcB;
+                //TO DO
             end
-            6'b011000: begin
-                ALUControl = 3'bxxx; /* MULT */
-                validIn_mul = 1;
+            //6'b011000:     /* MULT */
+                           
+            6'b011001: begin
+                ALUControl = 3'bxxx; /* MULTU */
+
                 if (validOut_mul == 0) begin
+                    validIn_mul = 1;
                     stall = 1;
                 end 
                 else if (validOut_mul == 1) begin
@@ -98,19 +103,19 @@ module ALU_all(
                     validIn_mul = 0;
                 end
             end
-            //6'b011001: ALUControl <= 3'b01011; /* MULTU */
-            6'b011010: begin
-                ALUControl = 3'bxxx; /* DIV */
-                validIn_div = 1;
+            //6'b011010: begin  /* DIV */
+    
+            6'b011011: begin
+                ALUControl = 3'bxxx; /* DIVU */                
                 if (validOut_div == 0) begin
                     stall = 1;
+                    validIn_div = 1;
                 end 
                 else if (validOut_div == 1) begin
                     stall = 0;
                     validIn_div = 0;
                 end
             end
-            //6'b011011: ALUControl <= 3'b01101; /* DIVU */
             6'b100001:begin
                 ALUControl = 3'b010; /* ADDU */
             end 
@@ -132,6 +137,14 @@ module ALU_all(
             //6'b101011: ALUControl <= 3'b10100; /* SLTU */
             default: ALUControl <= 3'bxxxxx;
             endcase
+
+            //TO DO mulu,divu,mthi,mtlo
+            if (funct != 011001) begin
+                validIn_mul = 0;
+            end
+            if (funct != 011011) begin
+                validIn_div = 0;
+            end
         end
     end
     
