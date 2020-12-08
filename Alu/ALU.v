@@ -1,5 +1,5 @@
 module ALU(  
-    input logic[2:0] ALUControl,
+    input logic[3:0] ALUControl,
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
     
@@ -16,35 +16,35 @@ module ALU(
 
     always_comb begin
         case (ALUControl)
-            3'b000  :   begin
+            4'b0000  :   begin
                 // logical AND 
                 ALUResult = SrcA & SrcB;
             end   
-            3'b001  :   begin
+            4'b0001  :   begin
                 // logical OR
                 ALUResult = SrcA | SrcB;
             end   
-            3'b010  :   begin
+            4'b0010  :   begin
                 // Addition
                 ALUResult = SrcA + SrcB;
             end
-            3'b011  :   begin
+            4'b0011  :   begin
                 // logical XOR
                 ALUResult = SrcA ^ SrcB;
             end      
-            3'b100  :   begin
+            4'b0100  :   begin
                 // shift left logical
-                ALUResult = SrcA << SrcB;
+                ALUResult = SrcB << SrcA;
             end   
-            3'b101  :   begin
+            4'b0101  :   begin
                 // shift right logical
-                ALUResult = SrcA >> SrcB;
+                ALUResult = SrcB >> SrcA;
             end   
-            3'b110  :   begin
+            4'b0110  :   begin
                 // Subtraction
                 ALUResult = SrcA - SrcB;
             end  
-            3'b111  :   begin
+            4'b0111  :   begin
                 // STL
                 SLT_sub = SrcA - SrcB;
                 if((SLT_sub >> 31) == 1)begin
@@ -52,7 +52,19 @@ module ALU(
                 end else begin
                     ALUResult = 0;
                 end
+            end
+            4'b1000 :   begin
+                //SRA
+                ALUResult = SrcA >>> SrcB;
             end    
+            4'b1001 : begin
+                //SLTU
+                if(SrcA < SrcB) begin
+                    ALUResult = 1;
+                end else begin
+                    ALUResult = 0;
+                end
+            end
             default: begin
                 //$display("Unknown alu operand");
                 ALUResult = 32'hxxxxxxxx;
