@@ -22,7 +22,7 @@ module Mult(
     logic[5:0] count, count_next;
 
     logic[63:0] Inverted_sum_next;
-    Sign_Inverter invert_sum(.In(sum_next[63:0]),.Out(Inverted_sum_next));
+    Sign_Inverter64 invert_sum(.In(sum_next[63:0]),.Out(Inverted_sum_next));
 
     parameter split = 4;
     parameter nibble_width = 32/split - 1;
