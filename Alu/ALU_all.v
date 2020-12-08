@@ -42,9 +42,13 @@ module ALU_all(
     logic[31:0] Div_Hi;
     logic[31:0] Div_Lo;
 
+    logic Mult_sign;
+    logic Div_sign;
+
     Mult mult_(
             .clk(clk),
             .validIn(validIn_mul),
+            .sign(Mult_sign),
             .validOut(validOut_mul),
             .SrcA(SrcA), 
             .SrcB(SrcB),
@@ -55,6 +59,7 @@ module ALU_all(
     Div div(
             .clk(clk),
             .validIn(validIn_div),
+            .sign(Div_sign),
             .validOut(validOut_div),
             .SrcA(SrcA), 
             .SrcB(SrcB),
@@ -102,11 +107,21 @@ module ALU_all(
                 //TO DO
                 Lo_next = SrcA;
             end
-            //6'b011000:     /* MULT */
-                           
+            6'b011000: begin     /* MULT */
+                ALUControl = 3'bxxx; /* MULTU */
+                if (validOut_mul == 0) begin
+                    validIn_mul = 1;
+                    stall = 1;
+                end 
+                else if (validOut_mul == 1) begin
+                    stall = 0;
+                    validIn_mul = 0;
+                    Hi_next = Mult_Hi;
+                    Lo_next = Mult_Lo;
+                end             
+            end               
             6'b011001: begin
                 ALUControl = 3'bxxx; /* MULTU */
-
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
                     stall = 1;
@@ -118,10 +133,20 @@ module ALU_all(
                     Lo_next = Mult_Lo;
                 end
             end
-            //6'b011010: begin  /* DIV */
-    
+            6'b011010: begin  /* DIV */
+                ALUControl = 3'bxxx; /* DIVU */               
+                if (validOut_div == 0) begin
+                    stall = 1;
+                    validIn_div = 1;
+                end 
+                else if (validOut_div == 1) begin
+                    stall = 0;
+                    validIn_div = 0;
+                    Hi_next = Mult_Hi;
+                    Lo_next = Mult_Lo;
+                end
             6'b011011: begin
-                ALUControl = 3'bxxx; /* DIVU */                
+                ALUControl = 3'bxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
                     validIn_div = 1;
