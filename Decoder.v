@@ -25,6 +25,12 @@ module Decoder(
         SW = 6'b101011;
         ADDIU = 6'b001001;
         ANDI = 6'001100;
+        J = 6'b000010;
+        LB = 6'b100000;
+        ORI = 6'b001101;
+        SLTI = 6'b001010;
+        BGTZ = 6'b000111;
+
     } opcode_t;
 
    /* Another enum to define CPU states. */
@@ -151,7 +157,7 @@ module Decoder(
 
                 J: case(state)
                   EXEC_1: begin
-                    PCSrc=10;
+                    PCSrc=1;
                     PCWrite=1;
                   end
                 endcase
@@ -188,20 +194,6 @@ module Decoder(
                   end
                 endcase
 
-                ADDU: case(stage)
-                  EXEC_1: begin
-                    ALUSrcA=1;
-                    ALUScrB=00;
-                    ALUOp=0010;
-                    Extra=1;
-                  end
-                  EXEC_2: being
-                    RegDst=1;
-                    MemtoReg=0;
-                    RegWrite=1;
-                  end
-                endcase
-
                 SLTI: case(stage)
                   EXEC_1: begin
                     ALUSrcA=1;
@@ -225,22 +217,6 @@ module Decoder(
                     Branch=1;
                   end
                 endcase
-
-                SRLV: case(stage)
-                  EXEC_1: begin
-                    ALUSrcA=1;
-                    ALUSrcB=00;
-                    ALUOp=0101;
-                    Extra=1;
-                  end
-                  EXEC_2: begin
-                    RegDst=1;
-                    MemtoReg=0;
-                    RegWrite=1;
-                  end
-                endcase
-
-
 
             endcase
         end
