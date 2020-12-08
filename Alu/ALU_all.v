@@ -25,6 +25,10 @@ module ALU_all(
     //multiply and divide
     logic[31:0] Hi, Hi_next;
     logic[31:0] Lo, Lo_next;
+    //Enable write of the Hi and Lo registers
+    logic Hi_en;
+    logic Lo_en;
+
 
     logic validIn_mul;
     logic validOut_mul;
@@ -32,6 +36,11 @@ module ALU_all(
     logic validOut_div;
 
     logic stall;
+    
+    logic[31:0] Mult_Hi;
+    logic[31:0] Mult_Lo;
+    logic[31:0] Div_Hi;
+    logic[31:0] Div_Lo;
 
     Mult mult_(
             .clk(clk),
@@ -39,8 +48,8 @@ module ALU_all(
             .validOut(validOut_mul),
             .SrcA(SrcA), 
             .SrcB(SrcB),
-            .Hi(Hi),
-            .Lo(Lo)
+            .Hi(Mult_Hi),
+            .Lo(Mult_Lo)
     );
 
     Div div(
@@ -49,8 +58,8 @@ module ALU_all(
             .validOut(validOut_div),
             .SrcA(SrcA), 
             .SrcB(SrcB),
-            .Hi(Hi),
-            .Lo(Lo)
+            .Hi(Div_Hi),
+            .Lo(Div_Lo)
     );
 
 
@@ -61,6 +70,8 @@ module ALU_all(
             ALUControl = ALU_opcode[2:0];
             validIn_mul = 0;
             validIn_div = 0;
+            Hi_en = 0;
+            Lo_en = 0;
         end
         else if(ALU_opcode == 4'b1111) begin
 
@@ -84,10 +95,12 @@ module ALU_all(
             6'b010001: begin
                 ALUControl = 3'bxxx; /* MTHI */
                 //TO DO 
+                Hi_next = SrcA;
             end
             6'b010011: begin
                 ALUControl = 3'bxxx; /* MTLO */
                 //TO DO
+                Lo_next = SrcA;
             end
             //6'b011000:     /* MULT */
                            
@@ -101,6 +114,8 @@ module ALU_all(
                 else if (validOut_mul == 1) begin
                     stall = 0;
                     validIn_mul = 0;
+                    Hi_next = Mult_Hi;
+                    Lo_next = Mult_Lo;
                 end
             end
             //6'b011010: begin  /* DIV */
@@ -114,6 +129,8 @@ module ALU_all(
                 else if (validOut_div == 1) begin
                     stall = 0;
                     validIn_div = 0;
+                    Hi_next = Mult_Hi;
+                    Lo_next = Mult_Lo;
                 end
             end
             6'b100001:begin
@@ -139,14 +156,24 @@ module ALU_all(
             endcase
 
             //TO DO mulu,divu,mthi,mtlo
-            if (funct != 011001) begin
+            if (funct != 011001) begin //MULTU
                 validIn_mul = 0;
             end
-            if (funct != 011011) begin
+            if (funct != 011011) begin //DIVU
                 validIn_div = 0;
+            end
+            if (funct != 011001 || funct != 011011 || funct != 010001) begin
+                Hi_en = 0;
+            end
+            if (funct != 011001 || funct != 011011 || funct != 010011) begin
+                Lo_en = 0;
             end
         end
     end
     
+    always_ff  @(posedge clk) begin
+        Hi <= Hi_en==1?Hi_next:Hi;
+        Lo <= Lo_en==1?Lo_next:Lo;
+    end
 
 endmodule
