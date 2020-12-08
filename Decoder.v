@@ -24,6 +24,7 @@ module Decoder(
         LW = 6'b100011;
         SW = 6'b101011;
         ADDIU = 6'b001001;
+        ANDI = 6'001100;
     } opcode_t;
 
    /* Another enum to define CPU states. */
