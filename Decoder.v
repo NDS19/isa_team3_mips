@@ -22,7 +22,8 @@ module Decoder(
         R_TYPE = 6'b000000;
         LW = 6'b100011;
         SW = 6'b101011;
-        ADDIU = 6'b001001;          
+        ADDIU = 6'b001001; 
+        ANDI = 6'001100;      
     } opcode_t;
 
    /* Another enum to define CPU states. */
@@ -133,6 +134,18 @@ module Decoder(
                         RegWrite = 1;
                     end
                 endcase 
+
+                SW: case (state)
+                    EXEC_1: begin
+                        ALUSrcA = 1;
+                        AluSrcB = 10;
+                        ALUOp = 00;
+                        Extra = 1;
+                    end 
+                    EXEC_2: begin
+                        IorD = 1;
+                    end
+                endcase
             endcase
         end
     end
