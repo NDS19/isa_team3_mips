@@ -21,6 +21,7 @@ module Decoder(
     /* Using an enum to define constants */
     typedef enum logic[5:0] {
         R_TYPE = 6'b000000;
+        BLT_TYPE = 6'b000001;
         LW = 6'b100011;
         SW = 6'b101011;
         ADDIU = 6'b001001;
