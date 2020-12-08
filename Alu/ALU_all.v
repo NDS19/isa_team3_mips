@@ -109,6 +109,7 @@ module ALU_all(
             end
             6'b011000: begin     /* MULT */
                 ALUControl = 3'bxxx; /* MULTU */
+                Mult_sign = 1;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
                     stall = 1;
@@ -122,6 +123,7 @@ module ALU_all(
             end               
             6'b011001: begin
                 ALUControl = 3'bxxx; /* MULTU */
+                Mult_sign = 0;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
                     stall = 1;
@@ -134,6 +136,7 @@ module ALU_all(
                 end
             end
             6'b011010: begin  /* DIV */
+                Div_sign = 1;
                 ALUControl = 3'bxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
@@ -146,6 +149,7 @@ module ALU_all(
                     Lo_next = Mult_Lo;
                 end
             6'b011011: begin
+                Div_sign = 0;
                 ALUControl = 3'bxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
