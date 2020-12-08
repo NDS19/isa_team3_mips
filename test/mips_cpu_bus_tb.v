@@ -1,9 +1,14 @@
+/* TO DO:
+1. Understand how the RAM file is initialised with an input file
+2. Implement timings to determine how quickly test cases are completed
+*/
+
 module mips_cpu_bus_tb;
     timeunit 1ns / 10ps;
 
-    parameter RAM_INIT_FILE = "test/01-binary/countdown.hex.txt";
-    //why is this just one preset input file?
-    // possibly ask on Friday's class
+    parameter RAM_INIT_FILE = "";
+    // Have an empty parameter which can be adjusted in the testbench script using the -P
+    // in the compilation block
     parameter TIMEOUT_CYCLES = 10000;
 
     // inputs
@@ -68,6 +73,8 @@ module mips_cpu_bus_tb;
         // this means that if the program stops active meaning we've reached
         // the end of the instructions, we can $finish
         $display("TB : finished; active=0");
+        //displays the time taken
+        $display("Time taken : " %time);
 
         // identifying the output and outputting to a stdout file
         $display("RESULT : %d", register_v0);

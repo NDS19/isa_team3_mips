@@ -3,6 +3,10 @@
 # basename /path/to/file.tar.gz .gz – Strip directory and suffix from filenames
 
 # This file should be executed from the root directory
+# ./test_mips_cpu_bus.sh [cpu file directory] [instruction]
+#   to test a single instruction
+# ./test_mips_cpu_bus.sh [cpu file directory]
+#   to test all instructions
 
 # Things to do:
 # 1. Replace templates with actual file names
@@ -65,12 +69,13 @@ if [$# -eq 2] # if there are two input arguments
       # RAM;
       for i in ${TESTCASES} ; do
           TESTNAME=$(basename ${i} .asm.txt)
-
+          # -P is used to adjust the parameter in the testbench verilog so we can
+          # input a file that is read in
           iverilog -g 2012 \
-          ${source_directory}/[cpu file.v] [cpu file tb.v] RAM_file.v [any components we have separate] \
-          -s test/[cpu file tb.v] \ # set the test-bench as top level since this instantiates everything
-          -P test/[cpu file tb.v].[ram file] =\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
-          -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} \ # output executable file for this instruction testcase
+          ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v \
+          -s test/mips_cpu_bus_tb.v \ # set the test-bench as top level since this instantiates everything
+          -P test/mips_cpu_bus_tb.v =\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
+          -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
       done
       # MAKE SURE TO ADJUST THIS BLOCK OF CODE FOR POSSIBLE CHANGES IN DIRECTORY
       >&2 echo " Successfully compiled test-bench"
@@ -178,9 +183,9 @@ if [$# -eq 2] # if there are two input arguments
           for i in ${TESTCASES} ; do
               TESTNAME=$(basename ${i} .asm.txt)
               iverilog -g 2012 \
-              [cpu file.v] [cpu file tb.v] [ram.v] [any components we have separate] \
-              -s [cpu file tb.v] # set the test-bench as top level since this instantiates everything
-              -P [cpu file tb.v].[ram file] =\"test/1-binary/${TESTNAME}.hex.txt\" # having the test case file input into the RAM
+              ${source_directory}/mips_cpu_bus.v mips_cpu_bus_tb.v RAM_file.v \
+              -s mips_cpu_bus_tb \ # set the test-bench as top level since this instantiates everything
+              -P mips_cpu_bus_tb.RAM_INIT_FILE =\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
               -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
           done
           >&2 echo " Successfully compiled test-bench"
