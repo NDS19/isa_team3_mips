@@ -226,11 +226,3 @@ module Decoder(
 
 endmodule
 
-
-
-            IorD <= 0;
-            AluSrcA <= 0;
-            AluSrcB <= 01;
-            ALUOp <= 00;
-            ALUsel <= 0;
-            PCWrite <= 1;
