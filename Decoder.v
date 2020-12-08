@@ -6,15 +6,16 @@ module Decoder(
     output logic IorD,
     output logic AluSrcA,
     output logic[1:0] AluSrcB,
-    output logic ALUOp,
+    output logic[3:0] ALUOp,
     output logic ALUsel,
     output logic IrWrite,
     output logic PCWrite,
     output logic RegWrite,
     output logic MemtoReg,
+    output logic MemWrite
 );
 
-    
+
 
 
     /* Using an enum to define constants */
@@ -22,7 +23,7 @@ module Decoder(
         R_TYPE = 6'b000000;
         LW = 6'b100011;
         SW = 6'b101011;
-        ADDIU = 6'b001001;          
+        ADDIU = 6'b001001;
     } opcode_t;
 
    /* Another enum to define CPU states. */
@@ -40,23 +41,23 @@ module Decoder(
     typedef enum logic[5:0] {
         ADDU = 6'b100001;
         AND = 6'b100100;
-        OR =  6'b100101;        
+        OR =  6'b100101;
     } rtype_t;
 
 
 
     opcode_t instr_opcode;
     state_t state;
-    rtype_t Funct;    
+    rtype_t Funct;
     logic Extra;
-    
+
 
     // Break-down the instruction into fields
     // these are just wires for our convenience
     assign instr_opcode = instr[31:26];
     assign Funct = instr[5:0];
-    
-    //skip instruction register 
+
+    //skip instruction register
     assign IrSel = (instr_opcode == DECODE) ? 0 : 1;
 
 
@@ -67,7 +68,7 @@ module Decoder(
     initial begin
         state = HALTED;
     end
-    
+
     //State machine
     always_ff @(posedge clk) begin
        case (state)
@@ -77,11 +78,11 @@ module Decoder(
            EXEC_2: state <= Extra ? EXEC_3 : FETCH;
            EXEC_3: state <= FETCH;
            default: HALTED;
-       endcase      
+       endcase
     end
 
 
-    
+
     //Implement here your instructions! beware of the Extra signal. set Extra to 0 if you don't need a new state
     //Decode logic
     always_comb begin
@@ -89,24 +90,24 @@ module Decoder(
             IorD = 0;
             AluSrcA = 0;
             AluSrcB = 01;
-            ALUOp = 00;
+            ALUOp = 0010;
             ALUsel = 0;
             PCWrite = 1;
-            Extra = 0; 
+            Extra = 0;
         end
-        else if (state == DECODE) begin           
+        else if (state == DECODE) begin
             AluSrcA = 0;
             AluSrcB = 11;
-            ALUOp = 00;                   
+            ALUOp = 0010;
         end
-        else begin      
+        else begin
             case (instr_opcode)
 
                 R_TYPE: case (state)
                     EXEC_1: begin
                         ALUSrcA = 1;
                         ALUSrcB = 00;
-                        ALUOp = 10;
+                        ALUOp = FUCNTION FIELD;
                         Extra = 1;
                     end
                     EXEC_2: begin
@@ -115,12 +116,12 @@ module Decoder(
                         RegWrite = 1;
                     end
                 endcase
-                
-                LW: case (state)                   
+
+                LW: case (state)
                     EXEC_1: begin
                         ALUSrcA = 1;
                         AluSrcB = 10;
-                        ALUOp = 00;
+                        ALUOp = 0010;
                         Extra = 1;
                     end
                     EXEC_2: begin
@@ -132,7 +133,114 @@ module Decoder(
                         MemtoReg = 1;
                         RegWrite = 1;
                     end
-                endcase 
+                endcase
+
+                SW: case(state)
+                    EXEC_1: begin
+                      ALUSrcA= 1;
+                      ALUSrcB= 10;
+                      ALUOp = 0010;
+                      Extra=1;
+                    end
+                    EXEC_2: begin
+                      IorD=1;
+                      MemWrite=1;
+                    end
+                endcase
+
+                J: case(state)
+                  EXEC_1: begin
+                    PCSrc=10;
+                    PCWrite=1;
+                  end
+                endcase
+
+                ORI: case(state)
+                  EXEC_1: begin
+                    ALUSrcA=1;
+                    ALUSrcB=10;
+                    ALUop= 0001;
+                    Extra=1;
+                  end
+                  EXEC_2: begin
+                    RegDst=0;
+                    MemtoReg=0;
+                    RegWrite=1;
+                  end
+                endcase
+
+                LB: case(state)
+                  EXEC_1: begin
+                    ALUSrcA = 1;
+                    AluSrcB = 10;
+                    ALUOp = 0010;
+                    Extra = 1;
+                  end
+                  EXEC_2: begin
+                    IorD = 1;
+                    Extra = 1;
+                  end
+                  EXEC_3: begin
+                    RegDst = 0;
+                    MemtoReg = 1;
+                    RegWrite = 1;
+                  end
+                endcase
+
+                ADDU: case(stage)
+                  EXEC_1: begin
+                    ALUSrcA=1;
+                    ALUScrB=00;
+                    ALUOp=0010;
+                    Extra=1;
+                  end
+                  EXEC_2: being
+                    RegDst=1;
+                    MemtoReg=0;
+                    RegWrite=1;
+                  end
+                endcase
+
+                SLTI: case(stage)
+                  EXEC_1: begin
+                    ALUSrcA=1;
+                    ALUSrcB=10;
+                    ALUOp=0111;
+                    Extra=1;
+                  end
+                  EXEC_2: begin
+                    RegDst=0;
+                    MemtoReg=0;
+                    RegWrite=1;
+                  end
+                endcase
+
+                BGTZ: case(stage)
+                  EXEC_1:begin
+                    ALUSrcA=1;
+                    ALUSrcB=00;
+                    ALUOp=0111;
+                    PCSrc=1;
+                    Branch=1;
+                  end
+                endcase
+
+                SRLV: case(stage)
+                  EXEC_1: begin
+                    ALUSrcA=1;
+                    ALUSrcB=00;
+                    ALUOp=0101;
+                    Extra=1;
+                  end
+                  EXEC_2: begin
+                    RegDst=1;
+                    MemtoReg=0;
+                    RegWrite=1;
+                  end
+                endcase
+
+
+
             endcase
         end
     end
