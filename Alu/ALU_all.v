@@ -1,5 +1,5 @@
 module ALU_all(
-    input logic[3:0] ALU_opcode,
+    input logic[3:0] ALU_Control,
     input logic[5:0] funct,
     input logic[4:0] shamt,
     input logic clk,
@@ -77,8 +77,8 @@ module ALU_all(
 
     //ALU operation specified by ALUControl
     always_comb begin
-        if(ALU_opcode[3] == 0)begin
-            ALUControl = ALU_opcode[2:0];
+        if(ALU_Control[3] == 0)begin
+            ALUControl = ALU_Control[2:0];
             validIn_mul = 0;
             validIn_div = 0;
             Hi_en = 0;
@@ -87,7 +87,7 @@ module ALU_all(
             //shamt not required for non R-type instructions
             SrcB_to_ALU = SrcB;
         end
-        else if(ALU_opcode == 4'b1111) begin
+        else if(ALU_Control == 4'b1111) begin
 
             case(funct) /* R-type */
             6'b000000: begin
