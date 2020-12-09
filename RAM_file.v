@@ -7,7 +7,10 @@ module RAM_8x4096(
 );
     parameter RAM_INIT_FILE = "";
 
-    reg [31:0] memory [4095:0];
+    reg [7:0] memory [4095:0];
+
+    reg [7:0] b0, b1, b2, b3;
+    
 
     initial begin
         integer i;
@@ -20,14 +23,20 @@ module RAM_8x4096(
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
             $readmemh(RAM_INIT_FILE, memory);
         end
+
+        assign b0 = memory[a+3];
+        assign b1 = memory[a+2];
+        assign b2 = memory[a+1];
+        assign b3 = memory[a];
+
     end
 
     /* Synchronous write path */
     always @(posedge clk) begin
         //$display("RAM : INFO : read=%h, addr = %h, mem=%h", read, address, memory[address]);
         if (write) begin
-            memory[a] <= wd;
+            {b0,b1,b2,b3} <= wd;
         end
-        rd <= memory[a]; // Read-after-write mode
+        rd <= {b0,b1,b2,b3}; // Read-after-write mode
     end
 endmodule
