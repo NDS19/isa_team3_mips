@@ -92,48 +92,37 @@ module ALU_all(
 
             case(funct) /* R-type */
             6'b000000: begin
-                ALU_OPCODE
-         = 4'b0100; /* SLL */
+                ALU_OPCODE = 4'b0100; /* SLL */
             end
             6'b000010: begin
-                ALU_OPCODE
-         = 4'b0101; /* SRL */
+                ALU_OPCODE = 4'b0101; /* SRL */
             end
             6'b000011: begin
-                ALU_OPCODE
-         = 4'b1000; /* SRA */  
+                ALU_OPCODE = 4'b1000; /* SRA */  
             end        
             6'b000100: begin
-                ALU_OPCODE
-         = 4'b0100; /* SLLV */
+                ALU_OPCODE = 4'b0100; /* SLLV */
             end
             6'b000110: begin
-                ALU_OPCODE
-         = 4'b0101; /* SRLV */
+                ALU_OPCODE = 4'b0101; /* SRLV */
             end
             6'b000111: begin
-                ALU_OPCODE
-         = 4'b1000; /* SRAV */
+                ALU_OPCOD = 4'b1000; /* SRAV */
             end
-            //6'b001000: ALU_OPCODE
-     <= 4'b00110; /* JR */
-            //6'b001001: ALU_OPCODE
-     <= 4'b00111; /* JALR */
+            //6'b001000: ALU_OPCODE  <= 4'b00110; /* JR */
+            //6'b001001: ALU_OPCODE  <= 4'b00111; /* JALR */
             6'b010001: begin
-                ALU_OPCODE
-         = 4'bxxxx; /* MTHI */
+                ALU_OPCODE = 4'bxxxx; /* MTHI */
                 //TO DO 
                 Hi_next = SrcA;
             end
             6'b010011: begin
-                ALU_OPCODE
-         = 4'bxxxx; /* MTLO */
+                ALU_OPCODE = 4'bxxxx; /* MTLO */
                 //TO DO
                 Lo_next = SrcA;
             end
             6'b011000: begin     /* MULT */
-                ALU_OPCODE
-         = 4'bxxxx; /* MULTU */
+                ALU_OPCODE  = 4'bxxxx; 
                 Mult_sign = 1;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
@@ -147,8 +136,7 @@ module ALU_all(
                 end             
             end               
             6'b011001: begin
-                ALU_OPCODE
-         = 4'bxxxx; /* MULTU */
+                ALU_OPCODE = 4'bxxxx; /* MULTU */
                 Mult_sign = 0;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
@@ -163,8 +151,7 @@ module ALU_all(
             end
             6'b011010: begin  /* DIV */
                 Div_sign = 1;
-                ALU_OPCODE
-         = 4'bxxxx; /* DIVU */               
+                ALU_OPCODE = 4'bxxxx;             
                 if (validOut_div == 0) begin
                     stall = 1;
                     validIn_div = 1;
@@ -177,8 +164,7 @@ module ALU_all(
                 end
             6'b011011: begin
                 Div_sign = 0;
-                ALU_OPCODE
-         = 4'bxxxx; /* DIVU */               
+                ALU_OPCODE = 4'bxxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
                     validIn_div = 1;
@@ -191,35 +177,27 @@ module ALU_all(
                 end
             end
             6'b100001:begin
-                ALU_OPCODE
-         = 4'b0010; /* ADDU */
+                ALU_OPCODE = 4'b0010; /* ADDU */
             end 
             6'b100011: begin
-                ALU_OPCODE
-         = 4'b0110; /* SUBU */
+                ALU_OPCODE= 4'b0110; /* SUBU */
             end
             6'b100100: begin
-                ALU_OPCODE
-         = 4'b0000; /* AND*/
+                ALU_OPCODE = 4'b0000; /* AND*/
             end
             6'b100101: begin
-                ALU_OPCODE
-         = 4'b0001; /* OR */
+                ALU_OPCODE= 4'b0001; /* OR */
             end
             6'b100110: begin
-                ALU_OPCODE
-         = 4'b0011; /* XOR */
+                ALU_OPCODE= 4'b0011; /* XOR */
             end
             6'b101010: begin
-                ALU_OPCODE
-         = 4'b0111; /* SLT */
+                ALU_OPCODE= 4'b0111; /* SLT */
             end
             6'b101011: begin
-                ALU_OPCODE
-         <= 4'b1001; /* SLTU */
+                ALU_OPCODE = 4'b1001; /* SLTU */
             end
-            default: ALU_OPCODE
-     <= 4'bxxxx;
+            default: ALU_OPCODE = 4'bxxxx;
             endcase
 
             //TO DO mulu,divu,mthi,mtlo
@@ -239,9 +217,9 @@ module ALU_all(
             //shamt field for functions that require it
             //          SLL,                SRL,                SRA,
             if(funct == 000000 || funct == 000010 || funct == 000010)begin
-                SrcB_to_ALU = { 3'b000, 24'h000000, shamt}
+                SrcB_to_ALU = { 3'b000, 24'h000000, shamt};
             end else begin
-                SrcB_to_ALU = SrcB
+                SrcB_to_ALU = SrcB;
             end
               
 
