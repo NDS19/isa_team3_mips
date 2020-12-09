@@ -1,6 +1,7 @@
 module ALU_all(
     input logic[3:0] ALU_opcode,
     input logic[5:0] funct,
+    input logic[4:0] shamt,
     input logic clk,
 
     input logic[31:0] SrcA,
@@ -16,10 +17,15 @@ module ALU_all(
 
     ALU alu_(.ALUControl(ALUControl), 
             .SrcA(SrcA), 
-            .SrcB(SrcB),
+            .SrcB(SrcB_to_ALU),
             .ALUResult(ALUResult),
             .Zero(Zero)
     );
+
+
+    //shamt field for shift instructions
+    logic[31:0] SrcB_to_ALU;
+
 
 
     //multiply and divide
@@ -77,38 +83,45 @@ module ALU_all(
             validIn_div = 0;
             Hi_en = 0;
             Lo_en = 0;
+
+            //shamt not required for non R-type instructions
+            SrcB_to_ALU = SrcB;
         end
         else if(ALU_opcode == 4'b1111) begin
 
             case(funct) /* R-type */
             6'b000000: begin
-                ALUControl = 3'b100; /* SLL */
+                ALUControl = 4'b0100; /* SLL */
             end
             6'b000010: begin
-                ALUControl = 3'b101; /* SRL */
+                ALUControl = 4'b0101; /* SRL */
             end
-            //6'b000011: ALUControl <= 3'b101; /* SRA */          
+            6'b000011: begin
+                ALUControl = 4'b1000; /* SRA */  
+            end        
             6'b000100: begin
-                ALUControl = 3'b100; /* SLLV */
+                ALUControl = 4'b0100; /* SLLV */
             end
             6'b000110: begin
-                ALUControl = 3'b101; /* SRLV */
+                ALUControl = 4'b0101; /* SRLV */
             end
-            //6'b000111: ALUControl <= 3'b00101; /* SRAV */
-            //6'b001000: ALUControl <= 3'b00110; /* JR */
-            //6'b001001: ALUControl <= 3'b00111; /* JALR */
+            6'b000111: begin
+                ALUControl = 4'b1000; /* SRAV */
+            end
+            //6'b001000: ALUControl <= 4'b00110; /* JR */
+            //6'b001001: ALUControl <= 4'b00111; /* JALR */
             6'b010001: begin
-                ALUControl = 3'bxxx; /* MTHI */
+                ALUControl = 4'bxxxx; /* MTHI */
                 //TO DO 
                 Hi_next = SrcA;
             end
             6'b010011: begin
-                ALUControl = 3'bxxx; /* MTLO */
+                ALUControl = 4'bxxxx; /* MTLO */
                 //TO DO
                 Lo_next = SrcA;
             end
             6'b011000: begin     /* MULT */
-                ALUControl = 3'bxxx; /* MULTU */
+                ALUControl = 4'bxxxx; /* MULTU */
                 Mult_sign = 1;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
@@ -122,7 +135,7 @@ module ALU_all(
                 end             
             end               
             6'b011001: begin
-                ALUControl = 3'bxxx; /* MULTU */
+                ALUControl = 4'bxxxx; /* MULTU */
                 Mult_sign = 0;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
@@ -137,7 +150,7 @@ module ALU_all(
             end
             6'b011010: begin  /* DIV */
                 Div_sign = 1;
-                ALUControl = 3'bxxx; /* DIVU */               
+                ALUControl = 4'bxxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
                     validIn_div = 1;
@@ -150,7 +163,7 @@ module ALU_all(
                 end
             6'b011011: begin
                 Div_sign = 0;
-                ALUControl = 3'bxxx; /* DIVU */               
+                ALUControl = 4'bxxxx; /* DIVU */               
                 if (validOut_div == 0) begin
                     stall = 1;
                     validIn_div = 1;
@@ -163,25 +176,27 @@ module ALU_all(
                 end
             end
             6'b100001:begin
-                ALUControl = 3'b010; /* ADDU */
+                ALUControl = 4'b0010; /* ADDU */
             end 
             6'b100011: begin
-                ALUControl = 3'b110; /* SUBU */
+                ALUControl = 4'b0110; /* SUBU */
             end
             6'b100100: begin
-                ALUControl = 3'b000; /* AND*/
+                ALUControl = 4'b0000; /* AND*/
             end
             6'b100101: begin
-                ALUControl = 3'b001; /* OR */
+                ALUControl = 4'b0001; /* OR */
             end
             6'b100110: begin
-                ALUControl = 3'b011; /* XOR */
+                ALUControl = 4'b0011; /* XOR */
             end
             6'b101010: begin
-                ALUControl = 3'b111; /* SLT */
+                ALUControl = 4'b0111; /* SLT */
             end
-            //6'b101011: ALUControl <= 3'b10100; /* SLTU */
-            default: ALUControl <= 3'bxxxxx;
+            6'b101011: begin
+                ALUControl <= 4'b1001; /* SLTU */
+            end
+            default: ALUControl <= 4'bxxxx;
             endcase
 
             //TO DO mulu,divu,mthi,mtlo
@@ -197,6 +212,17 @@ module ALU_all(
             if (funct != 011001 || funct != 011011 || funct != 010011) begin
                 Lo_en = 0;
             end
+
+            //shamt field for functions that require it
+            //          SLL,                SRL,                SRA,
+            if(funct == 000000 || funct == 000010 || funct == 000010)begin
+                SrcB_to_ALU = { 3'b000, 24'h000000, shamt}
+            end else begin
+                SrcB_to_ALU = SrcB
+            end
+              
+
+
         end
     end
     

@@ -55,7 +55,7 @@ module ALU(
             end
             4'b1000 :   begin
                 //SRA
-                ALUResult = SrcA >>> SrcB;
+                ALUResult = SrcB >>> SrcA;
             end    
             4'b1001 : begin
                 //SLTU
