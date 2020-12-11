@@ -1,6 +1,7 @@
 module Decoder(
     input logic clk,
     input logic[31:0] Instr,
+    input logic stall;
     output logic IrSel,
     output logic IrWrite,
     output logic IorD,
@@ -17,8 +18,6 @@ module Decoder(
 
 
   logic is_branch_delay, is_branch_delay_next;
-  logic write_branch_delay;
-
   /* Using an enum to define constants */
   
 
@@ -38,6 +37,10 @@ module Decoder(
       ADDU = 6'b100001;
       AND = 6'b100100;
       OR =  6'b100101;
+      MTHI = 6'b010001;
+      MTLO = 6'b010011;
+      JALR = 6'b000001;
+      JR = 6'b001000;
   } rtype_t;
 
 
@@ -70,12 +73,13 @@ module Decoder(
       case (state)
           FETCH: state <= DECODE;
           DECODE: state <= EXEC_1;
-          EXEC_1: state <= Extra ? EXEC_2 : FETCH;
+          EXEC_1: state <= stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
           EXEC_2: state <= Extra ? EXEC_3 : FETCH;
           EXEC_3: state <= FETCH;
           default: HALTED;
       endcase
-      is_branch_delay <= write_branch_delay == 1 ? write_branch_delay_next : write_branch_delay;
+      //is_branch_delay <= write_branch_delay == 1 ? is_branch_delay_next : is_branch_delay;
+      is_branch_delay <= is_branch_delay_next;
   end
 
 
@@ -84,6 +88,14 @@ module Decoder(
   //Decode logic
   always_comb begin
       if (instr_opcode == FETCH)begin
+        if (is_branch_delay == 1) begin
+          PCSrc = 0;
+          IorD = 0;
+          PCWrite = 1;
+          Extra = 0;
+        end
+        else begin
+          PCSrc = 0;
           IorD = 0;
           AluSrcA = 0;
           AluSrcB = 01;
@@ -91,6 +103,7 @@ module Decoder(
           ALUsel = 0;
           PCWrite = 1;
           Extra = 0;
+        end
       end
       else if (state == DECODE) begin
           AluSrcA = 0;
@@ -100,19 +113,61 @@ module Decoder(
       else begin
           case (instr_opcode)
 
-              R_TYPE: case (state)
-                  EXEC_1: begin
+              R_TYPE: if (Funct == MTHI || Funct == MTLO) begin
+                  case (state) 
+                    EXEC_1: begin
+                      extra = 0;
+                    end
+                  endcase
+                end
+                else if (Funct == JALR ) begin
+                  case (state)
+                    EXEC_1: begin
+                      ALUSrcA = 0; //Send the PC to the ALU, the ALU needs to add 8 to it
+                      ALUOp = 1111;
+                      Extra = 1;
+                    end
+                    EXEC_2: begin
+                      ALUsel = 1;
+                      RegDst = 1;
+                      MemtoReg = 1;
+                      RegWrite = 1;
+                      Extra = 1;
+                    end
+                    EXEC_3: begin
+                      ALUSrcA = 1; 
+                      ALUOp = 1110; //Pass through opcode, output of ALU should be SrcA
+                      is_branch_delay_next = 1;
+                    end
+                  endcase
+                end
+                else if (Funct == JR ) begin
+                  case (state)
+                    EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUOp = 1110;
+                      is_branch_delay_next = 1;
+                      Extra = 0;
+                    end
+                  endcase
+                end
+                else begin
+                  case (state)
+                    EXEC_1: begin
                       ALUSrcA = 1;
                       ALUSrcB = 00;
-                      ALUOp = FUCNTION FIELD;
+                      ALUOp = 1111;
                       Extra = 1;
-                  end
-                  EXEC_2: begin
+                    end
+                    EXEC_2: begin
+                      ALUsel = 1;
                       RegDst = 1;
-                      MemtoReg = 0;
+                      MemtoReg = 1;
                       RegWrite = 1;
-                  end
-              endcase
+                      Extra = 0;
+                    end
+                  endcase
+                end
 
               LW: case (state)
                   EXEC_1: begin
