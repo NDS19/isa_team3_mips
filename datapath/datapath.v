@@ -1,5 +1,4 @@
-// reset from PC and IR ?
-module datapath (input  logic       PcEn, IorD,
+module datapath (input  logic       clk, PcEn, IorD,
                  input  logic       reset,
                  input  logic       IrWrite,
                  input  logic       IrSel, RegDst,
@@ -32,7 +31,7 @@ module datapath (input  logic       PcEn, IorD,
     wire [31:0] branchnext;
     wire [31:0] instr;
     wire        OUTLSB = aluoutnext[0];
-    
+
     assign Instr = instr;
 
     //next PC logic
