@@ -13,6 +13,7 @@ module Decoder(
     output logic PCWrite,
     output logic RegWrite,
     output logic MemtoReg,
+    output logic PcSrc,
     output logic MemWrite
 );
 
