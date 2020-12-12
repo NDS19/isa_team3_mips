@@ -15,7 +15,7 @@ module datapath (input  logic       clk, PcEn, IorD,
                  output logic       OUTLSB,
                  output logic[31:0] Instr,
                  output logic[31:0] memloc,
-                 output logic[31:0] aluoutnext, writedata);
+                 output logic[31:0] writedata);
 
     wire [4:0]  writereg;
     wire [31:0] memloc;
