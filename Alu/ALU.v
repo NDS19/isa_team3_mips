@@ -3,8 +3,7 @@ module ALU(
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
     
-    output logic[31:0] ALUResult,
-    output logic Zero
+    output logic[31:0] ALUResult
 );
 
     //it is assumed that sign extension happens outside the ALU. Thus for ADDI we sign extend the
@@ -45,7 +44,7 @@ module ALU(
                 ALUResult = SrcA - SrcB;
             end  
             4'b0111  :   begin
-                // STL
+                // SLT (Comparison signed)
                 SLT_sub = SrcA - SrcB;
                 if((SLT_sub >> 31) == 1)begin
                     ALUResult = 1;
@@ -58,22 +57,43 @@ module ALU(
                 ALUResult = SrcB >>> SrcA;
             end    
             4'b1001 : begin
-                //SLTU
+                // SLTU (Comparison unsigned)
                 if(SrcA < SrcB) begin
                     ALUResult = 1;
                 end else begin
                     ALUResult = 0;
                 end
             end
+            4'b1010 : begin
+                // is zero
+                SLT_sub = SrcA - SrcB;
+                if( SLT_sub == 0) begin
+                    ALUResult = 1;
+                end else begin
+                    ALUResult = 0;
+                end                
+            end
+            4'b1011 : begin
+                // increment PC for branch
+                ALUResult = SrcA + 8;
+            end
+            4'b1100 : begin
+                // compare SrcA to 0
+                SLT_sub = SrcA - 0;
+                if((SLT_sub >> 31) == 1)begin
+                    ALUResult = 1;
+                end else begin
+                    ALUResult = 0;
+                end
+            end
+            4'b1110 : begin
+                //pass through SrcA
+                ALUResult = SrcA;
+            end
             default: begin
                 //$display("Unknown alu operand");
                 ALUResult = 32'hxxxxxxxx;
             end
         endcase
-        if(ALUResult == 0)begin
-            Zero = 1;
-        end else begin
-            Zero = 0;
-        end
     end
 endmodule

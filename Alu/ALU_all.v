@@ -19,7 +19,6 @@ module ALU_all(
             .SrcA(SrcA), 
             .SrcB(SrcB_to_ALU),
             .ALUResult(ALUResult),
-            .Zero(Zero)
     );
 
 
