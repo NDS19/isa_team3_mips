@@ -1,7 +1,7 @@
 module Decoder(
     input logic clk,
     input logic[31:0] Instr,
-    input logic stall;
+    input logic stall,
     output logic IrSel,
     output logic IrWrite,
     output logic IorD,
