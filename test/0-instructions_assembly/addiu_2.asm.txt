@@ -1,0 +1,4 @@
+LW $a0 0(ZERO)
+ADDIU $v0 $a0 10
+
+ZERO: 0
