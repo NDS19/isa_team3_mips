@@ -77,9 +77,8 @@ module ALU_all(
 
     //ALU operation specified by ALU_OPCODE
     always_comb begin
-        if(ALU_Control[3] == 0)begin
-            ALU_OPCODE
-     = ALU_Control[2:0];
+        if(ALU_Control != 1111 )begin
+            ALU_OPCODE = ALU_Control;
             validIn_mul = 0;
             validIn_div = 0;
             Hi_en = 0;
@@ -107,7 +106,7 @@ module ALU_all(
                 ALU_OPCODE = 4'b0101; /* SRLV */
             end
             6'b000111: begin
-                ALU_OPCOD = 4'b1000; /* SRAV */
+                ALU_OPCODE = 4'b1000; /* SRAV */
             end
             //6'b001000: ALU_OPCODE  <= 4'b00110; /* JR */
             //6'b001001: ALU_OPCODE  <= 4'b00111; /* JALR */
