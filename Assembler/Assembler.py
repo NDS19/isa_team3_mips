@@ -91,17 +91,17 @@ def decode(line,parameters,line_names):
     }
 
     rtype_func = {"ADDU":["a","000000"],
-        "AND":["a","000000"], #arithmatic syntac
-        "DIV":["md","011010"], #mult div syntax
-        "DIVU":["md","011011"],
-        "JR":["j","001000"], #jump syntax
-        "JALR":["jl","000001"], ##TODO
-        "MTHI":["m","010001"],
-        "MTLO":["m","010011"],
+        "AND":["a","000000"], #arithmatic syntac  #arithmatic
+        "DIV":["md","011010"], #mult div syntax    #arithmatic     
+        "DIVU":["md","011011"],               
+        "JR":["j","001000"], #jump syntax          #JUMP
+        "JALR":["jl","000001"], ##TODO              #JUMP
+        "MTHI":["m","010001"],                      #MOVE
+        "MTLO":["m","010011"],                      #MOVE
         "MULT":["md","011000"],
         "MULTU":["md","011001"],
         "OR":["a","100101"],
-        "SLL":["s","000000"], #shift syntax
+        "SLL":["s","000000"], #shift syntax         
         "SLLV":["a","000100"],
         "SLT":["a","101010"],
         "SLTU":["a","101011"],
@@ -155,7 +155,7 @@ def decode(line,parameters,line_names):
             output += opcodes[opcode][1]
             output += reg(reg1)
             output += reg(reg2)
-            if isdigit(const):
+            if isDigit(const):
                 output += bitString(int(const),16)
             else:
                 output += bitString(int(parameters[const]),16)
@@ -167,7 +167,7 @@ def decode(line,parameters,line_names):
             output += opcodes[opcode][1]
             output += bitString(0,5)
             output += reg(reg1)
-            if isdigit(const):
+            if isDigit(const):
                 output += bitString(int(const),16)
             else:
                 output += bitString(int(parameters[const]),16)
@@ -229,6 +229,8 @@ def writeOutput(output,output_file):
             #print(x)
             #_f.write(x)
             output_string += x
+        if (i+4) % 8 == 0 and i != 0:
+            output_string += " "
     #_f.write("\n")
     #_f.close()
     print(output_string)
@@ -250,7 +252,7 @@ for i in range(len(lines)):
         if isDigit(line[1]):
             parameters[line[0]] = int(line[1])
         else:
-            lines_codes[line[0]] = i
+            lines_codes[line[0]] = i * 4
 
 #assemble all the lines
 for line in lines:
