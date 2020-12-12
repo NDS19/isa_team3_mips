@@ -19,7 +19,19 @@ module Decoder(
 
   logic is_branch_delay, is_branch_delay_next;
   /* Using an enum to define constants */
-  
+  typedef enum logic[5:0] {
+        R_TYPE = 6'b000000;
+        BLT_TYPE = 6'b000001;
+        LW = 6'b100011;
+        SW = 6'b101011;
+        ADDIU = 6'b001001;
+        ANDI = 6'001100;
+        J = 6'b000010;
+        LB = 6'b100000;
+        ORI = 6'b001101;
+        SLTI = 6'b001010;
+        BGTZ = 6'b000111;
+   } opcode_t;
 
   /* Another enum to define CPU states. */
   typedef enum logic[2:0] {
