@@ -67,8 +67,8 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
     for i in ${TESTCASES} ; do
       TESTNAME=$(basename ${i} .asm.txt)
       # TESTNAME now doesn't have the .am.txt suffix
-      Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
-      >test/1-binary/${TESTNAME}.hex.txt
+      python Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
+      >test/1-binary/${TESTNAME}.bin.txt
     done
     >&2 echo " Successfully assembled test files for ${instruction}"
     # instruction assembly files have now been compiled into their hex binary files
@@ -84,8 +84,8 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       iverilog -g 2012 \
       ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v ALU/*.v \
       datapath/*.v register_file.v Decoder.v \
-      -s test/mips_cpu_bus_tb.v \ # set the test-bench as top level since this instantiates everything
-      -P test/mips_cpu_bus_tb.v =\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
+      -s test/mips_cpu_bus_tb \ # set the test-bench as top level since this instantiates everything
+      -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
       -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
     done
     # MAKE SURE TO ADJUST THIS BLOCK OF CODE FOR POSSIBLE CHANGES IN DIRECTORY
@@ -180,8 +180,8 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         # here it is all test case file names
         for i in ${TESTCASES} ; do
             TESTNAME=$(basename ${i} .asm.txt)
-            Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
-            >test/1-binary/${TESTNAME}.hex.txt
+            #Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
+            #>test/1-binary/${TESTNAME}.bin.txt
         done
         >&2 echo " Successfully assembled test files"
         # instruction assembly files have now been compiled into their hex binary files
