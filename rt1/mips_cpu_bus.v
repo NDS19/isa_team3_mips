@@ -58,6 +58,7 @@ Decoder Decoder_(
     .Is_Jump(Is_Jump),
     .OutLSB(OutLSB),
     .ExtSel(ExtSel)
+    .byteenable(byteenable)
     );
 
 datapath datapath_(
