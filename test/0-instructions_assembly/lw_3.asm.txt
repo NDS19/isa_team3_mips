@@ -1,4 +1,4 @@
-LW $v0 0(DATA1)
-JR $zero
-
-DATA1: 101
+ADDIU $t0, $zero, X
+LW $V0, 0($t0)
+J 0
+X: 101
