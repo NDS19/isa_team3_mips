@@ -30,7 +30,7 @@ module mips_cpu_bus_tb;
 
     // instianting everything and making the needed connections
     // might have to make all of the relevant connections including ALU, multiplexers, etc.
-    RAM_8x4096 #(RAM_INIT_FILE) ramInst(clk, address, write, read, writedata, readdata);
+    RAM_8x4096 #(RAM_INIT_FILE) ramInst(clk, address, write, writedata, byteenable, readdata);
     // instantiating the RAM
     [/*CPU module name*/] cpuInst(clk, rst, active, register_v0, address, \
       write, read, waitrequest, writedata, byteenable, readdata);

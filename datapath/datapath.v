@@ -10,15 +10,16 @@ module datapath (input  logic       clk, PcEn, IorD,
                  input  logic       stall,
                  input  logic       ALUsel,
                  input  logic       PCSrc,
+                 input  logic[31:0] ReadData,
                  output logic       stall,
                  output logic       OUTLSB,
                  output logic[31:0] Instr,
                  output logic[31:0] memloc,
-                 output logic[31:0] aluoutnext, writedata);
+                 output logic[31:0] writedata);
 
     wire [4:0]  writereg;
     wire [31:0] memloc;
-    wire [31:0] irin, irout;
+    wire [31:0] irout;
     wire [31:0] wd3;
     wire [31:0] pcnext;
     wire [31:0] nextrd1, nextrd2;
@@ -39,12 +40,12 @@ module datapath (input  logic       clk, PcEn, IorD,
     mux2 #(32)  brmux(result, branchnext, PCSrc, pcnext);
     pc #(32)    Pcreg(clk, reset, PcEn, pcnext, pc);
     mux2 #(32)  RegMem(pc, result, IorD, memloc);
-    ir #(32)    Irreg(clk, IrWrite, irin, irout);
+    ir #(32)    Irreg(clk, IrWrite, ReadData, irout);
 
     // rigister file logic
-    mux2 #(32)  muxIR(irin, irout, IrSel, instr);
+    mux2 #(32)  muxIR(ReadData, irout, IrSel, instr);
     mux2 #(5)   muxA3(instr[20:16], instr[15:11], RegDst, writereg);
-    mux2 #(32)  muxWD3(irin, result, MemToReg, wd3);
+    mux2 #(32)  muxWD3(ReadData, result, MemToReg, wd3);
     regfile     rf(clk, reset, instr[25:21], instr[20:16], writereg, nextrd1, nextrd2, RegWrite, wd3);
     flopr #(32) RegA(clk, nextrd1, rd1);
     flopr #(32) RegB(clk, nextrd2, writedata);
