@@ -235,6 +235,23 @@ module Decoder(
                 end
               endcase
 
+              ANDI: case(state)
+                EXEC_1: begin
+                  ALUSrcA=1;
+                  ALUSrcB=10;
+                  ExtSel=0; 
+                  ALUControl= 0000;
+                  Extra=1;
+                end
+                EXEC_2: begin
+                  RegDst=0;
+                  MemtoReg=1;
+                  RegWrite=1;
+                  ALUsel=1;
+                  Extra=0;
+                end
+              endcase
+
               LB: case(state)
                 EXEC_1: begin
                   ALUSrcA = 1;
@@ -267,6 +284,7 @@ module Decoder(
                 end
               endcase
 
+
               BGTZ: case(state)
                 EXEC_1:begin
                   ALUSrcA=1;
@@ -280,7 +298,5 @@ module Decoder(
           endcase
       end
   end
-
-
 endmodule
 
