@@ -3,6 +3,7 @@ module Decoder(
     input logic[31:0] Instr,
     input logic stall,
     input logic OutLSB,
+    input logic Rst,
     output logic IrSel,
     output logic IrWrite,
     output logic IorD,
@@ -76,7 +77,7 @@ module Decoder(
 
   //skip instruction register
   assign IrSel = (instr_opcode == DECODE) ? 0 : 1;
-
+  assign PCWrite = (instr_opcode == FETCH) ? 1 : 0;
 
   /* We are targetting an FPGA, which means we can specify the power-on value of the
       circuit. So here we set the initial state to 0, and set the output value to
@@ -94,6 +95,7 @@ module Decoder(
           EXEC_1: state <= stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
           EXEC_2: state <= Extra ? EXEC_3 : FETCH;
           EXEC_3: state <= FETCH;
+          HALTED: state <= Rst ? FETCH : HALTED;
           default: HALTED;
       endcase
       //is_branch_delay <= write_branch_delay == 1 ? is_branch_delay_next : is_branch_delay;
@@ -105,11 +107,13 @@ module Decoder(
   //Implement here your instructions! beware of the Extra signal. set Extra to 0 if you don't need a new state
   //Decode logic
   always_comb begin
+      if (Rst == 1) begin
+        is_branch_delay_next = 1;
+      end
       if (instr_opcode == FETCH)begin
         if (is_branch_delay == 1) begin
           PCSrc = 1;
           IorD = 0;
-          PCWrite = 1;
           Extra = 0;
         end
         else begin
@@ -119,7 +123,6 @@ module Decoder(
           AluSrcB = 01;
           ALUControl = 0010;
           ALUSel = 0;
-          PCWrite = 1;
           Extra = 0;
         end
       end
