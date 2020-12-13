@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eou pipefail
 
+sudo apt install python3
+
 # installing required files, place pre-installed execution or install commands here
 
 # basename /path/to/file.tar.gz .gz – Strip directory and suffix from filenames
@@ -19,6 +21,7 @@ set -eou pipefail
 #     different syntax which doesn't work here (if statements)
 #     UPDATE : if statements are actually the same apart from a ; at the end
 #     of fi. Also other syntax differences turned out that we could actually use DT's
+# 4. Adjust files to be able to handle the changes in directories
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
@@ -44,9 +47,9 @@ set -e
 source_directory="$1" # represents the directory of the CPU
 if [ $# -eq 2 ] ; then # if there are two input arguments
     echo " 2 arguments detected"
-    instruction = "$2" # represents the instruction we are testing
+    instruction="$2" # represents the instruction we are testing
     # input should be lower-case
-    TESTCASES = "test/0-instructions_assembly/${instruction}_*.asm.txt"
+    TESTCASES="test/0-instructions_assembly/${instruction}_*.asm.txt"
     # TESTCASES holds all the test files for the current instruction
     # with the suffix .asm.txt e.g. addiu_1.asm.txt
     # The * selects all different test-cases of the instruction
@@ -67,8 +70,8 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
     for i in ${TESTCASES} ; do
       TESTNAME=$(basename ${i} .asm.txt)
       # TESTNAME now doesn't have the .am.txt suffix
-      python Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
-      >test/1-binary/${TESTNAME}.bin.txt
+      echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 Assembler/Assembler.py \
+      > test/1-binary/${TESTNAME}.hex.txt
     done
     >&2 echo " Successfully assembled test files for ${instruction}"
     # instruction assembly files have now been compiled into their hex binary files
@@ -82,7 +85,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       # -P is used to adjust the parameter in the testbench verilog so we can
       # input a file that is read in
       iverilog -g 2012 \
-      ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v ALU/*.v \
+      ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v Alu/*.v \
       datapath/*.v register_file.v Decoder.v \
       -s test/mips_cpu_bus_tb \ # set the test-bench as top level since this instantiates everything
       -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
@@ -180,8 +183,8 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         # here it is all test case file names
         for i in ${TESTCASES} ; do
             TESTNAME=$(basename ${i} .asm.txt)
-            #Assembler/Assembler.py <test/0-instructions_assembly/${TESTNAME}.asm.txt \
-            #>test/1-binary/${TESTNAME}.bin.txt
+            echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 Assembler/Assembler.py \
+            >test/1-binary/${TESTNAME}.hex.txt
         done
         >&2 echo " Successfully assembled test files"
         # instruction assembly files have now been compiled into their hex binary files
@@ -193,7 +196,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         for i in ${TESTCASES} ; do
             TESTNAME=$(basename ${i} .asm.txt)
             iverilog -g 2012 \
-            ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v ALU/*.v \
+            ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v Alu/*.v \
             datapath/*.v register_file.v Decoder.v \
             -s mips_cpu_bus_tb \ # set the test-bench as top level since this instantiates everything
             -P mips_cpu_bus_tb.RAM_INIT_FILE =\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
