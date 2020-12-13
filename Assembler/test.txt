@@ -1,3 +1,10 @@
-ADDIU $1, $2, FIVE
-ADDU $1, $2, $3
+ADDIU $V0, $V1, FIVE
+ADDU $V0, $V1, $a0
+LW $t0, 3($V1)
+LW $t1, 3($V1)
+ADDU $t0, $t0, $t1
+SW $t0, 3($V0)
 FIVE: 5
+X: 101
+Y: 100
+SUM: 1056

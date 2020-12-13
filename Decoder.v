@@ -1,25 +1,39 @@
 module Decoder(
     input logic clk,
     input logic[31:0] Instr,
-    input logic stall;
+    input logic stall,
     output logic IrSel,
     output logic IrWrite,
     output logic IorD,
     output logic AluSrcA,
     output logic[1:0] AluSrcB,
-    output logic[3:0] ALUOp,
+    output logic[3:0] ALUControl,
     output logic ALUsel,
     output logic IrWrite,
     output logic PCWrite,
     output logic RegWrite,
     output logic MemtoReg,
+    output logic PcSrc,
+    output logic RegDst,
     output logic MemWrite
 );
 
 
   logic is_branch_delay, is_branch_delay_next;
   /* Using an enum to define constants */
-  
+  typedef enum logic[5:0] {
+        R_TYPE = 6'b000000;
+        BLT_TYPE = 6'b000001;
+        LW = 6'b100011;
+        SW = 6'b101011;
+        ADDIU = 6'b001001;
+        ANDI = 6'001100;
+        J = 6'b000010;
+        LB = 6'b100000;
+        ORI = 6'b001101;
+        SLTI = 6'b001010;
+        BGTZ = 6'b000111;
+   } opcode_t;
 
   /* Another enum to define CPU states. */
   typedef enum logic[2:0] {
@@ -99,7 +113,7 @@ module Decoder(
           IorD = 0;
           AluSrcA = 0;
           AluSrcB = 01;
-          ALUOp = 0010;
+          ALUControl = 0010;
           ALUsel = 0;
           PCWrite = 1;
           Extra = 0;
@@ -108,7 +122,7 @@ module Decoder(
       else if (state == DECODE) begin
           AluSrcA = 0;
           AluSrcB = 11;
-          ALUOp = 0010;
+          ALUControl = 0010;
       end
       else begin
           case (instr_opcode)
@@ -124,7 +138,7 @@ module Decoder(
                   case (state)
                     EXEC_1: begin
                       ALUSrcA = 0; //Send the PC to the ALU, the ALU needs to add 8 to it
-                      ALUOp = 1111;
+                      ALUControl = 1111;
                       Extra = 1;
                     end
                     EXEC_2: begin
@@ -136,7 +150,7 @@ module Decoder(
                     end
                     EXEC_3: begin
                       ALUSrcA = 1; 
-                      ALUOp = 1110; //Pass through opcode, output of ALU should be SrcA
+                      ALUControl = 1110; //Pass through opcode, output of ALU should be SrcA
                       is_branch_delay_next = 1;
                     end
                   endcase
@@ -145,7 +159,7 @@ module Decoder(
                   case (state)
                     EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUOp = 1110;
+                      ALUControl = 1110;
                       is_branch_delay_next = 1;
                       Extra = 0;
                     end
@@ -156,7 +170,7 @@ module Decoder(
                     EXEC_1: begin
                       ALUSrcA = 1;
                       ALUSrcB = 00;
-                      ALUOp = 1111;
+                      ALUControl = 1111;
                       Extra = 1;
                     end
                     EXEC_2: begin
@@ -173,7 +187,7 @@ module Decoder(
                   EXEC_1: begin
                       ALUSrcA = 1;
                       AluSrcB = 10;
-                      ALUOp = 0010;
+                      ALUControl = 0010;
                       Extra = 1;
                   end
                   EXEC_2: begin
@@ -191,7 +205,7 @@ module Decoder(
                   EXEC_1: begin
                     ALUSrcA= 1;
                     ALUSrcB= 10;
-                    ALUOp = 0010;
+                    ALUControl = 0010;
                     Extra=1;
                   end
                   EXEC_2: begin
@@ -211,7 +225,7 @@ module Decoder(
                 EXEC_1: begin
                   ALUSrcA=1;
                   ALUSrcB=10;
-                  ALUop= 0001;
+                  ALUControl= 0001;
                   Extra=1;
                 end
                 EXEC_2: begin
@@ -225,7 +239,7 @@ module Decoder(
                 EXEC_1: begin
                   ALUSrcA = 1;
                   AluSrcB = 10;
-                  ALUOp = 0010;
+                  ALUControl = 0010;
                   Extra = 1;
                 end
                 EXEC_2: begin
@@ -239,11 +253,11 @@ module Decoder(
                 end
               endcase
 
-              SLTI: case(stage)
+              SLTI: case(state)
                 EXEC_1: begin
                   ALUSrcA=1;
                   ALUSrcB=10;
-                  ALUOp=0111;
+                  ALUControl=0111;
                   Extra=1;
                 end
                 EXEC_2: begin
@@ -253,11 +267,11 @@ module Decoder(
                 end
               endcase
 
-              BGTZ: case(stage)
+              BGTZ: case(state)
                 EXEC_1:begin
                   ALUSrcA=1;
                   ALUSrcB=00;
-                  ALUOp=0111;
+                  ALUControl=0111;
                   PCSrc=1;
                   Branch=1;
                 end
