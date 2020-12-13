@@ -262,7 +262,7 @@ for i in range(len(lines)):
         if isDigit(line[1]):
             parameters[line[0]] = int(line[1])
         else:
-            line_names[line[0]] = i * 4
+            line_names[line[0]] = (i + 3217031168 ) & (pow(2,27)-1)
 
 #assemble all the lines
 for line in lines:

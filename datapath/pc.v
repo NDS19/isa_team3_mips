@@ -1,10 +1,13 @@
 module pc # (parameter WIDTH = 8)
                (input                    clk, reset, PcEn,
                 input      [WIDTH - 1:0] d,
-                output reg [WIDTH - 1:0] q);
+                output reg [WIDTH - 1:0] q,
+                input logic is_jump);
+
+    logic jump;
 
     always @ (posedge clk, posedge reset)
-        
+        jump <= is_jump;
         if (reset) q <= 0xBFC00000;
-        else       q <= PcEn ? d : q;
+        else       q <= jump ? {q[31:27],d[26:0]} : PcEn ? d : q;
 endmodule

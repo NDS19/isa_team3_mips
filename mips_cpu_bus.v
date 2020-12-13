@@ -29,6 +29,9 @@ logic MemtoReg;
 logic MemWrite;
 logic PcSrc;
 logic RegDst;
+logic Is_Jump;
+logic ExtSel;
+logic OutLSB;
 
 
 
@@ -49,9 +52,12 @@ Decoder Decoder_(
     .PCWrite(PCWrite),
     .RegWrite(RegWrite),
     .MemtoReg(MemtoReg),
-    .MemWrite(MemWrite)
-    .PcSrc(PcSrc)
-    .RegDst(RegDst)
+    .MemWrite(MemWrite),
+    .PcSrc(PcSrc),
+    .RegDst(RegDst),
+    .Is_Jump(Is_Jump),
+    .OutLSB(OutLSB),
+    .ExtSel(ExtSel)
     );
 
 datapath datapath_(
@@ -67,16 +73,16 @@ datapath datapath_(
     .RegWrite(RegWrite), 
     .ALUSrcA(AluSrcA),
     .ALUSrcB(AluSrcB),
-    //.ExtSel(),
+    .ExtSel(ExtSel),
     .ALUControl(ALUControl),
     .stall(stall),
     .ALUsel(ALUsel),
     .PCSrc(PcSrc),
-    //.OUTLSB(),
+    .OUTLSB(OutLSB),
     .Instr(Instr),
     .memloc(address),
-    .writedata(writedata)
-
+    .writedata(writedata),
+    .is_jump(Is_Jump)
 )
 
 endmodule

@@ -11,6 +11,7 @@ module datapath (input  logic       clk, PcEn, IorD,
                  input  logic       ALUsel,
                  input  logic       PCSrc,
                  input  logic[31:0] ReadData,
+                 input  logic       is_jump,
                  output logic       stall,
                  output logic       OUTLSB,
                  output logic[31:0] Instr,
@@ -38,7 +39,7 @@ module datapath (input  logic       clk, PcEn, IorD,
     //next PC logic
     flopr #(32) Brreg(clk, result, branchnext);
     mux2 #(32)  brmux(result, branchnext, PCSrc, pcnext);
-    pc #(32)    Pcreg(clk, reset, PcEn, pcnext, pc);
+    pc #(32)    Pcreg(clk, reset, PcEn, pcnext, pc, is_jump);
     mux2 #(32)  RegMem(pc, result, IorD, memloc);
     ir #(32)    Irreg(clk, IrWrite, ReadData, irout);
 
