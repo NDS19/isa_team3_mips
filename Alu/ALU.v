@@ -86,6 +86,10 @@ module ALU(
                     ALUResult = 0;
                 end
             end
+            4'b1101 : begin
+                // needed for jumps
+                ALUResult = SrcA + SrcB + 4;
+            end
             4'b1110 : begin
                 //pass through SrcA
                 ALUResult = SrcA;
