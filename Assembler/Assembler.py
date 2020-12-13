@@ -237,7 +237,7 @@ def writeOutput(output,output_file):
 
 
 #f = open(input(), 'r')
-f = open("test.txt", 'r')
+f = open(input(), 'r')
 lines = f.readlines()
 
 parameters = {}
