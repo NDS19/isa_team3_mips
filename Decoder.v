@@ -22,7 +22,8 @@ module Decoder(
     output logic RegDst,
     output logic MemWrite,
     output logic MemRead,
-    output logic Active
+    output logic Active,
+    output logic Is_Jump
 );
 
 
@@ -43,6 +44,7 @@ module Decoder(
         BLEZ = 6'b000110;
         J = 6'b000010;
         SLTIU = 6'b101000;
+        JAL = 6'b000011;
    } opcode_t;
 
   /* Another enum to define CPU states. */
@@ -82,8 +84,9 @@ module Decoder(
   assign Funct = instr[5:0];
 
   //skip instruction register
-  assign IrSel = (instr_opcode == DECODE) ? 0 : 1;
-  assign PCWrite = (instr_opcode == FETCH) ? 1 : 0;
+  assign IrSel = (state == DECODE) ? 0 : 1;
+  assign PCWrite = (state == FETCH) ? 1 : 0;
+  assign Is_Jump = (instr_opcode == J || instr_opcode == JAL) && (state == EXEC_1);
 
   assign Active = state == STALL;
   /* We are targetting an FPGA, which means we can specify the power-on value of the
@@ -132,16 +135,26 @@ module Decoder(
           PCSrc = 0;
           IorD = 0;
           AluSrcA = 0;
-          AluSrcB = 01;
+          AluSrcB = 11;
           ALUControl = 0010;
           ALUSel = 0;
+          ExtSel = 0;
           Extra = 0;
         end
       end
       else if (state == DECODE) begin
+        if(instr_opcode != J  && instr_opcode != JAL) begin  
           AluSrcA = 0;
           AluSrcB = 11;
-          ALUControl = 0010;
+          ExtSel = 0;
+          ALUControl = 1101;
+        end
+        else begin
+          //AluSrcA = 0;
+          AluSrcB = 11;
+          ExtSel = 1;
+          ALUControl = 1110;
+        end
       end
       else begin
           case (instr_opcode)
