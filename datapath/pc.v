@@ -6,6 +6,8 @@ module pc # (parameter WIDTH = 8)
 
     logic jump;
 
+    assign PcIs0 = q == 0;
+    
     always @ (posedge clk, posedge reset)
         jump <= is_jump;
         if (reset) q <= 0xBFC00000;

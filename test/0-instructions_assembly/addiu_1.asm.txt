@@ -1,5 +1,3 @@
-LW $a0 0(ZERO)
-ADDIU $v0 $a0 0
+ADDIU $a0, $zero, 0
+ADDIU $v0, $a0, 0
 JR $zero
-
-ZERO: 0

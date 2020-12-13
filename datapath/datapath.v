@@ -16,10 +16,13 @@ module datapath (input  logic       clk, PcEn, IorD,
                  output logic       OUTLSB,
                  output logic[31:0] Instr,
                  output logic[31:0] memloc,
-                 output logic[31:0] writedata);
+                 output logic[31:0] writedata,
+                 output logic       PcIs0,
+                 output logic[31:0] Register0
+                 );
 
     wire [4:0]  writereg;
-    wire [31:0] memloc;
+    wire [31:0] inp_mem;
     wire [31:0] irout;
     wire [31:0] wd3;
     wire [31:0] pcnext;
@@ -32,7 +35,9 @@ module datapath (input  logic       clk, PcEn, IorD,
     wire [31:0] SxOut, ZxOut;
     wire [31:0] branchnext;
     wire [31:0] instr;
-    wire        OUTLSB = aluoutnext[0];
+    wire [31:0] pc;
+
+    assign OUTLSB = aluoutnext[0];
 
     assign Instr = instr;
 
@@ -47,7 +52,7 @@ module datapath (input  logic       clk, PcEn, IorD,
     mux2 #(32)  muxIR(ReadData, irout, IrSel, instr);
     mux2 #(5)   muxA3(instr[20:16], instr[15:11], RegDst, writereg);
     mux2 #(32)  muxWD3(ReadData, result, MemToReg, wd3);
-    regfile     rf(clk, reset, instr[25:21], instr[20:16], writereg, nextrd1, nextrd2, RegWrite, wd3);
+    regfile     rf(clk, reset, instr[25:21], instr[20:16], writereg, nextrd1, nextrd2, RegWrite, wd3, Register0);
     flopr #(32) RegA(clk, nextrd1, rd1);
     flopr #(32) RegB(clk, nextrd2, writedata);
     mux2 #(32)  alumux(nextaluout, aluout, ALUsel, result);

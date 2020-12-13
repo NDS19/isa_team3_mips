@@ -1,6 +1,6 @@
 /* TO DO:
-1. Understand how the RAM file is initialised with an input file
-2. Implement timings to determine how quickly test cases are completed
+1. Understand how the RAM file is initialised with an input file [tick]
+2. Implement timings to determine how quickly test cases are completed [maybe working]
 */
 
 module mips_cpu_bus_tb;
@@ -32,7 +32,7 @@ module mips_cpu_bus_tb;
     // might have to make all of the relevant connections including ALU, multiplexers, etc.
     RAM_8x4096 #(RAM_INIT_FILE) ramInst(clk, address, write, writedata, byteenable, readdata);
     // instantiating the RAM
-    [/*CPU module name*/] cpuInst(clk, rst, active, register_v0, address, \
+    mips_cpu_bus cpuInst(clk, rst, active, register_v0, address, \
       write, read, waitrequest, writedata, byteenable, readdata);
     // instantiating the CPU
 

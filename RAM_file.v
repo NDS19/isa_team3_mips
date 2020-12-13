@@ -24,11 +24,13 @@ module RAM_8x4096(
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
             $readmemh(RAM_INIT_FILE, memory);
         end
-
-        b0 = memory[a];
-        b1 = memory[a+1];
-        b2 = memory[a+2];
-        b3 = memory[a+3];
+        
+        a = a - 32'hBFC00000;
+        
+        b0 = a==32'h0 ? 8'b0 : memory[a];
+        b1 = a==32'h0 ? 8'b0 : memory[a+1];
+        b2 = a==32'h0 ? 8'b0 : memory[a+2];
+        b3 = a==32'h0 ? 8'b0 : memory[a+3];
 
     end
 
