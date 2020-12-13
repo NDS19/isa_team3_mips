@@ -85,7 +85,8 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       # -P is used to adjust the parameter in the testbench verilog so we can
       # input a file that is read in
       iverilog -g 2012 \
-      ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v Alu/*.v \
+      ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_file.v \
+      Alu/ALU_all.v Alu/ALU.v Alu/Div.v Alu/MSB.v Alu/Mult.v Alu/Sign_Inverter.v Alu/Sign_Inverter64.v \
       datapath/*.v register_file.v Decoder.v \
       -s test/mips_cpu_bus_tb \ # set the test-bench as top level since this instantiates everything
       -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
