@@ -288,19 +288,19 @@ module Decoder(
 
               BLEZ: case(state) //done
                 EXEC_1: begin
-                  ALUSrcA=1;
-                  ALUControl=1100;
+                  ALUSrcA = 1;
+                  ALUControl = 1100;
                   is_branch_delay_next=(OutLSB == 1)?1:0;
                   Extra = 0;
-                  ALUsel=1;
+                  ALUsel = 1;
                 end
               endcase
 
               J: case(state)  //Done
                 EXEC_1: begin
-                  is_branch_delay_next=1;
+                  is_branch_delay_next = 1;
                   Extra = 0;
-                  ALUsel=1;
+                  ALUsel = 1;
                 end
               endcase
 
@@ -310,9 +310,9 @@ module Decoder(
                   ALUSrcA = 1;
                   ALUSrcB = 10;
                   ExtSel = 1
-                  ALUControl=1001;
+                  ALUControl= 1001;
                   Extra = 1;
-                  ALUsel=0;
+                  ALUsel= 0;
                 end
                 EXEC_2:begin
                   ALUSel = 1;
@@ -320,6 +320,25 @@ module Decoder(
                   RegDst = 1;
                   Extra = 0;
                   RegWrite = 1; 
+                  is_branch_delay_next = 0;
+                end
+              endcase
+
+              ADDIU: case (state)
+                EXEC_1: begin
+                  ExtSel = 1;
+                  ALUSrcB = 10;
+                  ALUSrcA = 1;
+                  ALUControl = 0010;
+                  Extra = 1;
+                end
+                EXEC_2: begin
+                  AluSel = 1;
+                  MemtoReg = 1;
+                  RegDst = 1;
+                  is_branch_delay_next = 0;
+                  RegWrite = 1;
+                  Extra = 0;
                 end
               endcase
           endcase

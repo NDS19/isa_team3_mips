@@ -57,12 +57,12 @@ def decode(line,parameters,line_names):
         #"AND":"000000",
         "ANDI":["r","001100"],
         "BEQ":["r","000100"],
-        "BGEZ":["j","000001"],
-        "BGEZAL":["j","000001"],
-        "BGTZ":["j","000111"],
-        "BLEZ":["j","000110"],
-        "BLTZ":["j","000001"],
-        "BLTZAL":["j","000001"],
+        "BGEZ":["b","000001"],
+        "BGEZAL":["b","000001"],
+        "BGTZ":["b","000111"],
+        "BLEZ":["b","000110"],
+        "BLTZ":["b","000001"],
+        "BLTZAL":["b","000001"],
         "J":["j","000001"],   ##TODO
         "LB":["ls","100000"],
         "LBU":["ls","100100"],
@@ -73,11 +73,11 @@ def decode(line,parameters,line_names):
         "LWL":["ls","100010"],
         "LWR":["ls","100110"],
         "ORI":["r","001101"],
-        "SB":["l","101000"],
+        "SB":["ls","101000"],
         "SH":["ls","101001"],
         "SLTI":["r","001010"],
         "SLTIU":["r","001011"],
-        "SLTU":["ls","101001"],
+    # "SLTU":["ls","101001"],
         "SW":["ls","101011"],
         "XORI":["r","001110"]
     }
@@ -90,7 +90,7 @@ def decode(line,parameters,line_names):
         "BLTZAL":"10000",
     }
 
-    rtype_func = {"ADDU":["a","000000"],
+    rtype_func = {"ADDU":["a","10001"],
         "AND":["a","000000"], #arithmatic syntac  #arithmatic
         "DIV":["md","011010"], #mult div syntax    #arithmatic     
         "DIVU":["md","011011"],               
@@ -125,8 +125,8 @@ def decode(line,parameters,line_names):
             reg2 = line[2]
             const = line[3]
             output += opcodes[opcode][1]
-            output += reg(reg1)
             output += reg(reg2)
+            output += reg(reg1)
             if isDigit(const):
                 output += bitString(int(const),16)
             else:
@@ -134,7 +134,7 @@ def decode(line,parameters,line_names):
                 #print(const)
                 output +=  bitString(int(parameters[const]),16)
         #elif opcode in jmp_type:
-        elif opcodes[opcode][0] == "j":
+        elif opcodes[opcode][0] == "b":
             reg1 = line[1]
             const = line[2]
             output += opcodes[opcode][1]
@@ -146,6 +146,16 @@ def decode(line,parameters,line_names):
                 output += bitString(int(parameters[const]),16)
             else:
                 output += bitString(int(line_names[const]),16)
+        
+        elif opcodes[opcode][0] == "j":
+            const = line[1]
+            output += opcodes[opcode][1]
+            if isDigit(const):
+                output += bitString(int(const),26)
+            elif output in parameters:
+                output += bitString(int(parameters[const]),26)
+            else:
+                output += bitString(int(line_names[const]),26)
 
         #elif opcode in load_store_type:
         elif opcodes[opcode][0] == "ls":
@@ -153,8 +163,8 @@ def decode(line,parameters,line_names):
             reg2 = line[2].split("(")[1][:-1]
             const = line[2].split("(")[0]
             output += opcodes[opcode][1]
-            output += reg(reg1)
             output += reg(reg2)
+            output += reg(reg1)
             if isDigit(const):
                 output += bitString(int(const),16)
             else:
@@ -179,12 +189,13 @@ def decode(line,parameters,line_names):
             reg1 = line[1]
             reg2 = line[2]
             reg3 = line[3]
-            output += reg(reg3) + reg(reg1) + reg(reg2) + "00000"
+            output += reg(reg2) + reg(reg3) + reg(reg1) + "00000"
         #elif opcode in mt_rtype:
         elif rtype_func[opcode][0] == "m":
             reg1 = line[1]
-            output += bitString(0,10)
+            #output += bitString(0,10)
             output += reg(reg1)
+            output += bitString(0,15)
         #elif opcode in mult_div:
         elif rtype_func[opcode][0] == "md":
             reg1 = line[1]
@@ -215,7 +226,6 @@ def decode(line,parameters,line_names):
     #print(output)
     return output
 
-
 def writeOutput(output,output_file):
     #print(output)
     #print(len(output))
@@ -236,8 +246,8 @@ def writeOutput(output,output_file):
     print(output_string)
 
 
-#f = open(input(), 'r')
 f = open(input(), 'r')
+#f = open("test.txt", 'r')
 lines = f.readlines()
 
 parameters = {}
@@ -252,7 +262,7 @@ for i in range(len(lines)):
         if isDigit(line[1]):
             parameters[line[0]] = int(line[1])
         else:
-            lines_codes[line[0]] = i * 4
+            line_names[line[0]] = i * 4
 
 #assemble all the lines
 for line in lines:
