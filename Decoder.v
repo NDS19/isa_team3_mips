@@ -4,6 +4,8 @@ module Decoder(
     input logic stall,
     input logic OutLSB,
     input logic Rst,
+    input logic waitrequest,
+    output logic ExtSel,
     output logic IrSel,
     output logic IrWrite,
     output logic IorD,
