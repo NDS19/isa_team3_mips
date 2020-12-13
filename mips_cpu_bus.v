@@ -35,6 +35,7 @@ logic RegDst;
 
 Decoder Decoder_( 
     .clk(clk),
+    .Rst(reset),
     .Instr(Instr),
     .stall(stall),
     .IrSel(IrSel),
