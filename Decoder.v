@@ -4,6 +4,7 @@ module Decoder(
     input logic stall,
     input logic OutLSB,
     input logic Rst,
+    input logic PCIs0,
     input logic waitrequest,
     output logic ExtSel,
     output logic IrSel,
@@ -19,7 +20,9 @@ module Decoder(
     output logic MemtoReg,
     output logic PcSrc,
     output logic RegDst,
-    output logic MemWrite
+    output logic MemWrite,
+    output logic MemRead,
+    output logic Active
 );
 
 
@@ -49,7 +52,8 @@ module Decoder(
       EXEC_1  = 3'b010,
       EXEC_2  = 3'b011,
       EXEC_3 = 3'b100,
-      HALTED = 3'b101
+      HALTED = 3'b101,
+      STALL = 3'b110
   } state_t;
 
   /*enum for R-Type*/
@@ -81,6 +85,7 @@ module Decoder(
   assign IrSel = (instr_opcode == DECODE) ? 0 : 1;
   assign PCWrite = (instr_opcode == FETCH) ? 1 : 0;
 
+  assign Active = state == STALL;
   /* We are targetting an FPGA, which means we can specify the power-on value of the
       circuit. So here we set the initial state to 0, and set the output value to
       indicate the CPU is not running.
@@ -92,11 +97,12 @@ module Decoder(
   //State machine
   always_ff @(posedge clk) begin
       case (state)
-          FETCH: state <= DECODE;
-          DECODE: state <= EXEC_1;
-          EXEC_1: state <= stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
-          EXEC_2: state <= Extra ? EXEC_3 : FETCH;
-          EXEC_3: state <= FETCH;
+          FETCH: state <= PCIs0?HALTED:waitrequest?STALL:DECODE;
+          STALL: state <= PCIs0?HALTED:waitrequest?STALL:DECODE;
+          DECODE: state <= PCIs0?HALTED:EXEC_1;
+          EXEC_1: state <= PCIs0?HALTED:stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
+          EXEC_2: state <= PCIs0?HALTED:Extra ? EXEC_3 : FETCH;
+          EXEC_3: state <= PCIs0?HALTED:FETCH;
           HALTED: state <= Rst ? FETCH : HALTED;
           default: HALTED;
       endcase
@@ -112,7 +118,11 @@ module Decoder(
       if (Rst == 1) begin
         is_branch_delay_next = 1;
       end
+      if (instr_opcode == STALL)begin
+        MemRead = 1;
+      end
       if (instr_opcode == FETCH)begin
+        MemRead = 1;
         if (is_branch_delay == 1) begin
           PCSrc = 1;
           IorD = 0;
