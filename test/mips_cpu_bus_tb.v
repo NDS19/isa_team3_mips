@@ -12,6 +12,16 @@
 module mips_cpu_bus_tb;
     //timeunit 1ns / 10ps;
 
+    /* TO DO:
+    1. Understand how the RAM file is initialised with an input file [tick]
+    2. Implement timings to determine how quickly test cases are completed [maybe working]
+    3. Fix compile-time errors
+        Output wires from the mips_cpu_bus file are causing declaration errors; because
+        these are output wires that the CPU either needs to use or will go to the RAM.
+        These might need to be treated as outputs of the tb since otherwise they are just
+        dangling wires
+    */
+
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
     // Have an empty parameter which can be adjusted in the testbench script using the -P
     // in the compilation block

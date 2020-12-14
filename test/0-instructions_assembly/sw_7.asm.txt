@@ -1,0 +1,5 @@
+ADDIU $t0, $zero, 5
+ADDIU $t1, $zero, 50
+SW $t0, 0($t1)
+LW $V0, 0($t1)
+JR $zero
