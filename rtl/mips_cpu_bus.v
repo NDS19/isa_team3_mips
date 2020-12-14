@@ -13,80 +13,75 @@ module mips_cpu_bus(
 );
 
 
-logic Instr;
-logic stall;
-logic IrSel;
-logic IrWrite;
-logic IorD;
-logic AluSrcA;
-logic AluSrcB;
-logic ALUControl;
-logic ALUsel;
-logic IrWrite;
-logic PCWrite;
-logic RegWrite;
-logic MemtoReg;
-logic MemWrite;
-logic PcSrc;
-logic RegDst;
-logic Is_Jump;
-logic ExtSel;
-logic OutLSB;
+    logic Instr;
+    logic stall;
+    logic IrSel;
+    logic IrWrite;
+    logic IorD;
+    logic AluSrcA;
+    logic AluSrcB;
+    logic ALUControl;
+    logic ALUsel;
+    //logic IrWrite;
+    logic PCWrite;
+    logic RegWrite;
+    logic MemtoReg;
+    logic MemWrite;
+    logic PcSrc;
+    logic RegDst;
+    logic Is_Jump;
+    logic ExtSel;
+    logic OutLSB;
 
 
+    Decoder Decoder_(
+        .clk(clk),
+        .Rst(reset),
+        .Instr(Instr),
+        .stall(stall),
+        .IrSel(IrSel),
+        .IrWrite(IrWrite),
+        .IorD(IorD),
+        .AluSrcA(AluSrcA),
+        .AluSrcB(AluSrcB),
+        .ALUControl(ALUControl),
+        .ALUsel(ALUsel),
+        .IrWrite(IrWrite),
+        .PCWrite(PCWrite),
+        .RegWrite(RegWrite),
+        .MemtoReg(MemtoReg),
+        .MemWrite(MemWrite),
+        .PcSrc(PcSrc),
+        .RegDst(RegDst),
+        .Is_Jump(Is_Jump),
+        .OutLSB(OutLSB),
+        .ExtSel(ExtSel),
+        .byteenable(byteenable)
+        );
 
-
-Decoder Decoder_( 
-    .clk(clk),
-    .Rst(reset),
-    .Instr(Instr),
-    .stall(stall),
-    .IrSel(IrSel),
-    .IrWrite(IrWrite),
-    .IorD(IorD),
-    .AluSrcA(AluSrcA),
-    .AluSrcB(AluSrcB),
-    .ALUControl(ALUControl),
-    .ALUsel(ALUsel),
-    .IrWrite(IrWrite),
-    .PCWrite(PCWrite),
-    .RegWrite(RegWrite),
-    .MemtoReg(MemtoReg),
-    .MemWrite(MemWrite),
-    .PcSrc(PcSrc),
-    .RegDst(RegDst),
-    .Is_Jump(Is_Jump),
-    .OutLSB(OutLSB),
-    .ExtSel(ExtSel)
-    .byteenable(byteenable)
+    datapath datapath_(
+        .clk(clk),
+        .PcEn(PCWrite),
+        .IorD(IorD),
+        .reset(reset),
+        .IrWrite(IrWrite),
+        .IrSel(IrSel),
+        .RegDst(RegDst),
+        .ReadData(readdata),
+        .MemToReg(MemtoReg),
+        .RegWrite(RegWrite),
+        .ALUSrcA(AluSrcA),
+        .ALUSrcB(AluSrcB),
+        .ExtSel(ExtSel),
+        .ALUControl(ALUControl),
+        .stall(stall),
+        .ALUsel(ALUsel),
+        .PCSrc(PcSrc),
+        .OUTLSB(OutLSB),
+        .Instr(Instr),
+        .memloc(address),
+        .writedata(writedata),
+        .Is_jump(Is_Jump)
     );
 
-datapath datapath_(
-    .clk(clk)
-    .PcEn(PCWrite),
-    .IorD(IorD),
-    .reset(reset),
-    .IrWrite(IrWrite),
-    .IrSel(IrSel), 
-    .RegDst(RegDst),
-    .ReadData(readdata),
-    .MemToReg(MemtoReg),
-    .RegWrite(RegWrite), 
-    .ALUSrcA(AluSrcA),
-    .ALUSrcB(AluSrcB),
-    .ExtSel(ExtSel),
-    .ALUControl(ALUControl),
-    .stall(stall),
-    .ALUsel(ALUsel),
-    .PCSrc(PcSrc),
-    .OUTLSB(OutLSB),
-    .Instr(Instr),
-    .memloc(address),
-    .writedata(writedata),
-    .is_jump(Is_Jump)
-)
-
 endmodule
-)
-
-
