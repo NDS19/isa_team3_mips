@@ -1,5 +1,5 @@
 module ALU(  
-    input logic[3:0] ALUControl,
+    input logic[4:0] ALUControl,
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
     
@@ -15,35 +15,35 @@ module ALU(
 
     always_comb begin
         case (ALUControl)
-            4'b0000  :   begin
+            5'b00000  :   begin
                 // logical AND 
                 ALUResult = SrcA & SrcB;
             end   
-            4'b0001  :   begin
+            5'b00001  :   begin
                 // logical OR
                 ALUResult = SrcA | SrcB;
             end   
-            4'b0010  :   begin
+            5'b00010  :   begin
                 // Addition
                 ALUResult = SrcA + SrcB;
             end
-            4'b0011  :   begin
+            5'b00011  :   begin
                 // logical XOR
                 ALUResult = SrcA ^ SrcB;
             end      
-            4'b0100  :   begin
+            5'b00100  :   begin
                 // shift left logical
                 ALUResult = SrcB << SrcA;
             end   
-            4'b0101  :   begin
+            5'b00101  :   begin
                 // shift right logical
                 ALUResult = SrcB >> SrcA;
             end   
-            4'b0110  :   begin
+            5'b00110  :   begin
                 // Subtraction
                 ALUResult = SrcA - SrcB;
             end  
-            4'b0111  :   begin
+            5'b00111  :   begin
                 // SLT (Comparison signed)
                 SLT_sub = SrcA - SrcB;
                 if((SLT_sub >> 31) == 1)begin
@@ -52,11 +52,11 @@ module ALU(
                     ALUResult = 0;
                 end
             end
-            4'b1000 :   begin
+            5'b01000 :   begin
                 //SRA
                 ALUResult = SrcB >>> SrcA;
             end    
-            4'b1001 : begin
+            5'b01001 : begin
                 // SLTU (Comparison unsigned)
                 if(SrcA < SrcB) begin
                     ALUResult = 1;
@@ -64,8 +64,8 @@ module ALU(
                     ALUResult = 0;
                 end
             end
-            4'b1010 : begin
-                // is zero
+            5'b01010 : begin
+                // is less than 0
                 SLT_sub = SrcA - SrcB;
                 if( SLT_sub == 0) begin
                     ALUResult = 1;
@@ -73,12 +73,12 @@ module ALU(
                     ALUResult = 0;
                 end                
             end
-            4'b1011 : begin
+            5'b01011 : begin
                 // increment PC for branch
                 ALUResult = SrcA + 8;
             end
-            4'b1100 : begin
-                // compare SrcA to 0
+            5'b01100 : begin
+                // is SrcA < 0 
                 SLT_sub = SrcA - 0;
                 if((SLT_sub >> 31) == 1)begin
                     ALUResult = 1;
@@ -86,13 +86,25 @@ module ALU(
                     ALUResult = 0;
                 end
             end
-            4'b1101 : begin
+            5'b01101 : begin
                 // needed for jumps
                 ALUResult = SrcA + SrcB + 4;
             end
-            4'b1110 : begin
+            5'b01110 : begin
                 //pass through SrcA
                 ALUResult = SrcA;
+            end
+
+            //5'b01111 /*R-type*/
+            
+            5'b10000 : begin
+                //is SrcA <= 0
+                SLT_sub = SrcA - 1;
+                if((SLT_sub >> 31) == 1)begin
+                    ALUResult = 1;
+                end else begin
+                    ALUResult = 0;
+                end
             end
             default: begin
                 //$display("Unknown alu operand");
