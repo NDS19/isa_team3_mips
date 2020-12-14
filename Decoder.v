@@ -68,13 +68,22 @@ module Decoder(
       MTLO = 6'b010011;
       JALR = 6'b000001;
       JR = 6'b001000;
+      BRANCH = 6'b000001;
   } rtype_t;
+
+  typedef enum logic[4:0] {
+      BGEZ = 5'b00001;
+      BGEZAL = 5'b10001;
+      BLTZ =  5'b00000;
+      BLTZAL = 5'b10000;
+  } branch_lg;
 
 
 
   opcode_t instr_opcode;
   state_t state;
   rtype_t Funct;
+  branch_lg branch_code;
   logic Extra;
 
 
@@ -82,13 +91,16 @@ module Decoder(
   // these are just wires for our convenience
   assign instr_opcode = instr[31:26];
   assign Funct = instr[5:0];
+  assign branch_code = instr[20:16]
 
   //skip instruction register
   assign IrSel = (state == DECODE) ? 0 : 1;
   assign PCWrite = (state == FETCH) ? 1 : 0;
   assign Is_Jump = (instr_opcode == J || instr_opcode == JAL) && (state == EXEC_1);
+  assign MemRead = (instr_opcode == LW) && (state == EXEC_2) || (state == FETCH);
+  assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
 
-  assign Active = state == STALL;
+  assign Active = state != HALTED;
   /* We are targetting an FPGA, which means we can specify the power-on value of the
       circuit. So here we set the initial state to 0, and set the output value to
       indicate the CPU is not running.
@@ -104,7 +116,7 @@ module Decoder(
           STALL: state <= PCIs0?HALTED:waitrequest?STALL:DECODE;
           DECODE: state <= PCIs0?HALTED:EXEC_1;
           EXEC_1: state <= PCIs0?HALTED:stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
-          EXEC_2: state <= PCIs0?HALTED:Extra ? EXEC_3 : FETCH;
+          EXEC_2: state <= PCIs0? HALTED : waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
           EXEC_3: state <= PCIs0?HALTED:FETCH;
           HALTED: state <= Rst ? FETCH : HALTED;
           default: HALTED;
@@ -159,10 +171,12 @@ module Decoder(
       else begin
           case (instr_opcode)
 
-              R_TYPE: if (Funct == MTHI || Funct == MTLO) begin
+              R_TYPE: begin
+                  if (Funct == MTHI || Funct == MTLO) begin
                   case (state) 
                     EXEC_1: begin
                       extra = 0;
+                      is_branch_delay_next = 0;
                     end
                   endcase
                 end
@@ -211,25 +225,29 @@ module Decoder(
                       MemtoReg = 1;
                       RegWrite = 1;
                       Extra = 0;
+                      is_branch_delay_next = 0;
                     end
                   endcase
                 end
-
+              end
               LW: case (state)
                   EXEC_1: begin
                       ALUSrcA = 1;
                       AluSrcB = 10;
                       ALUControl = 0010;
+                      ExtSel = 0;
                       Extra = 1;
                   end
                   EXEC_2: begin
                       IorD = 1;
                       Extra = 1;
+                      ALUsel = 0;
                   end
                   EXEC_3: begin
                       RegDst = 0;
                       MemtoReg = 1;
                       RegWrite = 1;
+                      is_branch_delay_next = 0;
                   end
               endcase
 
@@ -242,7 +260,8 @@ module Decoder(
                   end
                   EXEC_2: begin
                     IorD=1;
-                    MemWrite=1;
+                    //MemWrite=1;
+                    is_branch_delay_next = 0;
                   end
               endcase
 
@@ -255,33 +274,37 @@ module Decoder(
 
               ORI: case(state)
                 EXEC_1: begin
-                  ALUSrcA=1;
-                  ALUSrcB=10;
-                  ALUControl= 0001;
-                  Extra=1;
+                  ALUSrcA = 1;
+                  ALUSrcB = 10;
+                  ALUControl = 0001;
+                  ExtSel = 1;
+                  Extra = 1;
                 end
                 EXEC_2: begin
-                  RegDst=0;
-                  MemtoReg=0;
-                  RegWrite=1;
-                  Extra=0;
+                  RegDst = 0;
+                  MemtoReg = 0;
+                  RegWrite = 1;
+                  ALUSel = 1;
+                  is_branch_delay_next = 0;
+                  Extra= 0;
                 end
               endcase
 
               ANDI: case(state)
                 EXEC_1: begin
-                  ALUSrcA=1;
-                  ALUSrcB=10;
-                  ExtSel=0; 
-                  ALUControl= 0000;
-                  Extra=1;
+                  ALUSrcA = 1;
+                  ALUSrcB = 10;
+                  ExtSel = 0; 
+                  ALUControl = 0000;
+                  Extra = 1;
                 end
                 EXEC_2: begin
-                  RegDst=0;
-                  MemtoReg=1;
-                  RegWrite=1;
+                  RegDst = 0;
+                  MemtoReg = 1;
+                  RegWrite = 1;
                   ALUsel=1;
-                  Extra=0;
+                  is_branch_delay_next = 0;
+                  Extra = 0;
                 end
               endcase
 
@@ -305,18 +328,40 @@ module Decoder(
 
               SLTI: case(state)
                 EXEC_1: begin
-                  ALUSrcA=1;
-                  ALUSrcB=10;
-                  ALUControl=0111;
-                  Extra=1;
+                  ALUSrcA = 1;
+                  ExtSel = 0; 
+                  ALUSrcB = 10;
+                  ALUControl = 0111;
+                  Extra = 1;
                 end
                 EXEC_2: begin
-                  RegDst=0;
-                  MemtoReg=0;
-                  RegWrite=1;
-                  Extra=0;
+                  RegDst = 0;
+                  MemtoReg = 0;
+                  RegWrite = 1;
+                  ALUSel = 1;
+                  Extra = 0;
+                  is_branch_delay_next = 0;
                 end
               endcase
+
+              SLTIU: case(state)
+                EXEC_1: begin
+                  ALUSrcA = 1;
+                  ExtSel = 1; 
+                  ALUSrcB = 10;
+                  ALUControl = 0111;
+                  Extra = 1;
+                end
+                EXEC_2: begin
+                  RegDst = 0;
+                  MemtoReg = 0;
+                  RegWrite = 1;
+                  ALUSel = 1;
+                  Extra = 0;
+                  is_branch_delay_next = 0;
+                end
+              endcase
+
 
 
               BGTZ: case(state)
@@ -324,8 +369,63 @@ module Decoder(
                   ALUSrcA=1;
                   ALUSrcB=00;
                   ALUControl=0111;
-                  PCSrc=1;//this should not be set other than in fetch 
-                  Branch=1;//this isnt an output 
+                  ALUSel = 1;
+                  is_branch_delay_next = 0;=1;//this isnt an output 
+                end
+              endcase
+              BLT_TYPE: begin
+                case(branch_code)
+                  BLEZ: case(state) //done ////branch
+                    EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUControl = 1100;
+                      is_branch_delay_next=(OutLSB == 1)?1:0;
+                      Extra = 0;
+                      ALUsel = 1;
+                    end
+                  endcase
+
+                  BGEZ: case(state) //done    ///branch
+                    EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUControl = 1100;
+                      is_branch_delay_next=(OutLSB == 0)?1:0;
+                      Extra = 0;
+                      ALUsel = 1;
+                    end
+                  endcase
+                endcase
+              end
+
+              BEQ: case(state) //done
+                EXEC_1: begin
+                  ALUSrcA = 1;
+                  ALUSrcB = 00;
+                  ALUControl = 1010;
+                  is_branch_delay_next=(OutLSB == 1)?1:0;
+                  Extra = 0;
+                  ALUsel = 1;
+                end
+              endcase
+
+              BNE: case(state) //done
+                EXEC_1: begin
+                  ALUSrcA = 1;
+                  ALUSrcB = 00;
+                  ALUControl = 1010;
+                  is_branch_delay_next=(OutLSB == 0)?1:0;
+                  Extra = 0;
+                  ALUsel = 1;
+                end
+              endcase
+
+              BGEZAL: case(state) //TODO
+                EXEC_1: begin
+                  ALUSrcA = 1;
+                  ALUControl = 1100;
+                  is_branch_delay_next=(OutLSB == 0)?1:0;
+                  Extra = 0;
+                  ALUsel = 1;
                 end
               endcase
 
