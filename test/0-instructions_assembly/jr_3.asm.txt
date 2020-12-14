@@ -1,0 +1,6 @@
+ADDIU $t0, $zero, 4
+JR $t0
+ADDIU $v0, $zero, 15
+ADDIU $v0, $v0, 5
+ADDIU $v0, $v0, 15
+JR $zero
