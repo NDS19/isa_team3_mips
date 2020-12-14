@@ -23,7 +23,8 @@ module Decoder(
     output logic MemWrite,
     output logic MemRead,
     output logic Active,
-    output logic Is_Jump
+    output logic Is_Jump,
+    output logic[3:0] byteenable
 );
 
 
@@ -85,6 +86,7 @@ module Decoder(
   rtype_t Funct;
   branch_lg branch_code;
   logic Extra;
+  assign byteenable = 4'b1111
 
 
   // Break-down the instruction into fields

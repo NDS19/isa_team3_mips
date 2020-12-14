@@ -1,5 +1,3 @@
-`timescale 1ns/100ps
-
 module register_file(
   input logic clk,
   input logic reset,
@@ -10,7 +8,7 @@ module register_file(
   input logic write_enable,
   input logic[31:0] write_data3,
 
-  output logic[31:0] Register0  
+  output logic[31:0] Register0
 );
 
 logic[31:0] regs[31:0];
