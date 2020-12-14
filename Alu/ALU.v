@@ -1,8 +1,8 @@
-module ALU(  
+module ALU(
     input logic[2:0] ALUControl,
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
-    
+
     output logic[31:0] ALUResult,
     output logic Zero
 );
@@ -17,13 +17,13 @@ module ALU(
     always_comb begin
         case (ALUControl)
             3'b000  :   begin
-                // logical AND 
+                // logical AND
                 ALUResult = SrcA & SrcB;
-            end   
+            end
             3'b001  :   begin
                 // logical OR
                 ALUResult = SrcA | SrcB;
-            end   
+            end
             3'b010  :   begin
                 // Addition
                 ALUResult = SrcA + SrcB;
@@ -31,19 +31,19 @@ module ALU(
             3'b011  :   begin
                 // logical XOR
                 ALUResult = SrcA ^ SrcB;
-            end      
+            end
             3'b100  :   begin
                 // shift left logical
-                ALUResult = SrcA << SrcB;
-            end   
+                ALUResult = SrcB << SrcA;
+            end
             3'b101  :   begin
                 // shift right logical
-                ALUResult = SrcA >> SrcB;
-            end   
+                ALUResult = SrcB >> SrcA;
+            end
             3'b110  :   begin
                 // Subtraction
                 ALUResult = SrcA - SrcB;
-            end  
+            end
             3'b111  :   begin
                 // STL
                 SLT_sub = SrcA - SrcB;
@@ -52,7 +52,7 @@ module ALU(
                 end else begin
                     ALUResult = 0;
                 end
-            end    
+            end
             default: begin
                 //$display("Unknown alu operand");
                 ALUResult = 32'hxxxxxxxx;
