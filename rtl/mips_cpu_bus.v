@@ -39,6 +39,8 @@ module mips_cpu_bus(
     logic[31:0] SrcB;
     logic[31:0] SrcA;
 
+
+
     Decoder Decoder_(
         .Active(active),
         .clk(clk),
