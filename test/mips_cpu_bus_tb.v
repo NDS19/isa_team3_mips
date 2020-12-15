@@ -25,7 +25,7 @@ module mips_cpu_bus_tb;
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
     // Have an empty parameter which can be adjusted in the testbench script using the -P
     // in the compilation block
-    parameter TIMEOUT_CYCLES = 10;
+    parameter TIMEOUT_CYCLES = 30;
 
     // inputs
     logic clk;
