@@ -16,13 +16,14 @@ module ALU_all(
     logic[31:0] ALUResult;
 
     ALU alu_(.ALUControl(ALU_OPCODE), 
-            .SrcA(SrcA), 
+            .SrcA(SrcA_to_ALU), 
             .SrcB(SrcB_to_ALU),
             .ALUResult(ALUResult)
     );
 
     //shamt field for shift instructions
     logic[31:0] SrcB_to_ALU;
+    logic[31:0] SrcA_to_ALU;
 
 
 
@@ -72,7 +73,7 @@ module ALU_all(
     );
 
 
-    assign stall = ((funct == 011000) || (funct == 011001) || (funct == 011010) || (funct == 011011)) & (validOut_mul == 0);
+    assign stall = ((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
     //ALU operation specified by ALU_OPCODE
     always_comb begin
         if(ALU_Control != 5'b01111 )begin
@@ -84,6 +85,7 @@ module ALU_all(
 
             //shamt not required for non R-type instructions
             SrcB_to_ALU = SrcB;
+            SrcA_to_ALU = SrcA;
             Out = ALUResult;
             //Out is always ALUResult for non R-type instructions
         end
@@ -223,33 +225,35 @@ module ALU_all(
             endcase
 
             //TO DO mulu,divu,mthi,mtlo
-            if (funct != 011001) begin //MULTU
+            if (funct != 6'b011001) begin //MULTU
                 validIn_mul = 0;
             end
-            if (funct != 011011) begin //DIVU
+            if (funct != 6'b011011) begin //DIVU
                 validIn_div = 0;
             end
-            if (funct != 011001 || funct != 011011 || funct != 010001) begin
+            if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010001) begin
                 Hi_en = 0;
             end
-            if (funct != 011001 || funct != 011011 || funct != 010011) begin
+            if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010011) begin
                 Lo_en = 0;
             end
 
             //shamt field for functions that require it
             //          SLL,                SRL,                SRA,
-            if(funct == 000000 || funct == 000010 || funct == 000010)begin
-                SrcB_to_ALU = { 3'b000, 24'h000000, shamt};
+            if(funct == 6'b000000 || funct == 6'b000010 || funct == 6'b000010)begin
+                SrcA_to_ALU = { 3'b000, 24'h000000, shamt};
+                SrcB_to_ALU= SrcB;
             end else begin
                 SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = SrcA;
             end
     
             //implementation of MFHI and MFLO, assiging Out to right input
             //           MFHI
-            if (funct == 010000 ) begin
+            if (funct == 6'b010000 ) begin
                 Out = Hi;
             //                    MFLO
-            end else if (funct == 010010) begin
+            end else if (funct == 6'b010010) begin
                 Out = Lo;
             end else begin
                 Out = ALUResult;

@@ -139,9 +139,9 @@ module Decoder(
   // Break-down the instruction into fields
   // these are just wires for our convenience
   logic[31:0] instr = Instr;
-  assign instr_opcode = instr[31:26];
-  assign Funct = instr[5:0];
-  assign branch_code = instr[20:16];
+  assign instr_opcode = Instr[31:26];
+  assign Funct = Instr[5:0];
+  assign branch_code = Instr[20:16];
 
   //skip instruction register
   assign IrSel = (state == DECODE) ? 0 : 1;
@@ -191,7 +191,14 @@ module Decoder(
       //if (instr_opcode == STALL) begin
       //  MemRead = 1;
       //end
+      if (state == HALTED)begin
+        RegWrite = 0;
+      end
+      if (state == STALL)begin
+        RegWrite = 0;
+      end
       if (state == FETCH)begin
+                  RegWrite = 0;
         //MemRead = 1;
         if (is_branch_delay == 1) begin
           PCSrc = 1;
@@ -213,6 +220,7 @@ module Decoder(
         if(instr_opcode != J  && instr_opcode != JAL) begin  
           ALUSrcA = 0;
           ALUSrcB = 2'b11;
+                  RegWrite = 0;
           ExtSel = 0;
           ALUControl = 5'b01101;
         end
@@ -220,7 +228,7 @@ module Decoder(
           //ALUSrcA = 0;
           ALUSrcB = 2'b11;
           ExtSel = 1;
-          ALUControl = 5'b001011; //this needs to be pass through for B
+          ALUControl = 5'b01011; //this needs to be pass through for B
         end
       end
       else begin
@@ -232,6 +240,7 @@ module Decoder(
                     EXEC_1: begin
                       Extra = 0;
                       is_branch_delay_next = 0;
+                  RegWrite = 0;
                     end
                   endcase
                 end
@@ -239,8 +248,8 @@ module Decoder(
                   case (state)
                     EXEC_1: begin
                       ALUSrcA = 0; //Send the PC to the ALU, the ALU needs to add 4 to it
-                      ALUSrcB = 01;
-                      ALUControl = 00010;//add opcode
+                      ALUSrcB = 2'b01;
+                      ALUControl = 5'b00010;//add opcode
                       ALUSel = 0;
                       RegDst = 1;
                       MemtoReg = 1;
@@ -249,9 +258,10 @@ module Decoder(
                     end
                     EXEC_2: begin
                       ALUSrcA = 1; 
-                      ALUControl = 01110; //Pass through opcode, output of ALU should be SrcA
+                      ALUControl = 5'b01110; //Pass through opcode, output of ALU should be SrcA
                       ALUSel = 0; //skip the ALU register
                       is_branch_delay_next = 1;
+                  RegWrite = 0;
                       Extra = 0;
                     end
                   endcase
@@ -260,9 +270,10 @@ module Decoder(
                   case (state)
                     EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUControl = 01110;
+                      ALUControl = 5'b01110;
                       ALUSel = 0; //skip the ALU register
                       is_branch_delay_next = 1;
+                  RegWrite = 0;
                       Extra = 0;
                     end
                   endcase
@@ -271,8 +282,9 @@ module Decoder(
                   case (state)
                     EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUSrcB = 00;
-                      ALUControl = 01111;
+                      ALUSrcB = 2'b00;
+                      ALUControl = 5'b01111;
+                  RegWrite = 0;
                       Extra = 1;
                     end
                     EXEC_2: begin
@@ -289,19 +301,22 @@ module Decoder(
               LW: case (state)
                   EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUSrcB = 10;
-                      ALUControl = 00010;
+                      ALUSrcB = 2'b10;
+                      ALUControl = 5'b00010;
+                      RegWrite = 0;
                       ExtSel = 0;
                       Extra = 1;
                   end
                   EXEC_2: begin
                       IorD = 1;
                       Extra = 1;
-                      ALUSel = 0;
+                      ALUSel = 1;
+                      RegWrite = 0;
+                     // MemRead = 1;
                   end
                   EXEC_3: begin
                       RegDst = 0;
-                      MemtoReg = 1;
+                      MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
                   end
@@ -310,14 +325,16 @@ module Decoder(
               SW: case(state)
                   EXEC_1: begin
                     ALUSrcA= 1;
-                    ALUSrcB= 10;
-                    ALUControl = 00010;
+                    ALUSrcB= 2'b10;
+                    ALUControl = 5'b00010;
+                  RegWrite = 0;
                     Extra=1;
                   end
                   EXEC_2: begin
                     IorD=1;
                     //MemWrite=1;
                     is_branch_delay_next = 0;
+                  RegWrite = 0;
                   end
               endcase
 
@@ -331,8 +348,9 @@ module Decoder(
               ORI: case(state)
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 10;
-                  ALUControl = 00001;
+                  ALUSrcB = 2'b10;
+                  ALUControl = 5'b00001;
+                  RegWrite = 0;
                   ExtSel = 1;
                   Extra = 1;
                 end
@@ -349,9 +367,10 @@ module Decoder(
               ANDI: case(state)
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 10;
+                  ALUSrcB = 2'b10;
                   ExtSel = 0; 
-                  ALUControl = 00000;
+                  ALUControl = 5'b00000;
+                  RegWrite = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
@@ -367,13 +386,15 @@ module Decoder(
               LB: case(state)
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 10;
-                  ALUControl = 00010;
+                  ALUSrcB = 2'b10;
+                  ALUControl = 5'b00010;
+                  RegWrite = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
                   IorD = 1;
                   Extra = 1;
+                  RegWrite = 0;
                 end
                 EXEC_3: begin
                   RegDst = 0;
@@ -386,9 +407,10 @@ module Decoder(
                 EXEC_1: begin
                   ALUSrcA = 1;
                   ExtSel = 0; 
-                  ALUSrcB = 10;
-                  ALUControl = 00111;
+                  ALUSrcB = 2'b10;
+                  ALUControl = 5'b00111;
                   Extra = 1;
+                  RegWrite = 0;
                 end
                 EXEC_2: begin
                   RegDst = 0;
@@ -404,8 +426,9 @@ module Decoder(
                 EXEC_1: begin
                   ALUSrcA = 1;
                   ExtSel = 1; 
-                  ALUSrcB = 10;
-                  ALUControl = 00111;
+                  ALUSrcB = 2'b10;
+                  ALUControl = 5'b00111;
+                  RegWrite = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
@@ -423,9 +446,10 @@ module Decoder(
               BGTZ: case(state)
                 EXEC_1:begin
                   ALUSrcA=1;
-                  ALUSrcB=00;
-                  ALUControl = 00111;
+                  ALUSrcB=2'b00;
+                  ALUControl = 5'b00111;
                   ALUSel = 1;
+                  RegWrite = 0;
                   is_branch_delay_next = (OutLSB == 1)?0:1;//this isnt an output 
                 end
               endcase
@@ -434,20 +458,22 @@ module Decoder(
                   BLEZ: case(state) //done ////branch
                     EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUControl = 01100;
+                      ALUControl = 5'b01100;
                       is_branch_delay_next=(OutLSB == 1)?1:0;
                       Extra = 0;
                       ALUSel = 1;
+                  RegWrite = 0;
                     end
                   endcase
 
                   BGEZ: case(state) //done    ///branch
                     EXEC_1: begin
                       ALUSrcA = 1;
-                      ALUControl = 01100;
+                      ALUControl = 5'b01100;
                       is_branch_delay_next=(OutLSB == 0)?1:0;
                       Extra = 0;
                       ALUSel = 1;
+                  RegWrite = 0;
                     end
                   endcase
                 endcase
@@ -456,42 +482,46 @@ module Decoder(
               BEQ: case(state) //done
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 00;
-                  ALUControl = 01010;
+                  ALUSrcB = 2'b00;
+                  ALUControl = 5'b01010;
                   is_branch_delay_next=(OutLSB == 1)?1:0;
                   Extra = 0;
                   ALUSel = 1;
+                  RegWrite = 0;
                 end
               endcase
 
               BNE: case(state) //done
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 00;
-                  ALUControl = 01010;
+                  ALUSrcB = 2'b00;
+                  ALUControl = 5'b01010;
                   is_branch_delay_next=(OutLSB == 0)?1:0;
                   Extra = 0;
                   ALUSel = 1;
+                  RegWrite = 0;
                 end
               endcase
 
               BGEZAL: case(state) //TODO
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUControl = 01100;
+                  ALUControl = 5'b01100;
                   is_branch_delay_next=(OutLSB == 0)?1:0;
                   Extra = 0;
                   ALUSel = 1;
+                  RegWrite = 0;
                 end
               endcase
 
               BLEZ: case(state) //done
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUControl = 01100;
+                  ALUControl = 5'b01100;
                   is_branch_delay_next=(OutLSB == 1)?1:0;
                   Extra = 0;
                   ALUSel = 1;
+                  RegWrite = 0;
                 end
               endcase
 
@@ -500,8 +530,9 @@ module Decoder(
                   is_branch_delay_next = 1;
                   Extra = 0;
                   ExtSel = 1;
-                  ALUSrcB = 11;
+                  ALUSrcB = 2'b11;
                   ALUSel = 1;
+                  RegWrite = 0;
                 end
               endcase
 
@@ -509,22 +540,24 @@ module Decoder(
                 EXEC_1: begin
                   ExtSel = 1;
                   ALUSrcA = 0;
-                  ALUSrcB = 01;
-                  ALUControl = 00010;
+                  ALUSrcB = 2'b01;
+                  ALUControl = 5'b00010;
                   is_branch_delay_next=1;
                   Extra = 0;
                   ALUSel = 0;
+                  RegWrite = 0;
                 end
               endcase
 
               SLTIU: case(state)  //Done
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUSrcB = 10;
+                  ALUSrcB = 2'b10;
                   ExtSel = 1;
-                  ALUControl = 01001;
+                  ALUControl = 5'b01001;
                   Extra = 1;
                   ALUSel= 0;
+                  RegWrite = 0;
                 end
                 EXEC_2:begin
                   ALUSel = 1;
@@ -539,15 +572,16 @@ module Decoder(
               ADDIU: case (state)
                 EXEC_1: begin
                   ExtSel = 1;
-                  ALUSrcB = 10;
+                  ALUSrcB = 2'b10;
                   ALUSrcA = 1;
-                  ALUControl = 00010;
+                  ALUControl = 5'b00010;
                   Extra = 1;
+                  RegWrite = 0;
                 end
                 EXEC_2: begin
                   ALUSel = 1;
                   MemtoReg = 1;
-                  RegDst = 1;
+                  RegDst = 0;
                   is_branch_delay_next = 0;
                   RegWrite = 1;
                   Extra = 0;

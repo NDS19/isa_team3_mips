@@ -25,18 +25,21 @@ module RAM_8x4096(
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
             $readmemh(RAM_INIT_FILE, memory);
         end
-        
 
+        $display("memory b1 %b",memory[32'b101]);
+        $display("memory b2 %b",memory[32'b110]);
+        $display("memory b3 %b",memory[32'b111]);
+        $display("memory b4 %b",memory[32'b1000]);
     end
 
-    assign A = a==32'h0 ? a: a - 32'hBFC00000;
-    assign b0 = A==32'h0 ? 8'b0 : memory[A];
-    assign b1 = A==32'h0 ? 8'b0 : memory[A+1];
-    assign b2 = A==32'h0 ? 8'b0 : memory[A+2];
-    assign b3 = A==32'h0 ? 8'b0 : memory[A+3];
+    assign A = a==32'b0 ? a: a - 32'b10111111110000000000000000000000;
+    assign b0 = memory[A];
+    assign b1 = memory[A+1];
+    assign b2 = memory[A+2];
+    //assign b3 = A==32'h0 ? 8'b0 : memory[A+3];
+    assign b3 = memory[A+3];
     /* Synchronous write path */
     always @(posedge clk) begin
-        //$display("RAM : INFO : read=%h, addr = %h, mem=%h", read, address, memory[address]);
         /*
         case(byteenable)
             4'b0000:    begin
@@ -138,7 +141,9 @@ module RAM_8x4096(
         endcase
         */
         //$display("OUT %b A%b", {b3,b2,b1,b0}, A);
-        rd <= {b3,b2,b1,b0};
+       // rd <= {b3,b2,b1,b0};
+        rd <= {b0,b1,b2,b3};
+        //$display("RAM : INFO :  addr = %b, mem=%b rd = %b b3= %b", A, memory[A], rd, b3);
     end
 endmodule
 

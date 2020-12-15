@@ -221,8 +221,13 @@ def decode(line,parameters,line_names):
         elif rtype_func[opcode][0] == "s":
             reg1 = line[1]
             reg2 = line[2]
-            reg3 = line[3]
-            output += bitString(0,5) + reg(reg2) + reg(reg1) + reg(reg3)
+            const = line[3]
+            #reg3 = line[3]
+            output += bitString(0,5) + reg(reg2) + reg(reg1) #+ reg(reg3)
+            if isDigit(const):
+                output += bitString(int(const),5)
+            elif output in parameters:
+                output += bitString(int(parameters[const]),5)
         #elif opcode in mt_rtype:
         output += rtype_func[opcode][1]
     #print(output)

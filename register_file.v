@@ -26,6 +26,7 @@ assign Register0 = regs[0];
 
 integer index;
 always @(posedge clk) begin
+  $display("write_index3 = %b write_enable = %b write_data3 = %b",write_index3, write_enable, write_data3);
   if(reset==1) begin
     for(index=0;index<33;index= index+1)begin
       regs[index]<=0;

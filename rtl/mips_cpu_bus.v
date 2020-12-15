@@ -106,6 +106,7 @@ module mips_cpu_bus(
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b BranchDelay = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, BranchDelay,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
+        $display("\n");
     end
 
 endmodule
