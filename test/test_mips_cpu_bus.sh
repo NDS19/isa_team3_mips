@@ -92,7 +92,9 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_8x4096.v \
         Alu/ALU_all.v Alu/ALU.v Alu/Div.v Alu/MSB.v Alu/Mult.v Alu/Sign_Inverter.v Alu/Sign_Inverter64.v \
         datapath/*.v register_file.v Decoder.v \
-        -s mips_cpu_bus_tb  -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME}    # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
+        -s mips_cpu_bus_tb \
+        -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
+        -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME}    # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
         # output executable file for this instruction testcase
         # done
     # MAKE SURE TO ADJUST THIS BLOCK OF CODE FOR POSSIBLE CHANGES IN DIRECTORY

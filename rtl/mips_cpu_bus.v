@@ -38,9 +38,10 @@ module mips_cpu_bus(
     logic BranchDelay;
     logic[31:0] SrcB;
     logic[31:0] SrcA;
-
-
-
+/*
+    $dumpfile("test.vcd")
+    $dumpvars((0, mips_cpu_bus))
+*/
     Decoder Decoder_(
         .Active(active),
         .clk(clk),
@@ -107,6 +108,7 @@ module mips_cpu_bus(
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
+        $display("reset = %b", reset);
         $display("\n");
     end
 
