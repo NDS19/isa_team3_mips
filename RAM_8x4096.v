@@ -26,10 +26,10 @@ module RAM_8x4096(
             $readmemh(RAM_INIT_FILE, memory);
         end
 
-        $display("memory b1 %b",memory[32'b101]);
-        $display("memory b2 %b",memory[32'b110]);
-        $display("memory b3 %b",memory[32'b111]);
-        $display("memory b4 %b",memory[32'b1000]);
+        $display("memory b1 %b",memory[32'b10100]);
+        $display("memory b2 %b",memory[32'b10101]);
+        $display("memory b3 %b",memory[32'b10110]);
+        $display("memory b4 %b",memory[32'b10111]);
     end
 
     assign A = a==32'b0 ? a: a - 32'b10111111110000000000000000000000;

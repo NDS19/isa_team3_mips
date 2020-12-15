@@ -72,6 +72,7 @@ module mips_cpu_bus(
         );
 
     datapath datapath_(
+        .Register0(register_v0),
         .clk(clk),
         .PcEn(PCWrite),
         .IorD(IorD),
@@ -104,7 +105,7 @@ module mips_cpu_bus(
     always @(posedge clk) begin
         $display("IrWrite = %b, Is_Jump = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",IrWrite,Is_Jump,Instr,IorD, state, IrSel);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
-        $display("PC = %b Result = %b PCWrite = %b ALUsel = %b BranchDelay = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, BranchDelay,SrcB,AluSrcB);
+        $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
         $display("\n");
     end

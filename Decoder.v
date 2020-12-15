@@ -167,12 +167,12 @@ module Decoder(
       //$display("State = %b, Rst = %b, Active = %b, Instr = %b, IorD = %b",state,Rst,Active,Instr,IorD);
       //$display("MemRead = %b",MemRead);
       case (state)
-          FETCH: state <= waitrequest?STALL:DECODE;
-          STALL: state <= waitrequest?STALL:DECODE;
-          DECODE: state <= EXEC_1;
-          EXEC_1: state <= stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
-          EXEC_2: state <= waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
-          EXEC_3: state <= FETCH;
+          FETCH: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
+          STALL: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
+          DECODE: state <= PCIs0 ? HALTED :EXEC_1;
+          EXEC_1: state <= PCIs0 ? HALTED :stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
+          EXEC_2: state <= PCIs0 ? HALTED :waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
+          EXEC_3: state <= PCIs0 ? HALTED :FETCH;
           HALTED: state <= Rst ? FETCH : HALTED;
           default: state <= HALTED;
       endcase
@@ -259,9 +259,9 @@ module Decoder(
                     EXEC_2: begin
                       ALUSrcA = 1; 
                       ALUControl = 5'b01110; //Pass through opcode, output of ALU should be SrcA
-                      ALUSel = 0; //skip the ALU register
+                      ALUSel = 1; //skip the ALU register
                       is_branch_delay_next = 1;
-                  RegWrite = 0;
+                      RegWrite = 0;
                       Extra = 0;
                     end
                   endcase

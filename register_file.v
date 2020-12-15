@@ -22,7 +22,7 @@ assign reg_2 = regs[2];
 assign read_data1 = (a1!=0)? regs[a1]:0;
 assign read_data2 = (a2!=0)? regs[a2]:0;
 
-assign Register0 = regs[0];
+assign Register0 = regs[2];
 
 integer index;
 always @(posedge clk) begin
