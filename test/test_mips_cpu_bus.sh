@@ -107,7 +107,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} > test/3-output/CPU_MU0_bus_${TESTNAME}.stdout
       # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
 
-      RESULT = $?
+      RESULT=$?
       set -e
 
       if [[ "${RESULT}" -ne 0 ]] ; then

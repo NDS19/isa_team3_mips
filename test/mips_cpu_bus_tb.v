@@ -7,10 +7,10 @@
     These might need to be treated as outputs of the tb since otherwise they are just
     dangling wires
 */
-`timescale 1ns / 10ps
+//`timescale 1ns / 10ps
 
 module mips_cpu_bus_tb;
-    //timeunit 1ns / 10ps;
+    timeunit 1ns / 10ps;
 
     /* TO DO:
     1. Understand how the RAM file is initialised with an input file [tick]
