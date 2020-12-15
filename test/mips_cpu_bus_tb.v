@@ -113,7 +113,7 @@ module mips_cpu_bus_tb;
         $display("Time taken : %t", $time);
 
         // identifying the output and outputting to a stdout file
-        $display("RESULT : %d", register_v0);
+        $display("RESULT : %d",register_v0);
 
         // needs to verify if the we have returned to address 0 before finishing
         // should be fine placing this here at the end since we have supposedly
