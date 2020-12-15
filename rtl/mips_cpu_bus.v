@@ -34,6 +34,8 @@ module mips_cpu_bus(
     logic OutLSB;
 
 
+
+
     Decoder Decoder_(
         .clk(clk),
         .Rst(reset),
