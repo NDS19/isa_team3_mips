@@ -1,0 +1,8 @@
+ADDIU $t0, $zero, 6
+ADDIU $t1, $zero, 7
+LW $a0, 0($t0)
+LW $a1, 0($t1)
+AND $V0, $a0, $a1
+JR $zero
+.data -2147483648
+.data 0
