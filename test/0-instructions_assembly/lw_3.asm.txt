@@ -1,0 +1,4 @@
+ADDIU $t0, $zero, X
+LW $V0, 0($t0)
+J 0
+X: 101

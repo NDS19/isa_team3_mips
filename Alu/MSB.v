@@ -21,9 +21,6 @@ always_comb begin
         Out = 27;
     end
     else if (In[26]) begin
-        Out = 26;
-    end
-    else if (In[25]) begin
         Out = 25;
     end
     else if (In[24]) begin

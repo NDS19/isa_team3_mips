@@ -1,5 +1,3 @@
-`timescale 1ns/100ps
-
 module register_file(
   input logic clk,
   input logic reset,
@@ -8,7 +6,9 @@ module register_file(
   output logic[31:0] read_data1, read_data2,
 
   input logic write_enable,
-  input logic[31:0] write_data3
+  input logic[31:0] write_data3,
+
+  output logic[31:0] Register0
 );
 
 logic[31:0] regs[31:0];
@@ -21,6 +21,8 @@ assign reg_2 = regs[2];
 
 assign read_data1 = (a1!=0)? regs[a1]:0;
 assign read_data2 = (a2!=0)? regs[a2]:0;
+
+assign Register0 = regs[0];
 
 integer index;
 always @(posedge clk) begin
