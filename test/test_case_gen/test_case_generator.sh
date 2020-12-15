@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# run from the test directory
+# ./test_case_gen/test_case_generator.sh <lower case instruction name>
+
 TESTCASE="$1"
 
 g++ test_case_gen/select_test_case_gen.cpp -o test_case_gen/select

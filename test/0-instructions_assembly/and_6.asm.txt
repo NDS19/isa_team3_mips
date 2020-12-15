@@ -6,5 +6,6 @@ LW $a0, 9($t0)
 LW $a1, 10($t1)
 AND $V0, $a0, $a1
 JR $zero
+ADDIU $t0, $t0, 0
 .data 2147483647
 .data 0
