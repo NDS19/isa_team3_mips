@@ -75,7 +75,7 @@ module ALU(
             end
             5'b01011 : begin
                 // increment PC for branch
-                ALUResult = SrcA + 8;
+                ALUResult = SrcB;
             end
             5'b01100 : begin
                 // is SrcA < 0 

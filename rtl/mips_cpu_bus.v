@@ -12,15 +12,14 @@ module mips_cpu_bus(
     input logic[31:0] readdata
 );
 
-
-    logic Instr;
+    logic[31:0] Instr;
     logic stall;
     logic IrSel;
     logic IrWrite;
     logic IorD;
     logic AluSrcA;
-    logic AluSrcB;
-    logic ALUControl;
+    logic[1:0] AluSrcB;
+    logic[4:0] ALUControl;
     logic ALUsel;
     //logic IrWrite;
     logic PCWrite;
@@ -32,31 +31,42 @@ module mips_cpu_bus(
     logic Is_Jump;
     logic ExtSel;
     logic OutLSB;
-
+    logic PCIs0;
+    logic[2:0] state;
+    logic[31:0] PC;
+    logic[31:0] Result;
+    logic BranchDelay;
+    logic[31:0] SrcB;
+    logic[31:0] SrcA;
 
     Decoder Decoder_(
+        .Active(active),
         .clk(clk),
         .Rst(reset),
         .Instr(Instr),
         .stall(stall),
         .IrSel(IrSel),
-        .IrWrite(IrWrite),
         .IorD(IorD),
-        .AluSrcA(AluSrcA),
-        .AluSrcB(AluSrcB),
+        .ALUSrcA(AluSrcA),
+        .ALUSrcB(AluSrcB),
         .ALUControl(ALUControl),
-        .ALUsel(ALUsel),
+        .ALUSel(ALUsel),
         .IrWrite(IrWrite),
         .PCWrite(PCWrite),
         .RegWrite(RegWrite),
         .MemtoReg(MemtoReg),
         .MemWrite(MemWrite),
-        .PcSrc(PcSrc),
+        .MemRead(read),
+        .PCSrc(PcSrc),
         .RegDst(RegDst),
         .Is_Jump(Is_Jump),
         .OutLSB(OutLSB),
         .ExtSel(ExtSel),
-        .byteenable(byteenable)
+        .byteenable(byteenable),
+        .PCIs0(PCIs0),
+        .waitrequest(waitrequest),
+        .State(state),
+        .BranchDelay(BranchDelay)
         );
 
     datapath datapath_(
@@ -81,7 +91,19 @@ module mips_cpu_bus(
         .Instr(Instr),
         .memloc(address),
         .writedata(writedata),
-        .Is_jump(Is_Jump)
+        .is_jump(Is_Jump),
+        .PcIs0(PCIs0),
+        .PC(PC),
+        .Result(Result),
+        .SrcB(SrcB),
+        .SrcA(SrcA)
     );
+
+    always @(posedge clk) begin
+        $display("IrWrite = %b, Is_Jump = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",IrWrite,Is_Jump,Instr,IorD, state, IrSel);
+        $display("readdata = %b  address = %b read = %b",readdata, address,  read);
+        $display("PC = %b Result = %b PCWrite = %b ALUsel = %b BranchDelay = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, BranchDelay,SrcB,AluSrcB);
+        $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
+    end
 
 endmodule

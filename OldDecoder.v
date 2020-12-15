@@ -1,44 +1,3 @@
- 
-`define R_TYPE 6'b000000,
-`define BLT_TYPE  6'b000001
-`define LW  6'b100011
-`define SW  6'b101011
-`define ADDIU  6'b001001
-`define ANDI  6'b001100
-`define J  6'b000010
-`define LB  6'b100000
-`define ORI  6'b001101
-`define SLTI  6'b001010
-`define BGTZ  6'b000111
-`define BLEZ  6'b000110
-       // J = 6'b000010,
-`define BEQ  6'b000101
-`define BNE  6'b000100
-`define SLTIU  6'b101000
-`define JAL  6'b000011
-
-`define FETCH  3'b000
-`define DECODE 3'b001
-`define EXEC_1 3'b010
-`define EXEC_2 3'b011
-`define EXEC_3 3'b100
-`define HALTED 3'b101
-`define STALL 3'b110
-
-`define ADDU = 6'b100001
-`define AND 6'b100100
-`define OR  6'b100101
-`define MTHI 6'b010001
-`define MTLO 6'b010011
-`define JALR 6'b001001
-`define JR 6'b001000
-`define BRANCH 6'b000001
-
-`define BGEZ 5'b00001
-`define BGEZAL 5'b10001
-`define BLTZ 5'b00000
-`define BLTZAL 5'b10000
-
 module Decoder(
     input logic clk,
     input logic[31:0] Instr,
@@ -66,11 +25,8 @@ module Decoder(
     output logic Active,
     output logic Is_Jump,
     output logic Link,
-    output logic[3:0] byteenable,
-    output logic[2:0] State,
-    output logic BranchDelay
-    
-  );
+    output logic[3:0] byteenable
+);
 
 
   logic is_branch_delay, is_branch_delay_next;
@@ -128,14 +84,14 @@ module Decoder(
 
 
 
-  logic[5:0] instr_opcode;
-  logic[2:0] state;
-  logic[5:0] Funct;
-  logic[4:0] branch_code;
+  opcode_t instr_opcode;
+  state_t state;
+  rtype_t Funct;
+  branch_lg branch_code;
   logic Extra;
   assign byteenable = 4'b1111;
-  assign State = state;
-  assign BranchDelay = is_branch_delay; 
+
+
   // Break-down the instruction into fields
   // these are just wires for our convenience
   logic[31:0] instr = Instr;
@@ -145,7 +101,6 @@ module Decoder(
 
   //skip instruction register
   assign IrSel = (state == DECODE) ? 0 : 1;
-  assign IrWrite = (state == DECODE);
   assign PCWrite = (state == FETCH) ? 1 : 0;
   assign Is_Jump = (instr_opcode == J || instr_opcode == JAL) && (state == EXEC_1);
   assign Link = (instr_opcode == JAL) && (state == EXEC_1); 
@@ -159,20 +114,17 @@ module Decoder(
   */
   initial begin
       state = HALTED;
-      is_branch_delay_next = 0;
   end
 
   //State machine
-  always @(posedge clk) begin
-      //$display("State = %b, Rst = %b, Active = %b, Instr = %b, IorD = %b",state,Rst,Active,Instr,IorD);
-      //$display("MemRead = %b",MemRead);
+  always_ff @(posedge clk) begin
       case (state)
-          FETCH: state <= waitrequest?STALL:DECODE;
-          STALL: state <= waitrequest?STALL:DECODE;
-          DECODE: state <= EXEC_1;
-          EXEC_1: state <= stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
-          EXEC_2: state <= waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
-          EXEC_3: state <= FETCH;
+          FETCH: state <= PCIs0?HALTED:waitrequest?STALL:DECODE;
+          STALL: state <= PCIs0?HALTED:waitrequest?STALL:DECODE;
+          DECODE: state <= PCIs0?HALTED:EXEC_1;
+          EXEC_1: state <= PCIs0?HALTED:stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
+          EXEC_2: state <= PCIs0? HALTED : waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
+          EXEC_3: state <= PCIs0?HALTED:FETCH;
           HALTED: state <= Rst ? FETCH : HALTED;
           default: state <= HALTED;
       endcase
@@ -186,12 +138,12 @@ module Decoder(
   //Decode logic
   always_comb begin
       if (Rst == 1) begin
-        is_branch_delay_next = 0;
+        is_branch_delay_next = 1;
       end
       //if (instr_opcode == STALL) begin
       //  MemRead = 1;
       //end
-      if (state == FETCH)begin
+      if (instr_opcode == FETCH)begin
         //MemRead = 1;
         if (is_branch_delay == 1) begin
           PCSrc = 1;
@@ -202,25 +154,25 @@ module Decoder(
           PCSrc = 0;
           IorD = 0;
           ALUSrcA = 0;
-          ALUSrcB = 5'b01;
-          ALUControl = 5'b00010;
+          ALUSrcB = 11;
+          ALUControl = 00010;
           ALUSel = 0;
-          //ExtSel = 0;
+          ExtSel = 0;
           Extra = 0;
         end
       end
       else if (state == DECODE) begin
         if(instr_opcode != J  && instr_opcode != JAL) begin  
           ALUSrcA = 0;
-          ALUSrcB = 2'b11;
+          ALUSrcB = 11;
           ExtSel = 0;
-          ALUControl = 5'b01101;
+          ALUControl = 01101;
         end
         else begin
           //ALUSrcA = 0;
-          ALUSrcB = 2'b11;
+          ALUSrcB = 11;
           ExtSel = 1;
-          ALUControl = 5'b001011; //this needs to be pass through for B
+          ALUControl = 001011; //this needs to be pass through for B
         end
       end
       else begin

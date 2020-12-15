@@ -12,6 +12,7 @@ module RAM_8x4096(
 
     reg [7:0] b0, b1, b2, b3;
     
+    logic[31:0] A;
 
     initial begin
         integer i;
@@ -25,100 +26,119 @@ module RAM_8x4096(
             $readmemh(RAM_INIT_FILE, memory);
         end
         
-        a = a - 32'hBFC00000;
-        
-        b0 = a==32'h0 ? 8'b0 : memory[a];
-        b1 = a==32'h0 ? 8'b0 : memory[a+1];
-        b2 = a==32'h0 ? 8'b0 : memory[a+2];
-        b3 = a==32'h0 ? 8'b0 : memory[a+3];
 
     end
 
+    assign A = a==32'h0 ? a: a - 32'hBFC00000;
+    assign b0 = A==32'h0 ? 8'b0 : memory[A];
+    assign b1 = A==32'h0 ? 8'b0 : memory[A+1];
+    assign b2 = A==32'h0 ? 8'b0 : memory[A+2];
+    assign b3 = A==32'h0 ? 8'b0 : memory[A+3];
     /* Synchronous write path */
     always @(posedge clk) begin
         //$display("RAM : INFO : read=%h, addr = %h, mem=%h", read, address, memory[address]);
+        /*
         case(byteenable)
-            4'b0000:
-            if (write) begin
-            {32'b0} <= wd;
+            4'b0000:    begin
+                if (wd) begin
+                {32'b0} <= wd;
+                end
+                rd <= {32'b0}; // Read-after-write mode
             end
-            rd <= {32'b0}; // Read-after-write mode
-            4'b0001:
-            if (write) begin
+            4'b0001: begin
+            if (we) begin
             {24'b0,b0} <= wd;
             end
             rd <= {24'b0,b0}; // Read-after-write mode
-            4'b0010:
-            if (write) begin
+            end
+            4'b0010: begin
+            if (we) begin
             {16'b0,b1,8'b0} <= wd;
             end
             rd <= {16'b0,b1,8'b0}; // Read-after-write mode
-            4'b0011:
-            if (write) begin
+            end
+            4'b0011: begin
+            if (we) begin
             {16'b0,b1,b0} <= wd;
             end
             rd <= {16'b0,b1,b0}; // Read-after-write mode
-            4'b0100:
-            if (write) begin
+            end
+            4'b0100: begin
+            if (we) begin
             {8'b0,b2,16'b0} <= wd;
             end
             rd <= {8'b0,b2,16'b0}; // Read-after-write mode
-            4'b0101:
-            if (write) begin
+            end
+            4'b0101: begin
+            if (we) begin
             {8'b0,b2,8'b0,b0} <= wd;
             end
             rd <= {8'b0,b2,8'b0,b0}; // Read-after-write mode
-            4'b0110:
-            if (write) begin
+            end
+            4'b0110: begin
+            if (we) begin
             {8'b0,b2,b1,8'b0} <= wd;
             end
             rd <= {8'b0,b2,b1,8'b0}; // Read-after-write mode
-            4'b0111:
-            if (write) begin
+            end
+            4'b0111: begin
+            if (we) begin
             {8'b0,b2,b1,b0} <= wd;
             end
             rd <= {8'b0,b2,b1,b0}; // Read-after-write mode
-            4'b1000:
-            if (write) begin
+            end
+            4'b1000: begin
+            if (we) begin
             {b3,24'b0} <= wd;
             end
             rd <= {b3,24'b0}; // Read-after-write mode
-            4'b1001:
-            if (write) begin
+            end
+            4'b1001:begin 
+            if (we) begin
             {b3,16'b0,b0} <= wd;
             end
             rd <= {b3,16'b0,b0}; // Read-after-write mode
-            4'b1010:
-            if (write) begin
+            end
+            4'b1010: begin
+            if (we) begin
             {b3,8'b0,b1,8'b0} <= wd;
             end
             rd <= {b3,8'b0,b1,8'b0}; // Read-after-write mode
-            4'b1011:
-            if (write) begin
+            end
+            4'b1011: begin
+            if (wd) begin
             {b3,8'b0,b1,b0} <= wd;
             end
             rd <= {b3,8'b0,b1,b0}; // Read-after-write mode
-            4'b1100:
-            if (write) begin
+            end
+            4'b1100: begin
+            if (wd) begin
             {b3,b2,16'b0} <= wd;
             end
             rd <= {b3,b2,16'b0}; // Read-after-write mode
-            4'b1101:
-            if (write) begin
+            end
+            4'b1101: begin
+            if (wd) begin
             {b3,b2,8'b0,b0} <= wd;
             end
             rd <= {b3,b2,8'b0,b0}; // Read-after-write mode
-            4'b1110:
-            if (write) begin
+            end
+            4'b1110: begin
+            if (wd) begin
             {b3,b2,b1,8'b0} <= wd;
             end
             rd <= {b3,b2,b1,8'b0}; // Read-after-write mode
-            4'b1111:
-            if (write) begin
+            end
+            4'b1111: begin
+            if (wd) begin
             {b3,b2,b1,b0} <= wd;
             end
             rd <= {b3,b2,b1,b0}; // Read-after-write mode
-        
+            end
+        endcase
+        */
+        //$display("OUT %b A%b", {b3,b2,b1,b0}, A);
+        rd <= {b3,b2,b1,b0};
     end
 endmodule
 

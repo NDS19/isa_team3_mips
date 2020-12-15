@@ -1,4 +1,4 @@
-module pc # (parameter WIDTH = 8)
+module ir # (parameter WIDTH = 8)
                (input                    clk, IrWrite,
                 input      [WIDTH - 1:0] d,
                 output reg [WIDTH - 1:0] q);

@@ -12,13 +12,13 @@ module ALU_all(
 );
 
     //ALU block
-    logic[5:0] ALU_OPCODE;
+    logic[4:0] ALU_OPCODE;
     logic[31:0] ALUResult;
 
     ALU alu_(.ALUControl(ALU_OPCODE), 
             .SrcA(SrcA), 
             .SrcB(SrcB_to_ALU),
-            .ALUResult(ALUResult),
+            .ALUResult(ALUResult)
     );
 
     //shamt field for shift instructions
@@ -39,7 +39,7 @@ module ALU_all(
     logic validIn_div;
     logic validOut_div;
 
-    logic stall;
+   // logic stall;
     
     logic[31:0] Mult_Hi;
     logic[31:0] Mult_Lo;
@@ -72,7 +72,7 @@ module ALU_all(
     );
 
 
-
+    assign stall = ((funct == 011000) || (funct == 011001) || (funct == 011010) || (funct == 011011)) & (validOut_mul == 0);
     //ALU operation specified by ALU_OPCODE
     always_comb begin
         if(ALU_Control != 5'b01111 )begin
@@ -84,6 +84,7 @@ module ALU_all(
 
             //shamt not required for non R-type instructions
             SrcB_to_ALU = SrcB;
+            Out = ALUResult;
             //Out is always ALUResult for non R-type instructions
         end
         else if(ALU_Control == 5'b01111) begin
@@ -91,21 +92,27 @@ module ALU_all(
             case(funct) /* R-type */
             6'b000000: begin
                 ALU_OPCODE = 5'b00100; /* SLL */
+                Out = ALUResult;
             end
             6'b000010: begin
                 ALU_OPCODE = 5'b00101; /* SRL */
+                Out = ALUResult;
             end
             6'b000011: begin
                 ALU_OPCODE = 5'b01000; /* SRA */  
+                Out = ALUResult;
             end        
             6'b000100: begin
                 ALU_OPCODE = 5'b00100; /* SLLV */
+                Out = ALUResult;
             end
             6'b000110: begin
                 ALU_OPCODE = 5'b00101; /* SRLV */
+                Out = ALUResult;
             end
             6'b000111: begin
                 ALU_OPCODE = 5'b01000; /* SRAV */
+                Out = ALUResult;
             end
             //6'b001000: ALU_OPCODE  <= 5'b000110; /* JR */
             //6'b001001: ALU_OPCODE  <= 5'b000111; /* JALR */
@@ -132,24 +139,25 @@ module ALU_all(
                 Mult_sign = 1;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
-                    stall = 1;
+                    //stall = 1;
                 end 
                 else if (validOut_mul == 1) begin
-                    stall = 0;
+                    //stall = 0;
                     validIn_mul = 0;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
                 end             
-            end               
+            end       
+           
             6'b011001: begin
                 ALU_OPCODE = 5'bxxxxx; /* MULTU */
                 Mult_sign = 0;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
-                    stall = 1;
+                    //stall = 1;
                 end 
                 else if (validOut_mul == 1) begin
-                    stall = 0;
+                    //stall = 0;
                     validIn_mul = 0;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
@@ -159,24 +167,25 @@ module ALU_all(
                 Div_sign = 1;
                 ALU_OPCODE = 5'bxxxxx;             
                 if (validOut_div == 0) begin
-                    stall = 1;
+                    //stall = 1;
                     validIn_div = 1;
                 end 
                 else if (validOut_div == 1) begin
-                    stall = 0;
+                    //stall = 0;
                     validIn_div = 0;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
                 end
+            end
             6'b011011: begin
                 Div_sign = 0;
                 ALU_OPCODE = 5'bxxxxx; /* DIVU */               
                 if (validOut_div == 0) begin
-                    stall = 1;
+                    //stall = 1;
                     validIn_div = 1;
                 end 
                 else if (validOut_div == 1) begin
-                    stall = 0;
+                    //stall = 0;
                     validIn_div = 0;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
@@ -184,24 +193,31 @@ module ALU_all(
             end
             6'b100001:begin
                 ALU_OPCODE = 5'b00010; /* ADDU */
+                Out = ALUResult;
             end 
             6'b100011: begin
                 ALU_OPCODE= 5'b00110; /* SUBU */
+                Out = ALUResult;
             end
             6'b100100: begin
                 ALU_OPCODE = 5'b00000; /* AND*/
+                Out = ALUResult;
             end
             6'b100101: begin
                 ALU_OPCODE= 5'b00001; /* OR */
+                Out = ALUResult;
             end
             6'b100110: begin
                 ALU_OPCODE= 5'b00011; /* XOR */
+                Out = ALUResult;
             end
             6'b101010: begin
                 ALU_OPCODE= 5'b00111; /* SLT */
+                Out = ALUResult;
             end
             6'b101011: begin
                 ALU_OPCODE = 5'b01001; /* SLTU */
+                Out = ALUResult;
             end
             default: ALU_OPCODE = 5'bxxxxx;
             endcase

@@ -35,8 +35,13 @@ module Mult(
 
     logic negative;
 
+    logic is_neg_A;
+    assign is_neg_A = SrcA[31];
+    logic is_neg_B;
+    assign is_neg_B = SrcB[31];
+
     always_comb begin
-        if (SrcA[31] == SrcB[31]) begin
+        if (is_neg_A == is_neg_B) begin
             negative = 0;
         end 
         else begin
@@ -52,13 +57,13 @@ module Mult(
             running_next = 0;
         end
         else if (running == 0) begin
-            if (SrcA[31] == 1 && sign == 1) begin
+            if (is_neg_A == 1 && sign == 1) begin
                 mp_next = Inverted_A;
             end
             else begin
                 mp_next = SrcA;
             end
-            if (SrcB[31] == 1 && sign == 1) begin
+            if (is_neg_B == 1 && sign == 1) begin
                 mp_next = Inverted_B;
             end
             else begin

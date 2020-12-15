@@ -25,7 +25,7 @@ module mips_cpu_bus_tb;
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
     // Have an empty parameter which can be adjusted in the testbench script using the -P
     // in the compilation block
-    parameter TIMEOUT_CYCLES = 10000;
+    parameter TIMEOUT_CYCLES = 10;
 
     // inputs
     logic clk;
@@ -43,6 +43,8 @@ module mips_cpu_bus_tb;
     logic[31:0] writedata;
     logic[3:0] byteenable;
     logic[31:0] readdata;
+
+    assign waitrequest = 0;
 
     // instianting everything and making the needed connections
     // might have to make all of the relevant connections including ALU, multiplexers, etc.
@@ -77,9 +79,9 @@ module mips_cpu_bus_tb;
         clk=0;
 
         repeat (TIMEOUT_CYCLES) begin
-            #10;
+            #100;
             clk = !clk;
-            #10;
+            #100;
             clk = !clk;
         end
         // clock is created here in the test bench
