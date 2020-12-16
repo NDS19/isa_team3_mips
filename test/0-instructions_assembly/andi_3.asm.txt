@@ -1,5 +1,7 @@
-ADDIU $t0, $zero, 4
-LW $a0, 0($t0)
-ANDI $V0, $a0, -17722
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $a0, 24($t0)
+ANDI $V0, $a0, -1561
 JR $zero
-.data -783836726
+ADDIU $t0, $t0, 0
+.data 989839415
