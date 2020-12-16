@@ -91,9 +91,15 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         # -P is used to adjust the parameter in the testbench verilog so we can
         # input a file that is read in
         iverilog -g 2012 \
-        ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_8x4096.v \
-        Alu/ALU_all.v Alu/ALU.v Alu/Div.v Alu/MSB.v Alu/Mult.v Alu/Sign_Inverter.v Alu/Sign_Inverter64.v \
-        datapath/*.v register_file.v Decoder.v \
+        ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v ${source_directory}/mips_cpu/RAM_8x4096.v \
+        ${source_directory}/mips_cpu/Alu/ALU_all.v ${source_directory}/mips_cpu/Alu/ALU.v \
+        ${source_directory}/mips_cpu/Alu/Div.v \
+        ${source_directory}/mips_cpu/Alu/MSB.v \
+        ${source_directory}/mips_cpu/Alu/Mult.v \
+        ${source_directory}/mips_cpu/Alu/Sign_Inverter.v \
+        ${source_directory}/mips_cpu/Alu/Sign_Inverter64.v \
+        ${source_directory}/mips_cpu/datapath/*.v ${source_directory}/mips_cpu/register_file.v \
+        ${source_directory}/mips_cpu/Decoder.v \
         -s mips_cpu_bus_tb \
         -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
         -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
@@ -204,9 +210,15 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         #for i in ${TESTCASES} ; do
         #    TESTNAME=$(basename ${i} .asm.txt)
             iverilog -g 2012 \
-            ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_8x4096.v \
-            Alu/ALU_all.v Alu/ALU.v Alu/Div.v Alu/MSB.v Alu/Mult.v Alu/Sign_Inverter.v Alu/Sign_Inverter64.v \
-            datapath/*.v register_file.v Decoder.v \
+            ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v ${source_directory}/mips_cpu/RAM_8x4096.v \
+            ${source_directory}/mips_cpu/Alu/ALU_all.v ${source_directory}/mips_cpu/Alu/ALU.v \
+            ${source_directory}/mips_cpu/Alu/Div.v \
+            ${source_directory}/mips_cpu/Alu/MSB.v \
+            ${source_directory}/mips_cpu/Alu/Mult.v \
+            ${source_directory}/mips_cpu/Alu/Sign_Inverter.v \
+            ${source_directory}/mips_cpu/Alu/Sign_Inverter64.v \
+            ${source_directory}/mips_cpu/datapath/*.v ${source_directory}/mips_cpu/register_file.v \
+            ${source_directory}/mips_cpu/Decoder.v \
             -s mips_cpu_bus_tb \
             -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
             -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
