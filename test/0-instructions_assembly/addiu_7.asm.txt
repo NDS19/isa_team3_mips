@@ -1,5 +1,5 @@
 ADDIU $t0, $zero, 49088
-SLL $t0, $t0, 49088
+SLL $t0, $t0, 16
 LW $a0, 24($t0)
 ADDIU $v0, $a0, 20
 JR $zero
