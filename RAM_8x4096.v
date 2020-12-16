@@ -141,8 +141,8 @@ module RAM_8x4096(
         endcase
         */
         //$display("OUT %b A%b", {b3,b2,b1,b0}, A);
-       // rd <= {b3,b2,b1,b0};
-        rd <= {b0,b1,b2,b3};
+        rd <= {b3,b2,b1,b0};
+        //rd <= {b0,b1,b2,b3};
         //$display("RAM : INFO :  addr = %b, mem=%b rd = %b b3= %b", A, memory[A], rd, b3);
     end
 endmodule

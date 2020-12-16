@@ -90,7 +90,7 @@ module mips_cpu_bus_tb;
 
     initial begin //initial block that is event driven and runs in parallel
     //to the time driven block
-        rst <= 0;
+            rst <= 0;
 
         @(posedge clk);
         rst <= 1;

@@ -16,7 +16,7 @@ module mips_cpu_bus(
     logic stall;
     logic IrSel;
     logic IrWrite;
-        logic IorD;
+    logic IorD;
     logic AluSrcA;
     logic[1:0] AluSrcB;
     logic[4:0] ALUControl;
@@ -38,7 +38,6 @@ module mips_cpu_bus(
     logic BranchDelay;
     logic[31:0] SrcB;
     logic[31:0] SrcA;
-
 
 
     Decoder Decoder_(
