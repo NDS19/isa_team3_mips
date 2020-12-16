@@ -12,6 +12,8 @@ module ALU(
 
     //varible to store subtraction result for SLT
     logic[31:0] SLT_sub;
+    logic[31:0] JConst;
+    assign JConst = {4'b0000,SrcA[26:0],2'b00};
 
     always_comb begin
         case (ALUControl)
@@ -105,6 +107,10 @@ module ALU(
                 end else begin
                     ALUResult = 0;
                 end
+            end
+            5'b10001 : begin
+                //is SrcA <= 0
+                ALUResult = JConst;
             end
             default: begin
                 //$display("Unknown alu operand");
