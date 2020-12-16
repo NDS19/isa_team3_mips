@@ -132,7 +132,7 @@ module ALU_all(
                 ALU_OPCODE = 5'bxxxxx; /* MFHI */
                 //implemented in assign statement on line 23               
             end
-            6'b010000: begin
+            6'b010010: begin
                 ALU_OPCODE = 5'bxxxxx; /* MFLO */
                 //implemented in assign statement on line 23               
             end
