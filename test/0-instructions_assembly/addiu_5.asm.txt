@@ -4,4 +4,4 @@ LW $a0, 24($t0)
 ADDIU $V0, $a0, 0
 JR $zero
 ADDIU $t0, $t0, 0
-.data 0
+.data 4294967295
