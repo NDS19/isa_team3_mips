@@ -68,7 +68,8 @@ module Decoder(
     output logic Link,
     output logic[3:0] byteenable,
     output logic[2:0] State,
-    output logic BranchDelay
+    output logic BranchDelay,
+    output logic Stall
     
   );
 
@@ -136,6 +137,7 @@ module Decoder(
   assign byteenable = 4'b1111;
   assign State = state;
   assign BranchDelay = is_branch_delay; 
+  assign Stall = stall;
   // Break-down the instruction into fields
   // these are just wires for our convenience
   logic[31:0] instr = Instr;

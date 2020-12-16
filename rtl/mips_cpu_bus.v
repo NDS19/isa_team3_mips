@@ -38,6 +38,7 @@ module mips_cpu_bus(
     logic BranchDelay;
     logic[31:0] SrcB;
     logic[31:0] SrcA;
+    logic Stall;
 /*
     $dumpfile("test.vcd")
     $dumpvars((0, mips_cpu_bus))
@@ -69,7 +70,8 @@ module mips_cpu_bus(
         .PCIs0(PCIs0),
         .waitrequest(waitrequest),
         .State(state),
-        .BranchDelay(BranchDelay)
+        .BranchDelay(BranchDelay),
+        .Stall(Stall)
         );
 
     datapath datapath_(
@@ -104,7 +106,7 @@ module mips_cpu_bus(
     );
 
     always @(posedge clk) begin
-        $display("IrWrite = %b, Is_Jump = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",IrWrite,Is_Jump,Instr,IorD, state, IrSel);
+        $display("IrWrite = %b, Stall = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",IrWrite,Stall,Instr,IorD, state, IrSel);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);

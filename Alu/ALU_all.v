@@ -73,7 +73,7 @@ module ALU_all(
     );
 
 
-    assign stall = ((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
+    assign stall = (ALU_Control == 5'b01111)&((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
     //ALU operation specified by ALU_OPCODE
     always_comb begin
         if(ALU_Control != 5'b01111 )begin
