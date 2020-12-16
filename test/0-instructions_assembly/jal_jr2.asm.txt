@@ -1,0 +1,17 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $V0, 52($t0)
+LW $V1, 56($t0)
+LW $V2, 60($t0)
+JAL 32
+ADDU $V0, $V0, $V2
+JR $zero
+SUB $V0, $V0, $V1
+ADDU $V0, $V0, $V2
+ADDIU $V0, $zero, 10
+JR $ra
+ADDU $V0, $V0, $zero
+.data 220
+.data 110
+.data 50
+
