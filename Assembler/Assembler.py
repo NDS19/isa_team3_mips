@@ -90,7 +90,7 @@ def decode(line,parameters,line_names):
         "BLTZAL":"10000",
     }
 
-    rtype_func = {"ADDU":["a","10001"],
+    rtype_func = {"ADDU":["a","100001"],
         "AND":["a","000000"], #arithmatic syntac  #arithmatic
         "DIV":["md","011010"], #mult div syntax    #arithmatic     
         "DIVU":["md","011011"],               

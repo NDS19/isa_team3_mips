@@ -9,6 +9,8 @@ module pc  (
     //assign PcIs0 = q == 32'b0;
     
     //always @ (posedge clk, posedge reset)
+    logic[31:0] JConst;
+    assign JConst = {q[31:28],d[27:0]};
     always @(posedge clk) begin
         // $display("PC = %d",q);
         jump <= is_jump;
@@ -16,7 +18,7 @@ module pc  (
             q <= 32'hBFC00000;
         end
         else begin
-            q <= jump ? {q[31:27],d[26:0]} : PcEn ? d : q;
+            q <= jump ? JConst : PcEn ? d : q;
         end  
     end
 endmodule

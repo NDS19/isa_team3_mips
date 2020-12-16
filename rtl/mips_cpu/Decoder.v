@@ -286,7 +286,7 @@ module Decoder(
                       ALUSrcA = 1;
                       ALUSrcB = 2'b00;
                       ALUControl = 5'b01111;
-                  RegWrite = 0;
+                      RegWrite = 0;
                       Extra = 1;
                     end
                     EXEC_2: begin
@@ -533,7 +533,8 @@ module Decoder(
                   Extra = 0;
                   ExtSel = 1;
                   ALUSrcB = 2'b11;
-                  ALUSel = 1;
+                  ALUControl = 5'b10001;
+                  ALUSel = 0;
                   RegWrite = 0;
                 end
               endcase

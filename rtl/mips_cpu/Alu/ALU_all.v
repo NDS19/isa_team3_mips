@@ -1,7 +1,8 @@
 module ALU_all(
     input logic[4:0] ALU_Control,
-    input logic[5:0] funct,
-    input logic[4:0] shamt,
+    input logic[31:0] instr,
+    //input logic[5:0] funct,
+    //input logic[4:0] shamt,
     input logic clk,
 
     input logic[31:0] SrcA,
@@ -10,10 +11,14 @@ module ALU_all(
     output logic[31:0] Out,
     output logic stall
 );
-
+    logic[5:0] funct;
+    logic[4:0] shamt;
     //ALU block
     logic[4:0] ALU_OPCODE;
     logic[31:0] ALUResult;
+
+    assign shamt = instr[10:6];
+    assign funct = instr[5:0];
 
     ALU alu_(.ALUControl(ALU_OPCODE), 
             .SrcA(SrcA_to_ALU), 
@@ -76,7 +81,7 @@ module ALU_all(
     assign stall = (ALU_Control == 5'b01111)&((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
     //ALU operation specified by ALU_OPCODE
     always_comb begin
-        if(ALU_Control != 5'b01111 )begin
+        if(ALU_Control != 5'b01111)begin
             ALU_OPCODE = ALU_Control;
             validIn_mul = 0;
             validIn_div = 0;
@@ -85,7 +90,7 @@ module ALU_all(
 
             //shamt not required for non R-type instructions
             SrcB_to_ALU = SrcB;
-            SrcA_to_ALU = SrcA;
+            SrcA_to_ALU = (ALU_Control == 5'b10001)?instr:SrcA;
             Out = ALUResult;
             //Out is always ALUResult for non R-type instructions
         end
