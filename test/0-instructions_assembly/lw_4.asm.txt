@@ -1,4 +1,0 @@
-ADDIU $t0, $zero, 1
-LW $V0, 2($t0)
-JR $zero
-.data 101
