@@ -353,7 +353,7 @@ module Decoder(
                   ALUSrcB = 2'b10;
                   ALUControl = 5'b00001;
                   RegWrite = 0;
-                  ExtSel = 1;
+                  ExtSel = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
