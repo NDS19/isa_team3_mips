@@ -1,4 +1,4 @@
-module ALU(  
+module ALU(
     input logic[4:0] ALUControl,
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
@@ -14,6 +14,9 @@ module ALU(
     logic[31:0] SLT_sub;
     logic[31:0] JConst;
     assign JConst = {4'b0000,SrcA[26:0],2'b00};
+    logic signed[31:0] NegSrcB;
+
+    assign NegSrcB=SrcB;
 
     always_comb begin
         case (ALUControl)
@@ -56,7 +59,7 @@ module ALU(
             end
             5'b01000 :   begin
                 //SRA
-                ALUResult = SrcB >>> SrcA;
+                ALUResult = NegSrcB >>> SrcA;
             end
             5'b01001 : begin
                 // SLTU (Comparison unsigned)
@@ -67,7 +70,7 @@ module ALU(
                 end
             end
             5'b01010 : begin
-                // is less than 0
+                // is equal to 0
                 SLT_sub = SrcA - SrcB;
                 if( SLT_sub == 0) begin
                     ALUResult = 1;

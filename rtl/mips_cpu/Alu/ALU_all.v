@@ -20,8 +20,8 @@ module ALU_all(
     assign shamt = instr[10:6];
     assign funct = instr[5:0];
 
-    ALU alu_(.ALUControl(ALU_OPCODE), 
-            .SrcA(SrcA_to_ALU), 
+    ALU alu_(.ALUControl(ALU_OPCODE),
+            .SrcA(SrcA_to_ALU),
             .SrcB(SrcB_to_ALU),
             .ALUResult(ALUResult)
     );
@@ -46,7 +46,7 @@ module ALU_all(
     logic validOut_div;
 
    // logic stall;
-    
+
     logic[31:0] Mult_Hi;
     logic[31:0] Mult_Lo;
     logic[31:0] Div_Hi;
@@ -60,7 +60,7 @@ module ALU_all(
             .validIn(validIn_mul),
             .sign(Mult_sign),
             .validOut(validOut_mul),
-            .SrcA(SrcA), 
+            .SrcA(SrcA),
             .SrcB(SrcB),
             .Hi(Mult_Hi),
             .Lo(Mult_Lo)
@@ -71,7 +71,7 @@ module ALU_all(
             .validIn(validIn_div),
             .sign(Div_sign),
             .validOut(validOut_div),
-            .SrcA(SrcA), 
+            .SrcA(SrcA),
             .SrcB(SrcB),
             .Hi(Div_Hi),
             .Lo(Div_Lo)
@@ -106,9 +106,9 @@ module ALU_all(
                 Out = ALUResult;
             end
             6'b000011: begin
-                ALU_OPCODE = 5'b01000; /* SRA */  
+                ALU_OPCODE = 5'b01000; /* SRA */
                 Out = ALUResult;
-            end        
+            end
             6'b000100: begin
                 ALU_OPCODE = 5'b00100; /* SLLV */
                 Out = ALUResult;
@@ -125,7 +125,7 @@ module ALU_all(
             //6'b001001: ALU_OPCODE  <= 5'b000111; /* JALR */
             6'b010001: begin
                 ALU_OPCODE = 5'bxxxxx; /* MTHI */
-                //TO DO 
+                //TO DO
                 Hi_next = SrcA;
             end
             6'b010011: begin
@@ -135,34 +135,34 @@ module ALU_all(
             end
             6'b010000: begin
                 ALU_OPCODE = 5'bxxxxx; /* MFHI */
-                //implemented in assign statement on line 23               
+                //implemented in assign statement on line 23
             end
             6'b010010: begin
                 ALU_OPCODE = 5'bxxxxx; /* MFLO */
-                //implemented in assign statement on line 23               
+                //implemented in assign statement on line 23
             end
             6'b011000: begin     /* MULT */
-                ALU_OPCODE  = 5'bxxxxx; 
+                ALU_OPCODE  = 5'bxxxxx;
                 Mult_sign = 1;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
                     //stall = 1;
-                end 
+                end
                 else if (validOut_mul == 1) begin
                     //stall = 0;
                     validIn_mul = 0;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
-                end             
-            end       
-           
+                end
+            end
+
             6'b011001: begin
                 ALU_OPCODE = 5'bxxxxx; /* MULTU */
                 Mult_sign = 0;
                 if (validOut_mul == 0) begin
                     validIn_mul = 1;
                     //stall = 1;
-                end 
+                end
                 else if (validOut_mul == 1) begin
                     //stall = 0;
                     validIn_mul = 0;
@@ -172,11 +172,11 @@ module ALU_all(
             end
             6'b011010: begin  /* DIV */
                 Div_sign = 1;
-                ALU_OPCODE = 5'bxxxxx;             
+                ALU_OPCODE = 5'bxxxxx;
                 if (validOut_div == 0) begin
                     //stall = 1;
                     validIn_div = 1;
-                end 
+                end
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
@@ -186,11 +186,11 @@ module ALU_all(
             end
             6'b011011: begin
                 Div_sign = 0;
-                ALU_OPCODE = 5'bxxxxx; /* DIVU */               
+                ALU_OPCODE = 5'bxxxxx; /* DIVU */
                 if (validOut_div == 0) begin
                     //stall = 1;
                     validIn_div = 1;
-                end 
+                end
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
@@ -201,7 +201,7 @@ module ALU_all(
             6'b100001:begin
                 ALU_OPCODE = 5'b00010; /* ADDU */
                 Out = ALUResult;
-            end 
+            end
             6'b100011: begin
                 ALU_OPCODE= 5'b00110; /* SUBU */
                 Out = ALUResult;
@@ -245,14 +245,14 @@ module ALU_all(
 
             //shamt field for functions that require it
             //          SLL,                SRL,                SRA,
-            if(funct == 6'b000000 || funct == 6'b000010 || funct == 6'b000010)begin
-                SrcA_to_ALU = { 3'b000, 24'h000000, shamt};
+            if(funct == 6'b000000 || funct == 6'b000010 || funct == 6'b000011)begin
+                SrcA_to_ALU = { 27'b000000000000000000000000000, shamt};
                 SrcB_to_ALU= SrcB;
             end else begin
                 SrcB_to_ALU = SrcB;
                 SrcA_to_ALU = SrcA;
             end
-    
+
             //implementation of MFHI and MFLO, assiging Out to right input
             //           MFHI
             if (funct == 6'b010000 ) begin
@@ -263,10 +263,10 @@ module ALU_all(
             end else begin
                 Out = ALUResult;
             end
-            
+
         end
     end
-    
+
     always_ff  @(posedge clk) begin
         Hi <= Hi_en==1?Hi_next:Hi;
         Lo <= Lo_en==1?Lo_next:Lo;
