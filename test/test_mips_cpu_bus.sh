@@ -22,15 +22,19 @@ set -eou pipefail
 #     UPDATE : if statements are actually the same apart from a ; at the end
 #     of fi. Also other syntax differences turned out that we could actually use DT's
 # 4. Adjust files to be able to handle the changes in directories
-# 5. Move testing all instructions into one for loop
+# 5. Move testing all instructions into one for loop [tick]
 # 6. Recover early exit code in section 3 when the CPU is fully functional
+# 7. Adjust directory and script to compile every verilog file in the mips_cpu
+#     folder
+# 8. Send relative outputs from running the script to stderr rather than stdout
+#     This means things like the output of diff 
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
 #   into one for loop and have everything related to it in that single for loop
 #   rather than have multiple for loops
 #       This avoids having to call the same TESTNAME=$(basename ${i} .asm.txt) lines
-#       at every loop
+#       at every loop [tick]
 #
 
 set +e # doesn't exit immediately if a command exits with a non-zero status
@@ -162,7 +166,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
     #for i in ${TESTCASES} ; do
         #TESTNAME=$(basename ${i} .asm.txt)
         set +e # +e used to stop the script failing if an error occurs
-        diff -w test/4-reference/${TESTNAME}.out test/3-output/CPU_MU0_bus_${TESTNAME}.out
+        >&2 diff -w test/4-reference/${TESTNAME}.out test/3-output/CPU_MU0_bus_${TESTNAME}.out
         RESULT=$? # output of this diff line stored in RESULT
         set -e
 
@@ -278,7 +282,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         # for i in ${TESTCASES} ; do
             TESTNAME=$(basename ${i} .asm.txt)
             set +e # +e used to stop the script failing if an error occurs
-            diff -w test/4-reference/${TESTNAME}.out test/3-output/CPU_MU0_bus_${TESTNAME}.out
+            >&2 diff -w test/4-reference/${TESTNAME}.out test/3-output/CPU_MU0_bus_${TESTNAME}.out
             RESULT=$? # output of this diff line stored in RESULT
             set -e
 
