@@ -1,0 +1,8 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+ADDIU $t0, $zero, 5
+JR $t0
+ADDIU $v0, $zero, 15
+ADDIU $v0, $v0, 5
+ADDIU $v0, $v0, 15
+JR $zero

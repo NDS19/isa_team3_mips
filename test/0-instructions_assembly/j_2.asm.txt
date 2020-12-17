@@ -1,9 +1,10 @@
 ADDIU $t0, $zero, 49088
 SLL $t0, $t0, 16
-J 16
-ADDIU $V0, $zero, 10
-LW $V0, 28($t0)
+LW $V0, 36($t0)
+J 66060293
+ADDIU $V0, $V0, 10
+ADDIU $V0, $V0, 10
+ADDIU $V0, $V0, 10
 JR $zero
-ADDU $V0, $V0, $zero
-.data 280
-.data 100
+ADDIU $V0, $V0, 80
+.data 290
