@@ -16,7 +16,7 @@ module mips_cpu_bus(
     logic stall;
     logic IrSel;
     logic IrWrite;
-        logic IorD;
+    logic IorD;
     logic AluSrcA;
     logic[1:0] AluSrcB;
     logic[4:0] ALUControl;
@@ -38,9 +38,12 @@ module mips_cpu_bus(
     logic BranchDelay;
     logic[31:0] SrcB;
     logic[31:0] SrcA;
-
-
-
+    logic Stall;
+    logic[31:0] BranchNext;
+/*
+    $dumpfile("test.vcd")
+    $dumpvars((0, mips_cpu_bus))
+*/
     Decoder Decoder_(
         .Active(active),
         .clk(clk),
@@ -68,7 +71,8 @@ module mips_cpu_bus(
         .PCIs0(PCIs0),
         .waitrequest(waitrequest),
         .State(state),
-        .BranchDelay(BranchDelay)
+        .BranchDelay(BranchDelay),
+        .Stall(Stall)
         );
 
     datapath datapath_(
@@ -99,14 +103,16 @@ module mips_cpu_bus(
         .PC(PC),
         .Result(Result),
         .SrcB(SrcB),
-        .SrcA(SrcA)
+        .SrcA(SrcA),
+        .BranchNext(BranchNext)
     );
 
     always @(posedge clk) begin
-        $display("IrWrite = %b, Is_Jump = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",IrWrite,Is_Jump,Instr,IorD, state, IrSel);
+        $display("Is_Jump = %b, BranchNext = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",Is_Jump,BranchNext,Instr,IorD, state, IrSel);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
+        $display("reset = %b", reset);
         $display("\n");
     end
 

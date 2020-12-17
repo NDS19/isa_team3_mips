@@ -25,7 +25,7 @@ module mips_cpu_bus_tb;
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
     // Have an empty parameter which can be adjusted in the testbench script using the -P
     // in the compilation block
-    parameter TIMEOUT_CYCLES = 30;
+    parameter TIMEOUT_CYCLES = 10000;
 
     // inputs
     logic clk;
@@ -90,7 +90,7 @@ module mips_cpu_bus_tb;
 
     initial begin //initial block that is event driven and runs in parallel
     //to the time driven block
-        rst <= 0;
+            rst <= 0;
 
         @(posedge clk);
         rst <= 1;
@@ -110,10 +110,10 @@ module mips_cpu_bus_tb;
         // the end of the instructions, we can $finish
         $display("TB : finished; active=0");
         //displays the time taken
-        $display("Time taken : %t", $time);
+        $display("Time taken : %t ns", $time);
 
         // identifying the output and outputting to a stdout file
-        $display("RESULT : %d", register_v0);
+        $display("RESULT : %d",register_v0);
 
         // needs to verify if the we have returned to address 0 before finishing
         // should be fine placing this here at the end since we have supposedly

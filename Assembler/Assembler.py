@@ -90,7 +90,7 @@ def decode(line,parameters,line_names):
         "BLTZAL":"10000",
     }
 
-    rtype_func = {"ADDU":["a","10001"],
+    rtype_func = {"ADDU":["a","100001"],
         "AND":["a","000000"], #arithmatic syntac  #arithmatic
         "DIV":["md","011010"], #mult div syntax    #arithmatic     
         "DIVU":["md","011011"],               
@@ -238,16 +238,25 @@ def writeOutput(output,output_file):
     #print(len(output))
     #_f = open(output_file, 'w')
     output_string = ""
-    for i in range(len(output)):
-        if i % 4 == 0:
-            x = output[i:i+4]
-            #print(x)
-            x = hex(int(x,2))[2]
-            #print(x)
-            #_f.write(x)
-            output_string += x
-        if (i+4) % 8 == 0 and i != 0:
-            output_string += " "
+    n = 0
+
+    byte_1 = hex(int(output[24:28],2))[2] + hex(int(output[28:32],2))[2]
+    byte_2 = hex(int(output[16:20],2))[2] + hex(int(output[20:24],2))[2]
+    byte_3 = hex(int(output[8:12],2))[2] + hex(int(output[12:16],2))[2]
+    byte_4 = hex(int(output[0:4],2))[2] + hex(int(output[4:8],2))[2]
+
+    output_string = byte_1 + " " + byte_2 + " " + byte_3 + " " + byte_4
+
+    # for i in range(len(output)):
+    #     if i % 4 == 0:
+    #         x = output[i:i+4]
+    #         #print(x)
+    #         x = hex(int(x,2))[2]
+    #         #print(x)
+    #         #_f.write(x)
+    #         output_string += x
+    #     if (i+4) % 8 == 0 and i != 0:
+    #         output_string += " "
     #_f.write("\n")
     #_f.close()
     print(output_string)
