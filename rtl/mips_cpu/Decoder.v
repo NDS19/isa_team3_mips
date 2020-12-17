@@ -92,7 +92,7 @@ module Decoder(
        // J = 6'b000010,
         BEQ = 6'b000101,
         BNE = 6'b000100,
-        SLTIU = 6'b101000,
+        SLTIU = 6'b001011,
         JAL = 6'b000011
    } opcode_t;
 
@@ -416,7 +416,7 @@ module Decoder(
                 end
                 EXEC_2: begin
                   RegDst = 0;
-                  MemtoReg = 0;
+                  MemtoReg = 1;
                   RegWrite = 1;
                   ALUSel = 1;
                   Extra = 0;
@@ -429,13 +429,13 @@ module Decoder(
                   ALUSrcA = 1;
                   ExtSel = 1; 
                   ALUSrcB = 2'b10;
-                  ALUControl = 5'b00111;
+                  ALUControl = 5'b01001;
                   RegWrite = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
                   RegDst = 0;
-                  MemtoReg = 0;
+                  MemtoReg = 1;
                   RegWrite = 1;
                   ALUSel = 1;
                   Extra = 0;
