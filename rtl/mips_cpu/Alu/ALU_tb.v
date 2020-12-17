@@ -1,22 +1,25 @@
 module ALU_tb(
 );
-    //Inputs
+    // Outputs into ALU_all
     logic[31:0] SrcA, SrcB;
     logic[4:0] ALUControl;
     logic[31:0] instr;
 
-    //Outputs
+    // Wires we are using to form instr
     logic[31:0] ALUResult;
     logic[5:0] funct;
     logic[4:0] shamt;
+
+    // forming the instr word from the changing values
+    assign instr[10:6] = shamt;
+    assign instr[5:0] = funct;
+    // make the rest of the assignments to form the instruction word
+
 
     initial begin
 
         $dumpfile("ALU_tb.vcd");
         $dumpvars(0,"ALU_tb.vcd");
-
-        assign shamt = instr[10:6];
-        assign funct = instr[5:0];
 
         //BITWISE AND
 
