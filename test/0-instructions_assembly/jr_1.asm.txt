@@ -1,15 +1,8 @@
 ADDIU $t0, $zero, 49088
 SLL $t0, $t0, 16
-LW $V0, 48($t0)
-LW $V1, 52($t0)
-LW $A0, 56($t0)
-JR $A0
-ADDU $V0, $V0, $V1
-SUBU $V0, $V0, $V1
-ADDU $V0, $V0, $V1
-ADDIU $V0, $V0, 10
+ADDIU $t0, $zero, 5
+JR $t0
+ADDIU $v0, $zero, 15
+ADDIU $v0, $v0, 5
+ADDIU $v0, $v0, 15
 JR $zero
-ADDU $V0, $V0, $zero
-.data 520
-.data 210
-.data 66060296
