@@ -19,11 +19,11 @@ def bitString(x,bits):
             if i=="1":
                 flipped += "0"
         flipped = int(flipped,2)
-        print(flipped)
+       # print(flipped)
         #flipped = ~ binary#
         #print(binary)
         twoscomplement = flipped + 1
-        print(twoscomplement)
+       # print(twoscomplement)
         return bitString(twoscomplement,bits)
         #twoscomplement = 
         #while(len(twoscomplement) < bits):
