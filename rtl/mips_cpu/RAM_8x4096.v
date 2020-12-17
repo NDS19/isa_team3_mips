@@ -39,6 +39,15 @@ module RAM_8x4096(
     //assign b3 = A==32'h0 ? 8'b0 : memory[A+3];
     assign b3 = memory[A+3];
     /* Synchronous write path */
+    logic[7:0] W0;
+    logic[7:0] W1;
+    logic[7:0] W2;
+    logic[7:0] W3;
+    assign W0 = wd[7:0];
+    assign W1 = wd[15:8];
+    assign W2 = wd[23:16];
+    assign W3 = wd[31:24];
+
     always @(posedge clk) begin
         /*
         case(byteenable)
@@ -141,6 +150,13 @@ module RAM_8x4096(
         endcase
         */
         //$display("OUT %b A%b", {b3,b2,b1,b0}, A);
+        if (we) begin
+            memory[A+3] <= W3;
+            memory[A+2] <= W2;
+            memory[A+1] <= W1;
+            memory[A] <= W0;
+            //{b3,b2,b1,b0} <= wd;
+        end
         rd <= {b3,b2,b1,b0};
         //rd <= {b0,b1,b2,b3};
         //$display("RAM : INFO :  addr = %b, mem=%b rd = %b b3= %b", A, memory[A], rd, b3);

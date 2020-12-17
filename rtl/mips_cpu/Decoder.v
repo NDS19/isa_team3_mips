@@ -358,7 +358,7 @@ module Decoder(
                 end
                 EXEC_2: begin
                   RegDst = 0;
-                  MemtoReg = 0;
+                  MemtoReg = 1;
                   RegWrite = 1;
                   ALUSel = 1;
                   is_branch_delay_next = 0;
