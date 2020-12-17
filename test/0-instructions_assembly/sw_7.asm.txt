@@ -1,5 +1,7 @@
 ADDIU $t0, $zero, 5
-ADDIU $t1, $zero, 3217031218
+ADDIU $t1, $zero, 49088
+SLL $t1, $t1, 16
+ADDIU $t1, $t1, 50
 SW $t0, 0($t1)
 LW $V0, 0($t1)
 JR $zero

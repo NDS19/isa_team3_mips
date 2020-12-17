@@ -60,7 +60,7 @@ module mips_cpu_bus(
         .PCWrite(PCWrite),
         .RegWrite(RegWrite),
         .MemtoReg(MemtoReg),
-        .MemWrite(MemWrite),
+        .MemWrite(write),
         .MemRead(read),
         .PCSrc(PcSrc),
         .RegDst(RegDst),
@@ -108,7 +108,7 @@ module mips_cpu_bus(
     );
 
     always @(posedge clk) begin
-        $display("Is_Jump = %b, BranchNext = %b, Instr = %b, IorD = %b, State = %b IrSel = %b",Is_Jump,BranchNext,Instr,IorD, state, IrSel);
+        $display("Is_Jump = %b, writedata = %b, Instr = %b, IorD = %b, State = %b write = %b",Is_Jump,writedata,Instr,IorD, state, write);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
