@@ -1,5 +1,9 @@
-ADDIU $t0, $zero, 5
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
 ADDIU $t1, $zero, 201
-SW $t0, 5($t1)
-LW $V0, 5($t1)
+LW $t1, 32($t0)
+SW $t1, 444($t0)
+LW $V0, 444($t0)
 JR $zero
+ADDIU $t0, $t0, 0;
+.data 121
