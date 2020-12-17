@@ -1,0 +1,4 @@
+ADDIU $t0, $zero, 3
+LW $V0, 0($t0)
+JR $zero
+.data 20

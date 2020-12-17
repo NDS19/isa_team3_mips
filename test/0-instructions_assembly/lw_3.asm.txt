@@ -1,4 +1,6 @@
-ADDIU $t0, $zero, X
-LW $V0, 0($t0)
-J 0
-X: 101
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $V0, 20($t0)
+JR $zero
+ADDIU $t0, $zero, 1
+.data 20

@@ -7,15 +7,25 @@
     These might need to be treated as outputs of the tb since otherwise they are just
     dangling wires
 */
-`timescale 1ns / 10ps
+//`timescale 1ns / 10ps
 
 module mips_cpu_bus_tb;
-    //timeunit 1ns / 10ps;
+    timeunit 1ns / 10ps;
+
+    /* TO DO:
+    1. Understand how the RAM file is initialised with an input file [tick]
+    2. Implement timings to determine how quickly test cases are completed [maybe working]
+    3. Fix compile-time errors
+        Output wires from the mips_cpu_bus file are causing declaration errors; because
+        these are output wires that the CPU either needs to use or will go to the RAM.
+        These might need to be treated as outputs of the tb since otherwise they are just
+        dangling wires
+    */
 
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
     // Have an empty parameter which can be adjusted in the testbench script using the -P
     // in the compilation block
-    parameter TIMEOUT_CYCLES = 10000;
+    parameter TIMEOUT_CYCLES = 30;
 
     // inputs
     logic clk;
@@ -33,6 +43,8 @@ module mips_cpu_bus_tb;
     logic[31:0] writedata;
     logic[3:0] byteenable;
     logic[31:0] readdata;
+
+    assign waitrequest = 0;
 
     // instianting everything and making the needed connections
     // might have to make all of the relevant connections including ALU, multiplexers, etc.
@@ -67,9 +79,9 @@ module mips_cpu_bus_tb;
         clk=0;
 
         repeat (TIMEOUT_CYCLES) begin
-            #10;
+            #100;
             clk = !clk;
-            #10;
+            #100;
             clk = !clk;
         end
         // clock is created here in the test bench

@@ -22,9 +22,9 @@ Sign_Inverter invert_A(.In(SrcA),.Out(Inverted_A));
 Sign_Inverter inver_B(.In(SrcB),.Out(Inverted_B));
 
 logic[31:0] Inverted_Quotient_next;
-Sign_Inverter invert_sum(.In(Quotient_next),.Out(Inverted_Quotient_next));
+Sign_Inverter invert_quotient(.In(Quotient_next),.Out(Inverted_Quotient_next));
 logic[31:0] Inverted_Remainder_next;
-Sign_Inverter invert_sum(.In(Remainder_next),.Out(Inverted_Remainder_next));
+Sign_Inverter invert_remainder(.In(Remainder_next),.Out(Inverted_Remainder_next));
 
 //this should maybe be done in more cycles instead of combinatorially
 logic[4:0] msbA;
@@ -41,6 +41,11 @@ MSB MSBB(InputMSB_B,msbB);
 //     running = 0;
 //     running_next = 0;
 // end
+logic is_neg_A;
+assign is_neg_A = SrcA[31];
+logic is_neg_B;
+assign is_neg_B = SrcB[31];
+
 
 always_comb begin
     if (validIn == 0) begin
@@ -50,19 +55,19 @@ always_comb begin
         running_next = 1;
         count_next = 0;
         if (sign == 1) begin
-            if (SrcA[31] == 1 && SrcB[31] == 1) begin   //If both inputs are negative
+            if (is_neg_A == 1 && is_neg_B == 1) begin   //If both inputs are negative
                 Remainder_next = Inverted_A;
                 InputMSB_A = Inverted_A;
                 InputMSB_B = Inverted_B;
                 Divisor_next = Inverted_B << (msbA - msbB);
             end
-            else if (SrcA[31] == 1) begin   //If only A is negative
+            else if (is_neg_A == 1) begin   //If only A is negative
                 Remainder_next = Inverted_A; 
                 InputMSB_A = Inverted_A;      
                 InputMSB_B = SrcB;    
                 Divisor_next = SrcB << (msbA - msbB);
             end
-            else if (SrcB[31] == 1) begin   //If only B is negative
+            else if (is_neg_B == 1) begin   //If only B is negative
                 Remainder_next = SrcA; 
                 InputMSB_A = SrcA;    
                 InputMSB_B = Inverted_B;    

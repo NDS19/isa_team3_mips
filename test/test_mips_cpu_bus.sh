@@ -84,13 +84,12 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       TESTNAME=$(basename ${i} .asm.txt)
       # -P is used to adjust the parameter in the testbench verilog so we can
       # input a file that is read in
-      iverilog -g 2012 \
+      iverilog -Wall -g 2012 \
       ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v RAM_8x4096.v \
       Alu/ALU_all.v Alu/ALU.v Alu/Div.v Alu/MSB.v Alu/Mult.v Alu/Sign_Inverter.v Alu/Sign_Inverter64.v \
       datapath/*.v register_file.v Decoder.v \
-      -s test/mips_cpu_bus_tb  \  # set the test-bench as top level since this instantiates everything
-      -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \ # having the test case file input into the RAM
-      -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
+      -s mips_cpu_bus_tb  -P test/mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME}    # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
+      # output executable file for this instruction testcase
     done
     # MAKE SURE TO ADJUST THIS BLOCK OF CODE FOR POSSIBLE CHANGES IN DIRECTORY
     >&2 echo " Successfully compiled test-bench"
@@ -108,7 +107,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
       test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} > test/3-output/CPU_MU0_bus_${TESTNAME}.stdout
       # output file would be called e.g. CPU_MUO_bus_addiu_1.stdout
 
-      RESULT = $?
+      RESULT=$?
       set -e
 
       if [[ "${RESULT}" -ne 0 ]] ; then

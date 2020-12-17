@@ -22,10 +22,11 @@ assign reg_2 = regs[2];
 assign read_data1 = (a1!=0)? regs[a1]:0;
 assign read_data2 = (a2!=0)? regs[a2]:0;
 
-assign Register0 = regs[0];
+assign Register0 = regs[2];
 
 integer index;
 always @(posedge clk) begin
+  $display("write_index3 = %b write_enable = %b write_data3 = %b",write_index3, write_enable, write_data3);
   if(reset==1) begin
     for(index=0;index<33;index= index+1)begin
       regs[index]<=0;

@@ -63,7 +63,7 @@ def decode(line,parameters,line_names):
         "BLEZ":["b","000110"],
         "BLTZ":["b","000001"],
         "BLTZAL":["b","000001"],
-        "J":["j","000001"],   ##TODO
+        "J":["j","000010"],   ##TODO
         "LB":["ls","100000"],
         "LBU":["ls","100100"],
         "LH":["ls","100001"],
@@ -116,7 +116,9 @@ def decode(line,parameters,line_names):
     line = line.split()
     #print(line)
     #if this is not an rtype instruction
-    if line[0] not in rtype_func:
+    if line[0] == ".data":
+        output = bitString(int(line[1]),32)
+    elif line[0] not in rtype_func:
         #print("not r type")
         opcode = line[0]
         #if opcode in reg_2_type:
@@ -219,8 +221,13 @@ def decode(line,parameters,line_names):
         elif rtype_func[opcode][0] == "s":
             reg1 = line[1]
             reg2 = line[2]
-            reg3 = line[3]
-            output += bitString(0,5) + reg(reg2) + reg(reg1) + reg(reg3)
+            const = line[3]
+            #reg3 = line[3]
+            output += bitString(0,5) + reg(reg2) + reg(reg1) #+ reg(reg3)
+            if isDigit(const):
+                output += bitString(int(const),5)
+            elif output in parameters:
+                output += bitString(int(parameters[const]),5)
         #elif opcode in mt_rtype:
         output += rtype_func[opcode][1]
     #print(output)
