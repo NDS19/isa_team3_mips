@@ -32,7 +32,7 @@ always @(posedge clk) begin
       regs[index]<=0;
     end
   end
-  if(write_enable==1) begin
+  if(write_enable==1&write_index3!==5'b000000) begin
     regs[write_index3]<=write_data3;
     end
   end

@@ -8,7 +8,29 @@ def isDigit(x):
         return False
 
 def bitString(x,bits):
-    return format(x, '0' + str(bits) + 'b')
+    binary = format(x, '0' + str(bits) + 'b')
+    if(x < 0):
+        binary = "0" + binary[1:]
+        #print(binary)
+        flipped = ""
+        for i in binary:
+            if i == "0": 
+                flipped += "1"
+            if i=="1":
+                flipped += "0"
+        flipped = int(flipped,2)
+       # print(flipped)
+        #flipped = ~ binary#
+        #print(binary)
+        twoscomplement = flipped + 1
+       # print(twoscomplement)
+        return bitString(twoscomplement,bits)
+        #twoscomplement = 
+        #while(len(twoscomplement) < bits):
+        #    twoscomplement = twoscomplement[0] + twoscomplement
+        #return format(x, '0' + str(bits) + 'b')
+        #return twoscomplement
+    return binary
 
 def reg(reg_code):
     registers = {"$zero":0,
@@ -169,8 +191,10 @@ def decode(line,parameters,line_names):
             output += reg(reg1)
             if isDigit(const):
                 output += bitString(int(const),16)
-            else:
+            elif const in parameters:
                 output += bitString(int(parameters[const]),16)
+            else:
+                output += bitString(int(line_names[const]),216)
 
 
         elif opcodes[opcode][0] == "li":
@@ -278,7 +302,8 @@ for i in range(len(lines)):
         if isDigit(line[1]):
             parameters[line[0]] = int(line[1])
         else:
-            line_names[line[0]] = (i + 3217031168 ) & (pow(2,27)-1)
+            line_names[line[0]] = i * 4
+            #(i + 3217031168 ) & (pow(2,27)-1)
 
 #assemble all the lines
 for line in lines:

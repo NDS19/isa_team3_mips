@@ -2,7 +2,7 @@
 
 module ALU_tb(
 );
-    //Inputs
+    // Outputs into ALU_all
     logic[31:0] SrcA, SrcB;
     logic[4:0] ALU_Control;
     logic[31:0] instr;

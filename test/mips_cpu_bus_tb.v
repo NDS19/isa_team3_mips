@@ -33,7 +33,7 @@ module mips_cpu_bus_tb;
 
     // outputs
     logic active; // detects when the cpu has finished executing instructions, 0 when finished
-    logic[31:0] register_v0; // output of register 2, used for testing
+    logic signed [31:0] register_v0; // output of register 2, used for testing
 
     // wires to connect to the RAM
     logic[31:0] address;
