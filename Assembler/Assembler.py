@@ -97,6 +97,7 @@ def decode(line,parameters,line_names):
         "BLTZ":["b","000001"],
         "BLTZAL":["b","000001"],
         "J":["j","000010"],   ##TODO
+        "JAL":["j","000011"],
         "LB":["ls","100000"],
         "LBU":["ls","100100"],
         "LH":["ls","100001"],
