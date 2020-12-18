@@ -56,6 +56,7 @@ module Decoder(
         LHU = 6'b100101,
         LWL = 6'b100010,
         LWR = 6'b100110,
+        LUI = 6'b001111,
         //LB = 6'b100000,
        // J = 6'b000010,
         BEQ = 6'b000101,
@@ -314,7 +315,6 @@ module Decoder(
                       RegDst = 0;
                       MemtoReg = 1;
                       Extra = 0;
-                  end
                   end
               endcase
 
