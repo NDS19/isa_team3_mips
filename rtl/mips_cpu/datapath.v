@@ -54,7 +54,7 @@ module datapath (input  logic       clk, PcEn, IorD,
 
     assign memsign16 = { {16{ReadData[15]}},ReadData[15:0]};
     //assign memsign16 = ReadData[15]?{16'b1111111111111111,ReadData[15:0]}:{16'b0000000000000000,ReadData[15:0]};
-    assign memsign24 = { {8{ReadData[23]}},ReadData[23:0]};
+    assign memsign24 = { {24{ReadData[7]}},ReadData[7:0]};
     //assign memsign24 = ReadData[23]?{24'b111111111111111111111111,ReadData[7:0]}:{24'b000000000000000000000000,ReadData[7:0]};
     assign extendedmem = MemExt[1]==0?ReadData:MemExt[0]?memsign16:memsign24;
 
