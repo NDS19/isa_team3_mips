@@ -16,7 +16,7 @@ def bitString(x,bits):
     #print(binary)
     if(x < 0):
         #print("hello")
-        if(len(binary)==33):
+        if(len(binary)==bits+1):
             binary = binary[1:]
         else:
             binary = "0" + binary[1:]
