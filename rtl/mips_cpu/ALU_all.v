@@ -93,16 +93,18 @@ module ALU_all(
             validIn_div = 0;
             Hi_en = 0;
             Lo_en = 0;
-        if( opcode == 6'b100110 || opcode == 6'b100010)begin
-            SrcB_to_ALU = SrcB;
-            SrcA_to_ALU = ramdata;
-        end else begin
-            //shamt not required for non R-type instructions
-            SrcB_to_ALU = SrcB;
-            SrcA_to_ALU = (ALU_Control == 5'b10001)?instr:SrcA;
+            if ((ALU_Control == 5'b10010) || (ALU_Control == 5'b10011)) begin
+                SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = ramdata;
+                //Out = ALUResult;
+            end else begin
+                //shamt not required for non R-type instructions
+                SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = (ALU_Control == 5'b10001)?instr:SrcA;
+                //Out = ALUResult;
+                //Out is always ALUResult for non R-type instructions
+            end
             Out = ALUResult;
-            //Out is always ALUResult for non R-type instructions
-        end
         end
         else if(ALU_Control == 5'b01111) begin
 

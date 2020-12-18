@@ -338,7 +338,7 @@ module Decoder(
                   end
                   EXEC_3: begin
                       RegDst = 0;
-                      MemtoReg = 0;
+                      MemtoReg = 1;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
                       extendedmem = 00;
@@ -349,10 +349,12 @@ module Decoder(
                   EXEC_1: begin
                       ALUSrcA = 1;
                       ALUSrcB = 2'b10;
-                      ALUControl = 5'b10010;
+                      ALUControl = 5'b00010;
                       RegWrite = 0;
                       ExtSel = 0;
+                      ALUSel = 0;
                       Extra = 1;
+                      extendedmem = 00;
                   end
                   EXEC_2: begin
                       IorD = 1;
@@ -364,9 +366,12 @@ module Decoder(
                       extendedmem = 00;
                   end
                   EXEC_3: begin
+                      ALUControl = 5'b10010;
                       RegDst = 0;
-                      MemtoReg = 0;
+                      ALUSrcA = 1;
+                      MemtoReg = 1;
                       RegWrite = 1;
+                      ALUSel = 0;
                       is_branch_delay_next = 0;
                       extendedmem = 00;
                   end
@@ -561,7 +566,7 @@ module Decoder(
                 end
               endcase
 
-              LB: case(state)
+             /* LB: case(state)
                 EXEC_1: begin
                   ALUSrcA = 1;
                   ALUSrcB = 2'b10;
@@ -579,7 +584,7 @@ module Decoder(
                   MemtoReg = 1;
                   RegWrite = 1;
                 end
-              endcase
+              endcase*/
 
               SLTI: case(state)
                 EXEC_1: begin
