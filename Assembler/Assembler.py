@@ -267,9 +267,8 @@ def decode(line,parameters,line_names):
         elif rtype_func[opcode][0] == "sa":
             reg1 = line[1]
             reg2 = line[2]
-            const = line[3]
             reg3 = line[3]
-            output += bitString(0,5) + reg(reg3) + reg(reg2) + reg(reg1)
+            output +=  reg(reg3) + reg(reg2) + reg(reg1) + bitString(0,5)
         #elif opcode in mt_rtype:
         output += rtype_func[opcode][1]
     #print(output)
