@@ -25,9 +25,10 @@ set -eou pipefail
 # 5. Move testing all instructions into one for loop [tick]
 # 6. Recover early exit code in section 3 when the CPU is fully functional
 # 7. Adjust directory and script to compile every verilog file in the mips_cpu
-#     folder
+#     folder [tick]
 # 8. Send relative outputs from running the script to stderr rather than stdout
-#     This means things like the output of diff
+#     This means things like the output of diff [possible tick, check sanity check]
+# 9. Might need a stderr output on the compile line (update based on the Friday sanity check)
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
@@ -96,14 +97,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         # input a file that is read in
         iverilog -g 2012 \
         ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
-        ${source_directory}/mips_cpu/Alu/ALU_all.v ${source_directory}/mips_cpu/Alu/ALU.v \
-        ${source_directory}/mips_cpu/Alu/Div.v \
-        ${source_directory}/mips_cpu/Alu/MSB.v \
-        ${source_directory}/mips_cpu/Alu/Mult.v \
-        ${source_directory}/mips_cpu/Alu/Sign_Inverter.v \
-        ${source_directory}/mips_cpu/Alu/Sign_Inverter64.v \
-        ${source_directory}/mips_cpu/datapath/*.v ${source_directory}/mips_cpu/register_file.v \
-        ${source_directory}/mips_cpu/Decoder.v \
+        ${source_directory}/mips_cpu/*.v \
         -s mips_cpu_bus_tb \
         -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
         -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
@@ -132,6 +126,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
           # fail condition
           # need to find a way to obtain the word 'instruction'
            echo "${TESTNAME} ${instruction} Fail"
+           continue
            #exit TODO recover this exit code when the CPU is functioning
         fi
 
@@ -215,14 +210,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         #    TESTNAME=$(basename ${i} .asm.txt)
             iverilog -g 2012 \
             ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
-            ${source_directory}/mips_cpu/Alu/ALU_all.v ${source_directory}/mips_cpu/Alu/ALU.v \
-            ${source_directory}/mips_cpu/Alu/Div.v \
-            ${source_directory}/mips_cpu/Alu/MSB.v \
-            ${source_directory}/mips_cpu/Alu/Mult.v \
-            ${source_directory}/mips_cpu/Alu/Sign_Inverter.v \
-            ${source_directory}/mips_cpu/Alu/Sign_Inverter64.v \
-            ${source_directory}/mips_cpu/datapath/*.v ${source_directory}/mips_cpu/register_file.v \
-            ${source_directory}/mips_cpu/Decoder.v \
+            ${source_directory}/mips_cpu/*.v \
             -s mips_cpu_bus_tb \
             -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
             -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
@@ -250,7 +238,8 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
               # fail condition
               # need to find a way to obtain the word 'instruction'
                echo "${TESTNAME} ${instruction} Fail"
-               # exit
+               continue
+               # exit 
             fi
 
             # we now need to extract the necessary lines with the prefix "RESULT : "
