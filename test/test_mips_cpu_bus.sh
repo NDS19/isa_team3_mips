@@ -100,6 +100,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         ${source_directory}/mips_cpu/*.v \
         -s mips_cpu_bus_tb \
         -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
+        -P mips_cpu_bus_tb.INSTRUCTION=\"${instruction}\" \
         -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
         # output executable file for this instruction testcase
         # done
@@ -213,6 +214,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
             ${source_directory}/mips_cpu/*.v \
             -s mips_cpu_bus_tb \
             -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
+            -P mips_cpu_bus_tb.INSTRUCTION=\"${instruction}\" \
             -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
         #done
         #>&2 echo " Successfully compiled test-bench"
@@ -239,7 +241,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
               # need to find a way to obtain the word 'instruction'
                echo "${TESTNAME} ${instruction} Fail"
                continue
-               # exit 
+               # exit
             fi
 
             # we now need to extract the necessary lines with the prefix "RESULT : "
