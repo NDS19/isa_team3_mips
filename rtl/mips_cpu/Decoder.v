@@ -341,6 +341,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 00;
                   end
               endcase
 
@@ -367,6 +368,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 00;
                   end
               endcase
 
@@ -393,6 +395,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 11;
                   end
               endcase
 
@@ -419,6 +422,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 00;
                   end
               endcase
 
@@ -445,6 +449,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 10;
                   end
               endcase
 
@@ -471,6 +476,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
+                      extendedmem = 00;
                   end
               endcase
 
