@@ -49,115 +49,128 @@ module RAM_8x4096(
     assign W3 = wd[31:24];
 
     always @(posedge clk) begin
-        /*
+        
         case(byteenable)
             4'b0000:    begin
-                if (wd) begin
-                {32'b0} <= wd;
-                end
                 rd <= {32'b0}; // Read-after-write mode
             end
             4'b0001: begin
-            if (we) begin
-            {24'b0,b0} <= wd;
-            end
-            rd <= {24'b0,b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A] <= W0;    
+                end
+                rd <= {24'b0,b0};; // Read-after-write mode
             end
             4'b0010: begin
-            if (we) begin
-            {16'b0,b1,8'b0} <= wd;
-            end
-            rd <= {16'b0,b1,8'b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+1] <= W1;
+                end
+                rd <= {16'b0,b1,8'b0}; // Read-after-write mode
             end
             4'b0011: begin
-            if (we) begin
-            {16'b0,b1,b0} <= wd;
-            end
-            rd <= {16'b0,b1,b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+1] <= W1;
+                    memory[A] <= W0;
+                end
+                rd <= {16'b0,b1,b0}; // Read-after-write mode
             end
             4'b0100: begin
-            if (we) begin
-            {8'b0,b2,16'b0} <= wd;
-            end
-            rd <= {8'b0,b2,16'b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+2] <= W2;
+                end
+                rd <= {8'b0,b2,16'b0}; // Read-after-write mode
             end
             4'b0101: begin
-            if (we) begin
-            {8'b0,b2,8'b0,b0} <= wd;
-            end
-            rd <= {8'b0,b2,8'b0,b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+2] <= W2;
+                    memory[A] <= W0;
+                end
+                {8'b0,b2,8'b0,b0} <= wd; // Read-after-write mode
             end
             4'b0110: begin
-            if (we) begin
-            {8'b0,b2,b1,8'b0} <= wd;
-            end
-            rd <= {8'b0,b2,b1,8'b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+2] <= W2;
+                    memory[A+1] <= W1;
+                end
+                rd <= {8'b0,b2,b1,8'b0}; // Read-after-write mode
             end
             4'b0111: begin
-            if (we) begin
-            {8'b0,b2,b1,b0} <= wd;
-            end
-            rd <= {8'b0,b2,b1,b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+2] <= W2;
+                    memory[A+1] <= W1;
+                    memory[A] <= W0;
+                end
+                rd <= {8'b0,b2,b1,b0}; // Read-after-write mode
             end
             4'b1000: begin
-            if (we) begin
-            {b3,24'b0} <= wd;
-            end
-            rd <= {b3,24'b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+3] <= W3;
+                end
+                rd <= {b3,24'b0}; // Read-after-write mode
             end
             4'b1001:begin 
-            if (we) begin
-            {b3,16'b0,b0} <= wd;
-            end
-            rd <= {b3,16'b0,b0}; // Read-after-write mode
+                if (we) begin
+                    memory[A+3] <= W3;
+                    memory[A] <= W0;
+                end
+                rd <= {b3,16'b0,b0}; // Read-after-write mode
             end
             4'b1010: begin
             if (we) begin
-            {b3,8'b0,b1,8'b0} <= wd;
-            end
+                memory[A+3] <= W3;
+                memory[A+1] <= W1;
             rd <= {b3,8'b0,b1,8'b0}; // Read-after-write mode
             end
             4'b1011: begin
-            if (wd) begin
-            {b3,8'b0,b1,b0} <= wd;
+            if (we) begin
+                memory[A+3] <= W3;
+                memory[A+1] <= W1;
+                memory[A] <= W0;
             end
-            rd <= {b3,8'b0,b1,b0}; // Read-after-write mode
+            rd <= {b3,8'b0,b1,b0};// Read-after-write mode
             end
             4'b1100: begin
-            if (wd) begin
-            {b3,b2,16'b0} <= wd;
+            if (we) begin
+                memory[A+3] <= W3;
+                memory[A+2] <= W2;
             end
             rd <= {b3,b2,16'b0}; // Read-after-write mode
             end
             4'b1101: begin
-            if (wd) begin
-            {b3,b2,8'b0,b0} <= wd;
+            if (we) begin
+                memory[A+3] <= W3;
+                memory[A+2] <= W2;
+                memory[A] <= W0;
             end
-            rd <= {b3,b2,8'b0,b0}; // Read-after-write mode
+            rd <= {b3,b2,8'b0,b0};// Read-after-write mode
             end
             4'b1110: begin
-            if (wd) begin
-            {b3,b2,b1,8'b0} <= wd;
+            if (we) begin
+                memory[A+3] <= W3;
+                memory[A+2] <= W2;
+                memory[A+1] <= W1;
             end
             rd <= {b3,b2,b1,8'b0}; // Read-after-write mode
             end
             4'b1111: begin
-            if (wd) begin
-            {b3,b2,b1,b0} <= wd;
+            if (we) begin
+                memory[A+3] <= W3;
+                memory[A+2] <= W2;
+                memory[A+1] <= W1;
+                memory[A] <= W0;
             end
             rd <= {b3,b2,b1,b0}; // Read-after-write mode
             end
         endcase
-        */
+        
         //$display("OUT %b A%b", {b3,b2,b1,b0}, A);
-        if (we) begin
-            memory[A+3] <= W3;
-            memory[A+2] <= W2;
-            memory[A+1] <= W1;
-            memory[A] <= W0;
+        //if (we) begin
+        //    memory[A+3] <= W3;
+        //    memory[A+2] <= W2;
+        //    memory[A+1] <= W1;
+        //    memory[A] <= W0;
             //{b3,b2,b1,b0} <= wd;
-        end
-        rd <= {b3,b2,b1,b0};
+        //end
+        //rd <= {b3,b2,b1,b0};
         //rd <= {b0,b1,b2,b3};
         //$display("RAM : INFO :  addr = %b, mem=%b rd = %b b3= %b", A, memory[A], rd, b3);
     end

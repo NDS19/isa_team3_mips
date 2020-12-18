@@ -2,6 +2,7 @@
 `define R_TYPE 6'b000000,
 `define BLT_TYPE  6'b000001
 `define LW  6'b100011
+`define LB  6'b100000
 `define SW  6'b101011
 `define ADDIU  6'b001001
 `define ANDI  6'b001100
@@ -134,7 +135,7 @@ module Decoder(
   logic[5:0] Funct;
   logic[4:0] branch_code;
   logic Extra;
-  assign byteenable = 4'b1111;
+  //assign byteenable = 4'b1111;
   assign State = state;
   assign BranchDelay = is_branch_delay; 
   assign Stall = stall;
@@ -151,7 +152,7 @@ module Decoder(
   assign PCWrite = (state == FETCH) ? 1 : 0;
   assign Is_Jump = (instr_opcode == J || instr_opcode == JAL) && (state == EXEC_1);
   assign Link = (instr_opcode == JAL) && (state == EXEC_1); 
-  assign MemRead = (instr_opcode == LW) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
+  assign MemRead = (instr_opcode == LW || instr_opcode == LB) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
   assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
 
   assign Active = state != HALTED;
@@ -194,13 +195,15 @@ module Decoder(
       //  MemRead = 1;
       //end
       if (state == HALTED)begin
+        byteenable = 4'b1111
         RegWrite = 0;
       end
       if (state == STALL)begin
         RegWrite = 0;
       end
       if (state == FETCH)begin
-                  RegWrite = 0;
+        byteenable = 4'b1111
+        RegWrite = 0;
         //MemRead = 1;
         if (is_branch_delay == 1) begin
           PCSrc = 1;
@@ -314,6 +317,31 @@ module Decoder(
                       Extra = 1;
                       ALUSel = 1;
                       RegWrite = 0;
+                      //MemRead = 1;
+                      byteenable = 4'b1111
+                  end
+                  EXEC_3: begin
+                      RegDst = 0;
+                      MemtoReg = 0;
+                      RegWrite = 1;
+                      is_branch_delay_next = 0;
+                  end
+              endcase
+              LB: case (state)
+                  EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUSrcB = 2'b10;
+                      ALUControl = 5'b00010;
+                      RegWrite = 0;
+                      ExtSel = 0;
+                      Extra = 1;
+                  end
+                  EXEC_2: begin
+                      IorD = 1;
+                      Extra = 1;
+                      ALUSel = 1;
+                      RegWrite = 0;
+                      byteenable = 4'b0001
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -329,11 +357,12 @@ module Decoder(
                     ALUSrcA= 1;
                     ALUSrcB= 2'b10;
                     ALUControl = 5'b00010;
-                  RegWrite = 0;
+                    RegWrite = 0;
                     Extra=1;
                   end
                   EXEC_2: begin
                     IorD=1;
+                    byteenable = 4'b1111
                     //MemWrite=1;
                     is_branch_delay_next = 0;
                   RegWrite = 0;
