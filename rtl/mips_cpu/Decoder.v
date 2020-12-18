@@ -577,8 +577,12 @@ module Decoder(
 
               SLTI: case(state)
                 EXEC_1: begin
-                  RegWrite = 0;
+                  ALUSrcA = 1;
+                  ExtSel = 0; 
+                  ALUSrcB = 2'b10;
+                  ALUControl = 5'b00111;
                   Extra = 1;
+                  RegWrite = 0;
                 end
                 EXEC_2: begin
                   RegDst = 0;
