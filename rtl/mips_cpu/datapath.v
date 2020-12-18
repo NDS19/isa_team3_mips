@@ -9,6 +9,7 @@ module datapath (input  logic       clk, PcEn, IorD,
                  input  logic[1:0]  ALUSrcB,
                  input  logic       ExtSel,
                  input  logic[4:0]  ALUControl,
+                 input  logic[1:0]  MemExt,
                 // input  logic       stall,
                  input  logic       ALUsel,
                  input  logic       PCSrc,
@@ -25,7 +26,8 @@ module datapath (input  logic       clk, PcEn, IorD,
                  output logic[31:0] Result,
                  output logic[31:0] SrcB,
                  output logic[31:0] SrcA,
-                 output logic[31:0] BranchNext
+                 output logic[31:0] BranchNext,
+                 output logic       lessthan
                  );
 
     wire [4:0]  writereg;
@@ -43,6 +45,19 @@ module datapath (input  logic       clk, PcEn, IorD,
     wire [31:0] branchnext;
     wire [31:0] instr;
     wire [31:0] pc;
+
+    assign lessthan = rd1 < 0;
+
+    wire [31:0] memsign16;
+    wire [31:0] memsign24;
+    wire [31:0] extendedmem;
+
+    assign memsign16 = { {16{ReadData[15]}},ReadData[15:0]};
+    //assign memsign16 = ReadData[15]?{16'b1111111111111111,ReadData[15:0]}:{16'b0000000000000000,ReadData[15:0]};
+    assign memsign24 = { {8{ReadData[23]}},ReadData[23:0]};
+    //assign memsign24 = ReadData[23]?{24'b111111111111111111111111,ReadData[7:0]}:{24'b000000000000000000000000,ReadData[7:0]};
+    assign extendedmem = MemExt[1]==0?ReadData:MemExt[0]?memsign16:memsign24;
+
 
     assign PcIs0 = pc == 0;
     assign PC = pc;
@@ -66,7 +81,7 @@ module datapath (input  logic       clk, PcEn, IorD,
     // rigister file logic
     mux2 #(32)  muxIR(ReadData, irout, IrSel, instr);
     mux2 #(5)   muxA3(instr[20:16], instr[15:11], RegDst, writereg);
-    mux2 #(32)  muxWD3(ReadData, result, MemToReg, wd3);
+    mux2 #(32)  muxWD3(extendedmem, result, MemToReg, wd3);
     register_file     rf(clk, reset, instr[25:21], instr[20:16], writereg, nextrd1, nextrd2, RegWrite, wd3, Register0);
     flopr #(32) RegA(clk, nextrd1, rd1);
     flopr #(32) RegB(clk, nextrd2, writedata);

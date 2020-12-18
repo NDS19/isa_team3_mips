@@ -112,8 +112,16 @@ module ALU(
                 end
             end
             5'b10001 : begin
-                //is SrcA <= 0
+                //Jump
                 ALUResult = JConst;
+            end
+            5'b10010 : begin
+                //LWR
+                ALUResult = SrcB + 2;
+            end
+            5'b10011 : begin
+                //LWL
+                ALUResult = SrcB - 2;
             end
             default: begin
                 //$display("Unknown alu operand");
