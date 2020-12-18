@@ -296,6 +296,27 @@ module Decoder(
                   end
               endcase
 
+              LUI: case (state)
+                  EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUSrcB = 2'b10;
+                      ALUControl = 5'b10100;
+                      RegWrite = 0;
+                      ExtSel = 0;
+                      Extra = 1;
+                  end
+                  EXEC_2: begin
+                      IorD = 1;
+                      Extra = 1;
+                      ALUSel = 1;
+                      RegWrite = 1;
+                      RegDst = 0;
+                      MemtoReg = 1;
+                      Extra = 0;
+                  end
+                  end
+              endcase
+
               LWL: case (state)
                   EXEC_1: begin
                       ALUSrcA = 1;

@@ -123,6 +123,10 @@ module ALU(
                 //LWL
                 ALUResult = SrcB - 2;
             end
+            5'b10100 : begin
+                //LWL
+                ALUResult = SrcB << 16;
+            end
             default: begin
                 //$display("Unknown alu operand");
                 ALUResult = 32'hxxxxxxxx;
