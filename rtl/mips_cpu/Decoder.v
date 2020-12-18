@@ -47,6 +47,7 @@ module Decoder(
         J = 6'b000010,
         LB = 6'b100000,
         ORI = 6'b001101,
+        XORI = 6'b001110,
         SLTI = 6'b001010,
         BGTZ = 6'b000111,
         BLEZ = 6'b000110,
@@ -503,7 +504,7 @@ module Decoder(
                   ALUSrcB = 2'b10;
                   ALUControl = 5'b00001;
                   RegWrite = 0;
-                  ExtSel = 0;
+                  ExtSel = 1;
                   Extra = 1;
                 end
                 EXEC_2: begin
@@ -520,8 +521,27 @@ module Decoder(
                 EXEC_1: begin
                   ALUSrcA = 1;
                   ALUSrcB = 2'b10;
-                  ExtSel = 0; 
+                  ExtSel = 1; 
                   ALUControl = 5'b00000;
+                  RegWrite = 0;
+                  Extra = 1;
+                end
+                EXEC_2: begin
+                  RegDst = 0;
+                  MemtoReg = 1;
+                  RegWrite = 1;
+                  ALUSel=1;
+                  is_branch_delay_next = 0;
+                  Extra = 0;
+                end
+              endcase
+
+              XORI: case(state)
+                EXEC_1: begin
+                  ALUSrcA = 1;
+                  ALUSrcB = 2'b10;
+                  ExtSel = 1; 
+                  ALUControl = 5'b00011;
                   RegWrite = 0;
                   Extra = 1;
                 end
@@ -704,29 +724,10 @@ module Decoder(
                 end
               endcase
 
-              SLTIU: case(state)  //Done
-                EXEC_1: begin
-                  ALUSrcA = 1;
-                  ALUSrcB = 2'b10;
-                  ExtSel = 1;
-                  ALUControl = 5'b01001;
-                  Extra = 1;
-                  ALUSel= 0;
-                  RegWrite = 0;
-                end
-                EXEC_2:begin
-                  ALUSel = 1;
-                  MemtoReg = 1;
-                  RegDst = 1;
-                  Extra = 0;
-                  RegWrite = 1; 
-                  is_branch_delay_next = 0;
-                end
-              endcase
 
               ADDIU: case (state)
                 EXEC_1: begin
-                  ExtSel = 1;
+                  ExtSel = 0;
                   ALUSrcB = 2'b10;
                   ALUSrcA = 1;
                   ALUControl = 5'b00010;
