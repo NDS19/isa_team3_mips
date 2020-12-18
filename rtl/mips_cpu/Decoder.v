@@ -1,45 +1,3 @@
- 
-`define R_TYPE 6'b000000,
-`define BLT_TYPE  6'b000001
-`define LW  6'b100011
-`define LB  6'b100000
-`define SW  6'b101011
-`define ADDIU  6'b001001
-`define ANDI  6'b001100
-`define J  6'b000010
-`define LB  6'b100000
-`define ORI  6'b001101
-`define SLTI  6'b001010
-`define BGTZ  6'b000111
-`define BLEZ  6'b000110
-       // J = 6'b000010,
-`define BEQ  6'b000101
-`define BNE  6'b000100
-`define SLTIU  6'b101000
-`define JAL  6'b000011
-
-`define FETCH  3'b000
-`define DECODE 3'b001
-`define EXEC_1 3'b010
-`define EXEC_2 3'b011
-`define EXEC_3 3'b100
-`define HALTED 3'b101
-`define STALL 3'b110
-
-`define ADDU = 6'b100001
-`define AND 6'b100100
-`define OR  6'b100101
-`define MTHI 6'b010001
-`define MTLO 6'b010011
-`define JALR 6'b001001
-`define JR 6'b001000
-`define BRANCH 6'b000001
-
-`define BGEZ 5'b00001
-`define BGEZAL 5'b10001
-`define BLTZ 5'b00000
-`define BLTZAL 5'b10000
-
 module Decoder(
     input logic clk,
     input logic[31:0] Instr,
@@ -90,10 +48,11 @@ module Decoder(
         SLTI = 6'b001010,
         BGTZ = 6'b000111,
         BLEZ = 6'b000110,
+        //LB = 6'b100000,
        // J = 6'b000010,
         BEQ = 6'b000101,
         BNE = 6'b000100,
-        SLTIU = 6'b101000,
+        SLTIU = 6'b001011,
         JAL = 6'b000011
    } opcode_t;
 
@@ -195,14 +154,14 @@ module Decoder(
       //  MemRead = 1;
       //end
       if (state == HALTED)begin
-        byteenable = 4'b1111
+        byteenable = 4'b1111;
         RegWrite = 0;
       end
       if (state == STALL)begin
         RegWrite = 0;
       end
       if (state == FETCH)begin
-        byteenable = 4'b1111
+        byteenable = 4'b1111;
         RegWrite = 0;
         //MemRead = 1;
         if (is_branch_delay == 1) begin
@@ -318,7 +277,7 @@ module Decoder(
                       ALUSel = 1;
                       RegWrite = 0;
                       //MemRead = 1;
-                      byteenable = 4'b1111
+                      byteenable = 4'b1111;
                   end
                   EXEC_3: begin
                       RegDst = 0;
@@ -341,7 +300,7 @@ module Decoder(
                       Extra = 1;
                       ALUSel = 1;
                       RegWrite = 0;
-                      byteenable = 4'b0001
+                      byteenable = 4'b0001;
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -362,7 +321,7 @@ module Decoder(
                   end
                   EXEC_2: begin
                     IorD=1;
-                    byteenable = 4'b1111
+                    byteenable = 4'b1111;
                     //MemWrite=1;
                     is_branch_delay_next = 0;
                   RegWrite = 0;
@@ -445,7 +404,7 @@ module Decoder(
                 end
                 EXEC_2: begin
                   RegDst = 0;
-                  MemtoReg = 0;
+                  MemtoReg = 1;
                   RegWrite = 1;
                   ALUSel = 1;
                   Extra = 0;
@@ -458,13 +417,13 @@ module Decoder(
                   ALUSrcA = 1;
                   ExtSel = 1; 
                   ALUSrcB = 2'b10;
-                  ALUControl = 5'b00111;
+                  ALUControl = 5'b01001;
                   RegWrite = 0;
                   Extra = 1;
                 end
                 EXEC_2: begin
                   RegDst = 0;
-                  MemtoReg = 0;
+                  MemtoReg = 1;
                   RegWrite = 1;
                   ALUSel = 1;
                   Extra = 0;

@@ -8,9 +8,18 @@ def isDigit(x):
         return False
 
 def bitString(x,bits):
+    #print(x)
     binary = format(x, '0' + str(bits) + 'b')
+    #print(len(binary))
+    #print(binary)
+    #print(binary)
+    #print(binary)
     if(x < 0):
-        binary = "0" + binary[1:]
+        #print("hello")
+        if(len(binary)==33):
+            binary = binary[1:]
+        else:
+            binary = "0" + binary[1:]
         #print(binary)
         flipped = ""
         for i in binary:
@@ -18,13 +27,15 @@ def bitString(x,bits):
                 flipped += "1"
             if i=="1":
                 flipped += "0"
+        #print(flipped)
         flipped = int(flipped,2)
-       # print(flipped)
+        #print(flipped)
         #flipped = ~ binary#
         #print(binary)
         twoscomplement = flipped + 1
        # print(twoscomplement)
-        return bitString(twoscomplement,bits)
+        bits = bitString(twoscomplement,bits)
+        return bits
         #twoscomplement = 
         #while(len(twoscomplement) < bits):
         #    twoscomplement = twoscomplement[0] + twoscomplement
