@@ -139,7 +139,7 @@ def decode(line,parameters,line_names):
         "SLT":["a","101010"],
         "SLTU":["a","101011"],
         "SRA":["s","000011"],
-        "SRAV":["a","000111"],
+        "SRAV":["sa","000111"],
         "SLA":["s","000010"],
         "SLAV":["a","000110"],
         "SUBU":["a","100011"],
@@ -263,6 +263,13 @@ def decode(line,parameters,line_names):
                 output += bitString(int(const),5)
             elif output in parameters:
                 output += bitString(int(parameters[const]),5)
+
+        elif rtype_func[opcode][0] == "sa":
+            reg1 = line[1]
+            reg2 = line[2]
+            const = line[3]
+            reg3 = line[3]
+            output += bitString(0,5) + reg(reg3) + reg(reg2) + reg(reg1)
         #elif opcode in mt_rtype:
         output += rtype_func[opcode][1]
     #print(output)
