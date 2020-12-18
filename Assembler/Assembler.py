@@ -140,6 +140,7 @@ def decode(line,parameters,line_names):
         "SLTU":["a","101011"],
         "SRA":["s","000011"],
         "SRL":["s","000010"],
+        "SRLV":["sa","000110"],
         "SRAV":["sa","000111"],
         "SLA":["s","000010"],
         "SLAV":["a","000110"],

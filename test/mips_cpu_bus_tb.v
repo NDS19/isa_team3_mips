@@ -23,8 +23,8 @@ module mips_cpu_bus_tb;
     */
 
     parameter RAM_INIT_FILE = "test/1-binary/lw_3.hex.txt";
-    // Have an empty parameter which can be adjusted in the testbench script using the -P
-    // in the compilation block
+    parameter INSTRUCTION = "temp"; // holds the current test name
+    // These placeholder parameters are adjusted at compile time
     parameter TIMEOUT_CYCLES = 10000;
 
     // inputs
@@ -34,6 +34,7 @@ module mips_cpu_bus_tb;
     // outputs
     logic active; // detects when the cpu has finished executing instructions, 0 when finished
     logic signed [31:0] register_v0; // output of register 2, used for testing
+    logic unsigned [31:0] u_register_v0;
 
     // wires to connect to the RAM
     logic[31:0] address;
@@ -44,6 +45,7 @@ module mips_cpu_bus_tb;
     logic[3:0] byteenable;
     logic[31:0] readdata;
 
+    assign u_register_v0 = register_v0;
     assign waitrequest = 0;
 
     // instianting everything and making the needed connections
@@ -113,8 +115,14 @@ module mips_cpu_bus_tb;
         $display("Time taken : %t ns", $time);
 
         // identifying the output and outputting to a stdout file
-        $display("RESULT : %d",register_v0);
-
+        if (INSTRUCTION == "addiu" || INSTRUCTION == "addu" || INSTRUCTION == "divu"
+         || INSTRUCTION == "multu" || INSTRUCTION == "sltiu" || INSTRUCTION == "sltu"
+         || INSTRUCTION == "subu")
+        begin
+            $display("RESULT : %d", u_register_v0);
+        end else begin
+            $display("RESULT : %d", register_v0);
+        end
         // needs to verify if the we have returned to address 0 before finishing
         // should be fine placing this here at the end since we have supposedly
         // finished
