@@ -94,6 +94,6 @@ module datapath (input  logic       clk, PcEn, IorD,
     // ALU logic
     mux4 #(32)  srcbmux(writedata, 32'b100, signimm, signimmsh, ALUSrcB, srcb);
     mux2 #(32)  srcamux(pc, rd1, ALUSrcA, srca);
-    ALU_all     alu(ALUControl, instr, clk, srca, srcb, aluoutnext, stall);
+    ALU_all     alu(ALUControl, instr, clk, srca, srcb, ReadData, aluoutnext, stall);
     flopr #(32) RegALU(clk, aluoutnext, aluout);
 endmodule
