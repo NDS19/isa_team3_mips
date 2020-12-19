@@ -59,8 +59,8 @@ module Decoder(
         LUI = 6'b001111,
         //LB = 6'b100000,
        // J = 6'b000010,
-        BEQ = 6'b000101,
-        BNE = 6'b000100,
+        BEQ = 6'b000100,
+        BNE = 6'b000101,
         SLTIU = 6'b001011,
         JAL = 6'b000011
    } opcode_t;
@@ -193,7 +193,7 @@ module Decoder(
         if(instr_opcode != J  && instr_opcode != JAL) begin  
           ALUSrcA = 0;
           ALUSrcB = 2'b11;
-                  RegWrite = 0;
+          RegWrite = 0;
           ExtSel = 0;
           ALUControl = 5'b01101;
         end
@@ -614,8 +614,9 @@ module Decoder(
                 EXEC_1:begin
                   ALUSrcA=1;
                   ALUSrcB=2'b00;
-                  ALUControl = 5'b00111;
+                  ALUControl = 5'b10000;
                   ALUSel = 1;
+                  Extra = 0;
                   RegWrite = 0;
                   is_branch_delay_next = (OutLSB == 1)?0:1;//this isnt an output 
                 end
@@ -638,7 +639,7 @@ module Decoder(
                       ALUControl = 5'b00010;
                       Extra = 1;
                       ALUSel = 0;
-                      RegWrite = lessthan;
+                      RegWrite = 1;
                       MemtoReg = 1;
                     end
                     EXEC_2: begin
@@ -670,7 +671,7 @@ module Decoder(
                       ALUControl = 5'b00010;
                       Extra = 1;
                       ALUSel = 0;
-                      RegWrite = !lessthan;
+                      RegWrite = 1;
                       MemtoReg = 1;
                     end
                     EXEC_2: begin
@@ -692,7 +693,7 @@ module Decoder(
                   ALUSrcA = 1;
                   ALUSrcB = 2'b00;
                   ALUControl = 5'b01010;
-                  is_branch_delay_next=(OutLSB == 1)?1:0;
+                  is_branch_delay_next=OutLSB;
                   Extra = 0;
                   ALUSel = 1;
                   RegWrite = 0;
@@ -725,7 +726,7 @@ module Decoder(
               BLEZ: case(state) //done
                 EXEC_1: begin
                   ALUSrcA = 1;
-                  ALUControl = 5'b01100;
+                  ALUControl = 5'b10000;
                   is_branch_delay_next=(OutLSB == 1)?1:0;
                   Extra = 0;
                   ALUSel = 1;

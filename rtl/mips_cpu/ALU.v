@@ -35,6 +35,8 @@ module ALU(
 
     assign LWL_out = {SrcA_left,SrcB_right};
     assign LWR_out = {SrcB_left,SrcA_right};
+    
+    //logic signed SrcASigned;
 
 
     always_comb begin
@@ -112,7 +114,7 @@ module ALU(
             end
             5'b01101 : begin
                 // needed for jumps
-                ALUResult = SrcA + SrcB + 4;
+                ALUResult = SrcA + SrcB;
             end
             5'b01110 : begin
                 //pass through SrcA

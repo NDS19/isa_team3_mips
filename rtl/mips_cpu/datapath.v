@@ -28,7 +28,8 @@ module datapath (input  logic       clk, PcEn, IorD,
                  output logic[31:0] SrcB,
                  output logic[31:0] SrcA,
                  output logic[31:0] BranchNext,
-                 output logic       lessthan
+                 output logic       lessthan,
+                 output logic[31:0] SrcADebug
                  );
 
     wire [4:0]  writereg;
@@ -70,7 +71,7 @@ module datapath (input  logic       clk, PcEn, IorD,
     assign BranchNext = branchnext;
 
 
-    assign OUTLSB = aluout[0];
+    assign OUTLSB = aluoutnext[0];
 
     assign Instr = instr;
 
@@ -100,6 +101,6 @@ module datapath (input  logic       clk, PcEn, IorD,
     // ALU logic
     mux4 #(32)  srcbmux(writedata, 32'b100, signimm, signimmsh, ALUSrcB, srcb);
     mux2 #(32)  srcamux(pc, rd1, ALUSrcA, srca);
-    ALU_all     alu(ALUControl, instr, clk, srca, srcb, ReadData, aluoutnext, stall);
+    ALU_all     alu(ALUControl, instr, clk, srca, srcb, ReadData, aluoutnext, stall, SrcADebug);
     flopr #(32) RegALU(clk, aluoutnext, aluout);
 endmodule

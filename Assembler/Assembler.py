@@ -90,6 +90,7 @@ def decode(line,parameters,line_names):
         #"AND":"000000",
         "ANDI":["r","001100"],
         "BEQ":["r","000100"],
+        "BNE":["r","000101"],
         "BGEZ":["b","000001"],
         "BGEZAL":["b","000001"],
         "BGTZ":["b","000111"],
