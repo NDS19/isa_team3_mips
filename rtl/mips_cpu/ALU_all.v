@@ -12,11 +12,14 @@ module ALU_all(
     input logic[31:0] ramdata,
 
     output logic[31:0] Out,
-    output logic stall
+    output logic stall,
+    output logic[31:0] SrcADebug
 );
     logic[5:0] funct;
     logic[4:0] shamt;
     logic[5:0] opcode;
+
+    assign SrcADebug = SrcA_to_ALU;
 
     assign opcode = instr[31:26];
     //ALU block

@@ -4,7 +4,7 @@ LW $V0, 56($t0)
 LW $V1, 60($t0)
 LW $A2, 64($t0)
 LW $S3, 68($t0)
-BGEZAL $S3 1
+BGEZAL $S3, 2
 ADDU $V0, $V0, $A2   
 JR $zero
 SUBU $V0, $V0, $V1   

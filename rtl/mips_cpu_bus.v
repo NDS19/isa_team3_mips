@@ -113,15 +113,16 @@ module mips_cpu_bus(
         .Result(Result),
         .SrcB(SrcB),
         .SrcA(SrcA),
-        .BranchNext(BranchNext)
+        .BranchNext(BranchNext),
+        .SrcADebug(SrcADebug)
     );
-
+    logic[31:0] SrcADebug;
     always @(posedge clk) begin
-        $display("Link = %b, writedata = %b, Instr = %b, IorD = %b, State = %b write = %b",Link,writedata,Instr,IorD, state, write);
+        $display("OutLSB = %b, writedata = %b, Instr = %b, IorD = %b, State = %b reset = %b",OutLSB,writedata,Instr,IorD, state, reset);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
-        $display("reset = %b", reset);
+        $display("is_branch_delay_next = %b", BranchDelay);
         $display("\n");
     end
 

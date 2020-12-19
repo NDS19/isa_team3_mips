@@ -1,7 +1,7 @@
 ADDIU $t0, $zero, 49088
 SLL $t0, $t0, 16
 LW $a0, 40($t0)
-BLTZAL $a0, 2
+BLTZAL $a0, 3
 ADDIU $V0, $zero, 1
 ADDIU $V0, $V0, 45
 ADDIU $V0, $V0, 98
