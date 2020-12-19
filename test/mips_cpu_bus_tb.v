@@ -117,7 +117,7 @@ module mips_cpu_bus_tb;
         // identifying the output and outputting to a stdout file
         if (INSTRUCTION == "addiu" || INSTRUCTION == "addu" || INSTRUCTION == "divu"
          || INSTRUCTION == "multu" || INSTRUCTION == "sltiu" || INSTRUCTION == "sltu"
-         || INSTRUCTION == "subu")
+         || INSTRUCTION == "subu" || INSTRUCTION == "bgezal" || INSTRUCTION == "bltzal")
         begin
             $display("RESULT : %d", u_register_v0);
         end else begin
