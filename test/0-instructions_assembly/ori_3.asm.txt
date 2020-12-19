@@ -1,7 +1,7 @@
 ADDIU $t0, $zero, 49088
 SLL $t0, $t0, 16
 LW $a0, 24($t0)
-ORI $V0, $a0, -29997
+ORI $V0, $a0, -12147
 JR $zero
 ADDIU $t0, $t0, 0
-.data 938269572
+.data -81074194
