@@ -42,11 +42,13 @@ module mips_cpu_bus(
     logic[31:0] BranchNext;
     logic lessthan;
     logic[1:0] extendedmem;
+    logic Link;
 /*
     $dumpfile("test.vcd")
     $dumpvars((0, mips_cpu_bus))
 */
     Decoder Decoder_(
+        .Link(Link),
         .extendedmem(extendedmem),
         .lessthan(lessthan),
         .Active(active),
@@ -80,6 +82,7 @@ module mips_cpu_bus(
         );
 
     datapath datapath_(
+        .Link(Link),
         .MemExt(extendedmem),
         .lessthan(lessthan),
         .Register0(register_v0),

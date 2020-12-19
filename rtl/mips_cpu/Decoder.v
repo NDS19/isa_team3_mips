@@ -119,7 +119,7 @@ module Decoder(
   assign IrWrite = (state == DECODE);
   assign PCWrite = (state == FETCH) ? 1 : 0;
   assign Is_Jump = (instr_opcode == J) && (state == EXEC_1)|| (instr_opcode == JAL) && (state == EXEC_2);
-  assign Link = (instr_opcode == JAL) && (state == EXEC_1); 
+  assign Link = ((instr_opcode == JAL)||(instr_opcode == BGEZAL)||(instr_opcode == JALR)||(instr_opcode == BLTZAL)) && (state == EXEC_1); 
   assign MemRead = (instr_opcode == LW || instr_opcode == LB || instr_opcode == LBU|| instr_opcode == LH || instr_opcode == LHU || instr_opcode == LWL|| instr_opcode == LWR) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
   assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
 
@@ -246,7 +246,7 @@ module Decoder(
                       ALUControl = 5'b01110;
                       ALUSel = 0; //skip the ALU register
                       is_branch_delay_next = 1;
-                  RegWrite = 0;
+                      RegWrite = 0;
                       Extra = 0;
                     end
                   endcase
@@ -639,7 +639,7 @@ module Decoder(
                       ALUControl = 5'b00010;
                       is_branch_delay_next=lessthan;
                       Extra = 0;
-                      ALUSel = 0;
+                      ALUSel = 1;
                       RegWrite = 0;
                     end
                   endcase
@@ -657,14 +657,22 @@ module Decoder(
 
                   BGEZAL: case(state) //TODO
                     EXEC_1: begin
-                      ExtSel = 1;
                       ALUSrcA = 0;
                       ALUSrcB = 2'b01;
                       ALUControl = 5'b00010;
-                      is_branch_delay_next=!lessthan;
-                      Extra = 0;
+                      Extra = 1;
                       ALUSel = 0;
+                      RegWrite = !lessthan;
+                      MemtoReg = 1;
+                    end
+                    EXEC_2: begin
+                      ALUSrcA = 0;
+                      ALUSrcB = 2'b11;
                       RegWrite = 0;
+                      ExtSel = 0;
+                      ALUSel = 0;
+                      ALUControl = 5'b01101;
+                      is_branch_delay_next=!lessthan;
                     end
                   endcase
 

@@ -15,6 +15,7 @@ module datapath (input  logic       clk, PcEn, IorD,
                  input  logic       PCSrc,
                  input  logic[31:0] ReadData,
                  input  logic       is_jump,
+                 input  logic       Link,
                  output logic       stall,
                  output logic       OUTLSB,
                  output logic[31:0] Instr,
@@ -46,7 +47,9 @@ module datapath (input  logic       clk, PcEn, IorD,
     wire [31:0] instr;
     wire [31:0] pc;
 
-    assign lessthan = rd1 < 0;
+    logic signed [31:0] rd1_signed;
+    assign rd1_signed = rd1;
+    assign lessthan = rd1_signed < 0;
 
     wire [31:0] memsign16;
     wire [31:0] memsign24;
@@ -82,7 +85,10 @@ module datapath (input  logic       clk, PcEn, IorD,
     mux2 #(32)  muxIR(ReadData, irout, IrSel, instr);
     mux2 #(5)   muxA3(instr[20:16], instr[15:11], RegDst, writereg);
     mux2 #(32)  muxWD3(extendedmem, result, MemToReg, wd3);
-    register_file     rf(clk, reset, instr[25:21], instr[20:16], writereg, nextrd1, nextrd2, RegWrite, wd3, Register0);
+
+    logic[4:0] regWritewithlink;
+    assign regWritewithlink = Link?5'b11111:writereg;
+    register_file     rf(clk, reset, instr[25:21], instr[20:16], regWritewithlink, nextrd1, nextrd2, RegWrite, wd3, Register0);
     flopr #(32) RegA(clk, nextrd1, rd1);
     flopr #(32) RegB(clk, nextrd2, writedata);
     mux2 #(32)  alumux(aluoutnext, aluout, ALUsel, result);
