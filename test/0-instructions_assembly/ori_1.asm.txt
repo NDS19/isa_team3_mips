@@ -4,4 +4,4 @@ LW $a0, 24($t0)
 ORI $V0, $a0, 0
 JR $zero
 ADDIU $t0, $t0, 0
-.data -17
+.data -2147483648
