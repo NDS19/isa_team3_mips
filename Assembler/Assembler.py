@@ -125,7 +125,7 @@ def decode(line,parameters,line_names):
     }
 
     rtype_func = {"ADDU":["a","100001"],
-        "AND":["a","000000"], #arithmatic syntac  #arithmatic
+        "AND":["a","100100"], #arithmatic syntac  #arithmatic
         "DIV":["md","011010"], #mult div syntax    #arithmatic     
         "DIVU":["md","011011"],               
         "JR":["j","001000"], #jump syntax          #JUMP
