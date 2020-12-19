@@ -117,7 +117,7 @@ module mips_cpu_bus(
     );
 
     always @(posedge clk) begin
-        $display("Is_Jump = %b, writedata = %b, Instr = %b, IorD = %b, State = %b write = %b",Is_Jump,writedata,Instr,IorD, state, write);
+        $display("Link = %b, writedata = %b, Instr = %b, IorD = %b, State = %b write = %b",Link,writedata,Instr,IorD, state, write);
         $display("readdata = %b  address = %b read = %b",readdata, address,  read);
         $display("PC = %b Result = %b PCWrite = %b ALUsel = %b PCIs0 = %b, AluSrcB = %b AluSrcB = %b", PC, Result, PCWrite, ALUsel, PCIs0,SrcB,AluSrcB);
         $display("SrcA = %b AluSrcA = %b ALUControl = %b",SrcA, AluSrcA, ALUControl);
