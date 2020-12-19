@@ -1,0 +1,12 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $a0, 44($t0)
+BLTZ $a0, 4
+ADDIU $V0, $zero, 1
+ADDIU $V0, $V0, 18
+ADDIU $V0, $V0, 42
+ADDIU $V0, $V0, 600
+ADDIU $V0, $V0, 56
+JR $zero
+ADDIU $t0, $t0, 0
+.data -10
