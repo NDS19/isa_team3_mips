@@ -96,7 +96,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         # -P is used to adjust the parameter in the testbench verilog so we can
         # input a file that is read in
         iverilog -g 2012 \
-        ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
+        ${source_directory}/mips_cpu_*.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
         ${source_directory}/mips_cpu/*.v \
         -s mips_cpu_bus_tb \
         -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
@@ -210,7 +210,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         #for i in ${TESTCASES} ; do
         #    TESTNAME=$(basename ${i} .asm.txt)
             iverilog -g 2012 \
-            ${source_directory}/mips_cpu_bus.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
+            ${source_directory}/mips_cpu_*.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
             ${source_directory}/mips_cpu/*.v \
             -s mips_cpu_bus_tb \
             -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
