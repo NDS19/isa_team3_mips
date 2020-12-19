@@ -8,11 +8,17 @@ module ALU_all(
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
 
+    //LWL and LWR
+    input logic[31:0] ramdata,
+
     output logic[31:0] Out,
     output logic stall
 );
     logic[5:0] funct;
     logic[4:0] shamt;
+    logic[5:0] opcode;
+
+    assign opcode = instr[31:26];
     //ALU block
     logic[4:0] ALU_OPCODE;
     logic[31:0] ALUResult;
@@ -87,12 +93,18 @@ module ALU_all(
             validIn_div = 0;
             Hi_en = 0;
             Lo_en = 0;
-
-            //shamt not required for non R-type instructions
-            SrcB_to_ALU = SrcB;
-            SrcA_to_ALU = (ALU_Control == 5'b10001)?instr:SrcA;
+            if ((ALU_Control == 5'b10010) || (ALU_Control == 5'b10011)) begin
+                SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = ramdata;
+                //Out = ALUResult;
+            end else begin
+                //shamt not required for non R-type instructions
+                SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = (ALU_Control == 5'b10001)?instr:SrcA;
+                //Out = ALUResult;
+                //Out is always ALUResult for non R-type instructions
+            end
             Out = ALUResult;
-            //Out is always ALUResult for non R-type instructions
         end
         else if(ALU_Control == 5'b01111) begin
 

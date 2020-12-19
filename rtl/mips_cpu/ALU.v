@@ -18,6 +18,25 @@ module ALU(
 
     assign NegSrcB=SrcB;
 
+    //LWL and LWR
+    logic[15:0] SrcA_right;
+    logic[15:0] SrcA_left;
+    logic[15:0] SrcB_right;
+    logic[15:0] SrcB_left; 
+
+    logic[31:0] LWL_out;
+    logic[31:0] LWR_out;
+    
+
+    assign SrcA_right = SrcA[15:0];
+    assign SrcA_left = SrcA[31:16];
+    assign SrcB_right = SrcB[15:0];
+    assign SrcB_left = SrcB[31:16];
+
+    assign LWL_out = {SrcA_left,SrcB_right};
+    assign LWR_out = {SrcB_left,SrcA_right};
+
+
     always_comb begin
         case (ALUControl)
             5'b00000  :   begin
@@ -112,8 +131,20 @@ module ALU(
                 end
             end
             5'b10001 : begin
-                //is SrcA <= 0
+                //Jump
                 ALUResult = JConst;
+            end
+            5'b10010 : begin
+                //LWR
+                ALUResult = LWR_out;
+            end
+            5'b10011 : begin
+                //LWL
+                ALUResult = LWL_out;
+            end
+            5'b10100 : begin
+                //LUI
+                ALUResult = SrcB << 16;
             end
             default: begin
                 //$display("Unknown alu operand");
