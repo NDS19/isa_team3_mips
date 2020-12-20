@@ -1,0 +1,20 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $V0, 64($t0)
+LW $V1, 68($t0)
+LW $a0, 72($t0)
+LW $a1, 76($t0)
+JALR $a2, $a1
+ADDU $V0, $V0, $V1
+ADDU $V0, $V0, $V1
+JR $zero
+ADDIU $V0, $V0, 0
+SUBU $V0, $V0, $V1
+ADDU $V0, $V0, $V1
+ADDIU $V0, $V0, 10
+JR $a2
+ADDU $V0, $V0, $V1
+.data 8600
+.data 20
+.data 80
+.data 3217031212

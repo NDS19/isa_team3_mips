@@ -72,8 +72,8 @@ module Mult(
         end
         else if (count != (split+1)) begin
             sum_next = sum + mp_nibble * mc;
-            mp_next = mp>>nibble_width;
-            mc_next = mc<<nibble_width;
+            mp_next = mp>>(nibble_width+1);
+            mc_next = mc<<(nibble_width+1);
             if (mp==0) begin
                 count_next=split+1;
             end

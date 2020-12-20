@@ -28,7 +28,8 @@ set -eou pipefail
 #     folder [tick]
 # 8. Send relative outputs from running the script to stderr rather than stdout
 #     This means things like the output of diff [possible tick, check sanity check]
-# 9. Might need a stderr output on the compile line (update based on the Friday sanity check)
+# 9. Might need a stderr output on the compile line (update based on the Friday sanity check) [not needed]
+# 10. Ensure all instructions have a test case with the _0 suffix
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
@@ -179,12 +180,12 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
 elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases should be run
     >&2 echo "Testing CPU : ${source_directory} for all instructions"
 
-    INSTRUCTIONS="test/0-instructions_assembly/*_1.asm.txt"
+    INSTRUCTIONS="test/0-instructions_assembly/*_0.asm.txt"
     # Holds every instruction with the prefix _1/asm.txt therefore holding every
-    # instruction assuming every instruction is test
+    # instruction assuming every instruction has the _0 suffix
     for i in ${INSTRUCTIONS} ; do
-        instruction=$(basename ${i} _1.asm.txt)
-        # Removes the _1.asm.txt to just get the instruction name
+        instruction=$(basename ${i} _0.asm.txt)
+        # Removes the _0.asm.txt to just get the instruction name
         TESTCASES="test/0-instructions_assembly/${instruction}*.asm.txt"
         # TESTCASES holds all the test files for the current instruction
         # with the suffix .asm.txt; for the addiu instruction, it holds addiu_1,

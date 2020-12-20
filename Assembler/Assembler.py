@@ -130,7 +130,7 @@ def decode(line,parameters,line_names):
         "DIV":["md","011010"], #mult div syntax    #arithmatic     
         "DIVU":["md","011011"],               
         "JR":["j","001000"], #jump syntax          #JUMP
-        "JALR":["jl","000001"], ##TODO              #JUMP
+        "JALR":["jl","001001"], ##TODO              #JUMP
         "MTHI":["m","010001"],                      #MOVE
         "MTLO":["m","010011"],
         "MFHI":["mf","010000"],                      #MOVE

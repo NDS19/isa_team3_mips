@@ -121,7 +121,7 @@ module Decoder(
   assign IrWrite = (state == DECODE);
   assign PCWrite = (state == FETCH) ? 1 : 0;
   assign Is_Jump = (instr_opcode == J) && (state == EXEC_1)|| (instr_opcode == JAL) && (state == EXEC_2);
-  assign Link = ( (instr_opcode == JAL) || (instr_opcode == JALR) || ((instr_opcode == BLT_TYPE)&&((branch_code == BLTZAL)||(branch_code == BGEZAL))) ) && (state == EXEC_1); 
+  assign Link = ( (instr_opcode == JAL) || ((instr_opcode == BLT_TYPE)&&((branch_code == BLTZAL)||(branch_code == BGEZAL))) ) && (state == EXEC_1); 
   assign MemRead = (instr_opcode == LW || instr_opcode == LB || instr_opcode == LBU|| instr_opcode == LH || instr_opcode == LHU || instr_opcode == LWL|| instr_opcode == LWR) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
   assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
 
@@ -247,10 +247,11 @@ module Decoder(
                     EXEC_2: begin
                       ALUSrcA = 1; 
                       ALUControl = 5'b01110; //Pass through opcode, output of ALU should be SrcA
-                      ALUSel = 1; //skip the ALU register
+                      ALUSel = 0; //skip the ALU register
                       is_branch_delay_next = 1;
                       RegWrite = 0;
                       Extra = 0;
+                      
                     end
                   endcase
                 end

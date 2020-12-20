@@ -88,9 +88,9 @@ module ALU_all(
             .Lo(Div_Lo)
     );
 
-    assign Hi_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011011)&&(validOut_div)) || (funct == 6'b010001)) && ALU_Control == 6'b01111;
-    assign Lo_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011011)&&(validOut_div)) || (funct == 6'b010010)) && ALU_Control == 6'b01111;
-    assign stall = (ALU_Control == 5'b01111)&((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
+    assign Hi_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011010)&&(validOut_div)) || (funct == 6'b010001)) && ALU_Control == 6'b01111;
+    assign Lo_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011010)&&(validOut_div)) || (funct == 6'b010010)) && ALU_Control == 6'b01111;
+    assign stall = (ALU_Control == 5'b01111)&( ((funct == 6'b011000) || (funct == 6'b011001)) & (validOut_mul == 0) || ((funct == 6'b011010) || (funct == 6'b011011)) & (validOut_div == 0));
     //ALU operation specified by ALU_OPCODE
     always_comb begin
         if(ALU_Control != 5'b01111)begin
@@ -197,8 +197,8 @@ module ALU_all(
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
-                    Hi_next = Mult_Hi;
-                    Lo_next = Mult_Lo;
+                    Hi_next = Div_Hi;
+                    Lo_next = Div_Lo;
                 end
             end
             6'b011011: begin
@@ -211,8 +211,8 @@ module ALU_all(
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
-                    Hi_next = Mult_Hi;
-                    Lo_next = Mult_Lo;
+                    Hi_next = Div_Hi;
+                    Lo_next = Div_Lo;
                 end
             end
             6'b100001:begin
@@ -285,7 +285,7 @@ module ALU_all(
     end
 
     always  @(posedge clk) begin
-        $display("Hi = %b MFHI = %b validOut_mul = %b", Hi, funct == 6'b010000, validOut_mul);
+        $display("DivHi = %b  Hi_en = %b funct = %b validOut_div = %b", Div_Hi, Hi_en, funct == 6'b010000, validOut_div);
         Hi <= Hi_en==1?Hi_next:Hi;
         Lo <= Lo_en==1?Lo_next:Lo;
     end
