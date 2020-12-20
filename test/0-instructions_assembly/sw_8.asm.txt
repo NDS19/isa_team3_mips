@@ -5,5 +5,5 @@ LW $t1, 32($t0)
 SW $t1, 444($t0)
 LW $V0, 444($t0)
 JR $zero
-ADDIU $t0, $t0, 0;
+ADDIU $t0, $t0, 0
 .data 121
