@@ -84,6 +84,8 @@ module Decoder(
       OR =  6'b100101,
       MTHI = 6'b010001,
       MTLO = 6'b010011,
+      MFHI = 6'b010000,
+      MFLO = 6'b010010,
       JALR = 6'b001001,
       JR = 6'b001000,
       BRANCH = 6'b000001
@@ -208,12 +210,25 @@ module Decoder(
           case (instr_opcode)
 
               R_TYPE: begin
-                  if (Funct == MTHI || Funct == MTLO) begin
+                if (Funct == MTHI || Funct == MTLO) begin
                   case (state) 
                     EXEC_1: begin
+                      ALUControl = 5'b01111;
                       Extra = 0;
                       is_branch_delay_next = 0;
-                  RegWrite = 0;
+                      RegWrite = 0;
+                    end
+                  endcase
+                end
+                if (Funct == MFLO || Funct == MFHI) begin
+                  case (state) 
+                    EXEC_1: begin
+                      ALUControl = 5'b01111;
+                      Extra = 0;
+                      MemtoReg = 1;
+                      RegDst = 1;
+                      is_branch_delay_next = 0;
+                      RegWrite = 1;
                     end
                   endcase
                 end

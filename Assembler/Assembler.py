@@ -132,7 +132,9 @@ def decode(line,parameters,line_names):
         "JR":["j","001000"], #jump syntax          #JUMP
         "JALR":["jl","000001"], ##TODO              #JUMP
         "MTHI":["m","010001"],                      #MOVE
-        "MTLO":["m","010011"],                      #MOVE
+        "MTLO":["m","010011"],
+        "MFHI":["mf","010000"],                      #MOVE
+        "MFLO":["mf","010010"],
         "MULT":["md","011000"],
         "MULTU":["md","011001"],
         "OR":["a","100101"],
@@ -237,6 +239,11 @@ def decode(line,parameters,line_names):
             #output += bitString(0,10)
             output += reg(reg1)
             output += bitString(0,15)
+        elif rtype_func[opcode][0] == "mf":
+            reg1 = line[1]
+            output += bitString(0,10)
+            output += reg(reg1)
+            output += bitString(0,5)
         #elif opcode in mult_div:
         elif rtype_func[opcode][0] == "md":
             reg1 = line[1]
