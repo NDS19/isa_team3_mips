@@ -139,7 +139,7 @@ def decode(line,parameters,line_names):
         "MULTU":["md","011001"],
         "OR":["a","100101"],
         "SLL":["s","000000"], #shift syntax         
-        "SLLV":["a","000100"],
+        "SLLV":["sb","000100"],
         "SLT":["a","101010"],
         "SLTU":["a","101011"],
         "SRA":["s","000011"],
@@ -233,6 +233,11 @@ def decode(line,parameters,line_names):
             reg2 = line[2]
             reg3 = line[3]
             output += reg(reg2) + reg(reg3) + reg(reg1) + "00000"
+        elif rtype_func[opcode][0] == "sb":
+            reg1 = line[1]
+            reg2 = line[2]
+            reg3 = line[3]
+            output += reg(reg3) + reg(reg2) + reg(reg1) + "00000"
         #elif opcode in mt_rtype:
         elif rtype_func[opcode][0] == "m":
             reg1 = line[1]

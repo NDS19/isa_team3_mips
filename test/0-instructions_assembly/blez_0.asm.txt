@@ -7,4 +7,4 @@ ADDIU $V0, $V0, 10
 ADDIU $V0, $V0, 20
 JR $zero
 ADDIU $t0, $t0, 0
-.data 50
+.data -50
