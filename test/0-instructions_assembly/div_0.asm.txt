@@ -1,0 +1,11 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $a0, 36($t0)
+LW $a1, 40($t0)
+DIV $a0, $a1
+MFHI $t0
+MFLO $t1
+ADDU $V0, $t0, $t1 
+JR $V0
+.data 1
+.data 1

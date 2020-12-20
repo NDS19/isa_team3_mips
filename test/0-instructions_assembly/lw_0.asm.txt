@@ -1,0 +1,9 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+LW $a0, 28($t0)
+SW $a0, 44($t0)
+LW $V0, 44($T0)
+JR $zero
+ADDIU $t0, $zero, 1
+.data 101
+.data 121
