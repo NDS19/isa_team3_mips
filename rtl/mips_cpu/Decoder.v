@@ -92,7 +92,11 @@ module Decoder(
       MFLO = 6'b010010,
       JALR = 6'b001001,
       JR = 6'b001000,
-      BRANCH = 6'b000001
+      BRANCH = 6'b000001,
+      MULT = 6'b011000,
+      MULTU = 6'b011001,
+      DIV = 6'b011010,
+      DIVU = 6'b011011
   } rtype_t;
 
   typedef enum logic[4:0] {
@@ -142,17 +146,28 @@ module Decoder(
       is_branch_delay_next = 0;
   end
 
+  logic halt, halt_next;
+
   //State machine
   always @(posedge clk) begin
       //$display("State = %b, Rst = %b, Active = %b, Instr = %b, IorD = %b",state,Rst,Active,Instr,IorD);
       //$display("MemRead = %b",MemRead);
+      halt <= halt_next;
       case (state)
-          FETCH: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
-          STALL: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
-          DECODE: state <= PCIs0 ? HALTED :EXEC_1;
-          EXEC_1: state <= PCIs0 ? HALTED :stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
-          EXEC_2: state <= PCIs0 ? HALTED :waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
-          EXEC_3: state <= PCIs0 ? HALTED :FETCH;
+          // FETCH: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
+          // STALL: state <= PCIs0 ? HALTED :waitrequest?STALL:DECODE;
+          // DECODE: state <= PCIs0 ? HALTED :EXEC_1;
+          // EXEC_1: state <= PCIs0 ? HALTED :stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
+          // EXEC_2: state <= PCIs0 ? HALTED :waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
+          // EXEC_3: state <= PCIs0 ? HALTED :FETCH;
+          // HALTED: state <= Rst ? FETCH : HALTED;
+          // default: state <= HALTED;
+          FETCH: state <= waitrequest?STALL:DECODE;
+          STALL: state <= waitrequest?STALL:DECODE;
+          DECODE: state <= EXEC_1;
+          EXEC_1: state <= (halt&&!Extra) ? HALTED :stall ? EXEC_1 : Extra ? EXEC_2 : FETCH;
+          EXEC_2: state <= (halt&&!Extra) ? HALTED :waitrequest? EXEC_2 : Extra ? EXEC_3 : FETCH;
+          EXEC_3: state <= halt ? HALTED :FETCH;
           HALTED: state <= Rst ? FETCH : HALTED;
           default: state <= HALTED;
       endcase
@@ -165,6 +180,14 @@ module Decoder(
   //Implement here your instructions! beware of the Extra signal. set Extra to 0 if you don't need a new state
   //Decode logic
   always_comb begin
+      if (state == FETCH) begin
+        halt_next = PCIs0;
+      end
+      else begin
+        halt_next = halt;
+      end
+
+
       if (Rst == 1) begin
         is_branch_delay_next = 0;
       end
@@ -271,6 +294,22 @@ module Decoder(
                       is_branch_delay_next = 1;
                       RegWrite = 0;
                       Extra = 0;
+                    end
+                  endcase
+                end
+                else if (Funct == MULT ||  Funct == DIV || Funct == DIVU || Funct == MULTU) begin
+                  case (state)
+                    EXEC_1: begin
+                      ALUSrcA = 1;
+                      ALUSrcB = 2'b00;
+                      ALUControl = 5'b01111;
+                      RegWrite = 0;
+                      Extra = 1;
+                    end
+                    EXEC_2: begin
+                      RegWrite = 0;
+                      Extra = 0;
+                      is_branch_delay_next = 0;
                     end
                   endcase
                 end
