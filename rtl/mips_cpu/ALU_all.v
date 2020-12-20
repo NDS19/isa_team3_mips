@@ -66,6 +66,9 @@ module ALU_all(
     logic Mult_sign;
     logic Div_sign;
 
+    logic shift_variable_bits;
+    assign shift_variable_bits = SrcA[4:0];
+
     Mult mult_(
             .clk(clk),
             .validIn(validIn_mul),
@@ -265,6 +268,10 @@ module ALU_all(
             if(funct == 6'b000000 || funct == 6'b000010 || funct == 6'b000011)begin
                 SrcA_to_ALU = { 27'b000000000000000000000000000, shamt};
                 SrcB_to_ALU= SrcB;
+            //                 SLLV                  SRAV                SRLV
+            end else if(funct == 6'b000100||funct == 6'b000111||funct == 6'b000110)begin
+                SrcB_to_ALU = SrcB;
+                SrcA_to_ALU = {27'b000000000000000000000000000,shift_variable_bits};
             end else begin
                 SrcB_to_ALU = SrcB;
                 SrcA_to_ALU = SrcA;
