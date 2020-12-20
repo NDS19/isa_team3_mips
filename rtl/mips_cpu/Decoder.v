@@ -64,7 +64,9 @@ module Decoder(
         BEQ = 6'b000100,
         BNE = 6'b000101,
         SLTIU = 6'b001011,
-        JAL = 6'b000011
+        JAL = 6'b000011,
+        SB = 6'b101000,
+        SH = 6'b101001
    } opcode_t;
 
   /* Another enum to define CPU states. */
@@ -125,7 +127,7 @@ module Decoder(
   assign Is_Jump = (instr_opcode == J) && (state == EXEC_1)|| (instr_opcode == JAL) && (state == EXEC_2);
   assign Link = ( (instr_opcode == JAL) || ((instr_opcode == BLT_TYPE)&&((branch_code == BLTZAL)||(branch_code == BGEZAL))) ) && (state == EXEC_1); 
   assign MemRead = (instr_opcode == LW || instr_opcode == LB || instr_opcode == LBU|| instr_opcode == LH || instr_opcode == LHU || instr_opcode == LWL|| instr_opcode == LWR) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
-  assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
+  assign MemWrite = ((instr_opcode == SW)||(instr_opcode == SB)||(instr_opcode == SH)) && (state == EXEC_2) ;
 
   assign stallorpc_sel = (state == STALL);
   assign pc_stall_en = (state == FETCH);
@@ -300,7 +302,7 @@ module Decoder(
                       RegWrite = 0;
                       ExtSel = 0;
                       Extra = 1;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
                   EXEC_2: begin
                       IorD = 1;
@@ -309,7 +311,7 @@ module Decoder(
                       RegWrite = 0;
                       //MemRead = 1;
                       byteenable = 4'b1111;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
                   EXEC_3: begin
                       RegDst = 0;
@@ -355,7 +357,7 @@ module Decoder(
                       RegWrite = 0;
                       //MemRead = 1;
                       byteenable = 4'b1111;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
                   EXEC_3: begin
                       RegDst = 0;
@@ -363,7 +365,7 @@ module Decoder(
                       RegWrite = 1;
                       ALUSrcB = 00;
                       is_branch_delay_next = 0;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                       ALUControl = 5'b10011;
                       ALUSel = 0;
                   end
@@ -378,7 +380,7 @@ module Decoder(
                       ExtSel = 0;
                       ALUSel = 0;
                       Extra = 1;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
                   EXEC_2: begin
                       IorD = 1;
@@ -387,7 +389,7 @@ module Decoder(
                       RegWrite = 0;
                       //MemRead = 1;
                       byteenable = 4'b1111;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
                   EXEC_3: begin
                       ALUControl = 5'b10010;
@@ -397,7 +399,7 @@ module Decoder(
                       RegWrite = 1;
                       ALUSel = 0;
                       is_branch_delay_next = 0;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
               endcase
 
@@ -416,7 +418,7 @@ module Decoder(
                       ALUSel = 1;
                       RegWrite = 0;
                       byteenable = 4'b0011;
-                      extendedmem = 11;
+                      extendedmem = 2'b11;
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -424,7 +426,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
-                      extendedmem = 11;
+                      extendedmem = 2'b11;
                   end
               endcase
 
@@ -443,7 +445,7 @@ module Decoder(
                       ALUSel = 1;
                       RegWrite = 0;
                       byteenable = 4'b0011;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -451,7 +453,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
               endcase
 
@@ -470,7 +472,7 @@ module Decoder(
                       ALUSel = 1;
                       RegWrite = 0;
                       byteenable = 4'b0001;
-                      extendedmem = 10;
+                      extendedmem = 2'b10;
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -478,7 +480,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
-                      extendedmem = 10;
+                      extendedmem = 2'b10;
                   end
               endcase
 
@@ -497,7 +499,7 @@ module Decoder(
                       ALUSel = 1;
                       RegWrite = 0;
                       byteenable = 4'b0001;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                      // MemRead = 1;
                   end
                   EXEC_3: begin
@@ -505,7 +507,7 @@ module Decoder(
                       MemtoReg = 0;
                       RegWrite = 1;
                       is_branch_delay_next = 0;
-                      extendedmem = 00;
+                      extendedmem = 2'b00;
                   end
               endcase
 
@@ -514,6 +516,7 @@ module Decoder(
                     ALUSrcA= 1;
                     ALUSrcB= 2'b10;
                     ALUControl = 5'b00010;
+                    ExtSel = 0;
                     RegWrite = 0;
                     Extra=1;
                   end
@@ -522,7 +525,43 @@ module Decoder(
                     byteenable = 4'b1111;
                     //MemWrite=1;
                     is_branch_delay_next = 0;
-                  RegWrite = 0;
+                    RegWrite = 0;
+                  end
+              endcase
+
+              SB: case(state)
+                  EXEC_1: begin
+                    ALUSrcA= 1;
+                    ALUSrcB= 2'b10;
+                    ExtSel = 0;
+                    ALUControl = 5'b00010;
+                    RegWrite = 0;
+                    Extra=1;
+                  end
+                  EXEC_2: begin
+                    IorD=1;
+                    byteenable = 4'b0001;
+                    //MemWrite=1;
+                    is_branch_delay_next = 0;
+                    RegWrite = 0;
+                  end
+              endcase
+
+              SH: case(state)
+                  EXEC_1: begin
+                    ALUSrcA= 1;
+                    ALUSrcB= 2'b10;
+                    ExtSel = 0;
+                    ALUControl = 5'b00010;
+                    RegWrite = 0;
+                    Extra=1;
+                  end
+                  EXEC_2: begin
+                    IorD=1;
+                    byteenable = 4'b0011;
+                    //MemWrite=1;
+                    is_branch_delay_next = 0;
+                    RegWrite = 0;
                   end
               endcase
 
