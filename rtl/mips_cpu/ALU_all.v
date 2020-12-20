@@ -14,6 +14,8 @@ module ALU_all(
     output logic[31:0] Out,
     output logic stall,
     output logic[31:0] SrcADebug
+
+    
 );
     logic[5:0] funct;
     logic[4:0] shamt;
@@ -86,17 +88,15 @@ module ALU_all(
             .Lo(Div_Lo)
     );
 
-
-    assign stall = (ALU_Control == 5'b01111)&((funct == 6'b011000) || (funct == 6'b011001) || (funct == 6'b011010) || (funct == 6'b011011)) & (validOut_mul == 0);
+    assign Hi_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011010)&&(validOut_div)) || (funct == 6'b010001)) && ALU_Control == 6'b01111;
+    assign Lo_en =( ( (funct == 6'b011000 || funct == 6'b011001)&&(validOut_mul) || (funct == 6'b011011 || funct == 6'b011010)&&(validOut_div)) || (funct == 6'b010010)) && ALU_Control == 6'b01111;
+    assign stall = (ALU_Control == 5'b01111)&( ((funct == 6'b011000) || (funct == 6'b011001)) & (validOut_mul == 0) || ((funct == 6'b011010) || (funct == 6'b011011)) & (validOut_div == 0));
     //ALU operation specified by ALU_OPCODE
     always_comb begin
         if(ALU_Control != 5'b01111)begin
             ALU_OPCODE = ALU_Control;
             validIn_mul = 0;
             validIn_div = 0;
-            Hi_en = 0;
-            Lo_en = 0;
-                // LWR and LWL
             if ((ALU_Control == 5'b10010) || (ALU_Control == 5'b10011)) begin
                 SrcB_to_ALU = SrcB;
                 SrcA_to_ALU = ramdata;
@@ -182,6 +182,7 @@ module ALU_all(
                 else if (validOut_mul == 1) begin
                     //stall = 0;
                     validIn_mul = 0;
+                   // Hi_en = 1;
                     Hi_next = Mult_Hi;
                     Lo_next = Mult_Lo;
                 end
@@ -196,8 +197,8 @@ module ALU_all(
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
-                    Hi_next = Mult_Hi;
-                    Lo_next = Mult_Lo;
+                    Hi_next = Div_Hi;
+                    Lo_next = Div_Lo;
                 end
             end
             6'b011011: begin
@@ -210,8 +211,8 @@ module ALU_all(
                 else if (validOut_div == 1) begin
                     //stall = 0;
                     validIn_div = 0;
-                    Hi_next = Mult_Hi;
-                    Lo_next = Mult_Lo;
+                    Hi_next = Div_Hi;
+                    Lo_next = Div_Lo;
                 end
             end
             6'b100001:begin
@@ -246,18 +247,18 @@ module ALU_all(
             endcase
 
             //TO DO mulu,divu,mthi,mtlo
-            if (funct != 6'b011001) begin //MULTU
-                validIn_mul = 0;
-            end
-            if (funct != 6'b011011) begin //DIVU
-                validIn_div = 0;
-            end
-            if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010001) begin
-                Hi_en = 0;
-            end
-            if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010011) begin
-                Lo_en = 0;
-            end
+            // if (funct != 6'b011001) begin //MULTU
+            //     validIn_mul = 0;
+            // end
+            // if (funct != 6'b011011) begin //DIVU
+            //     validIn_div = 0;
+            // end
+            // if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010001) begin
+          //      Hi_en = 0;
+          //  end
+          //  if (funct != 6'b011001 || funct != 6'b011011 || funct != 6'b010011) begin
+          //      Lo_en = 0;
+          //  end
 
             //shamt field for functions that require it
             //          SLL,                SRL,                SRA,
@@ -283,7 +284,8 @@ module ALU_all(
         end
     end
 
-    always_ff  @(posedge clk) begin
+    always  @(posedge clk) begin
+        $display("DivHi = %b  Hi_en = %b funct = %b validOut_div = %b", Div_Hi, Hi_en, funct == 6'b010000, validOut_div);
         Hi <= Hi_en==1?Hi_next:Hi;
         Lo <= Lo_en==1?Lo_next:Lo;
     end

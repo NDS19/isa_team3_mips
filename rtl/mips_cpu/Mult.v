@@ -8,7 +8,6 @@ module Mult(
     input logic[31:0] SrcB,
     output logic[31:0] Hi,
     output logic[31:0] Lo
-
 );
     //Sign inverted SrcA and SrcB
     logic[31:0] Inverted_A;
@@ -52,7 +51,7 @@ module Mult(
         if (validIn == 0) begin
             //mp_next = SrcA;
             //mc_next = SrcB;
-            sum_next = 0;
+            sum_next = running == 0?0:sum;
             count_next = 0;
             running_next = 0;
         end
@@ -64,34 +63,39 @@ module Mult(
                 mp_next = SrcA;
             end
             if (is_neg_B == 1 && sign == 1) begin
-                mp_next = Inverted_B;
+                mc_next = Inverted_B;
             end
             else begin
-                mp_next = SrcB;
+                mc_next = SrcB;
             end
             running_next = 1;
         end
-        else if (count != split) begin
+        else if (count != (split+1)) begin
             sum_next = sum + mp_nibble * mc;
-            mp_next = mp>>nibble_width;
-            mc_next = mc<<nibble_width;
+            mp_next = mp>>(nibble_width+1);
+            mc_next = mc<<(nibble_width+1);
             if (mp==0) begin
-                count_next=split;
+                count_next=split+1;
             end
             else begin
                 count_next = count + 1;
             end
         end
+        else begin
+            count_next = 0;
+        end
     end
 
-    always_ff  @(posedge clk) begin
+    always  @(posedge clk) begin
+        //$display("sum_next = %b  mp_next = %b mp = %b running = %b",sum_next, mp_next, mp, running);
+        //$display("Hi = %b  split = %b validOut = %b mc = %b",Hi, split, validOut, mc);
         mp <= mp_next;
         mc <= mc_next;
         sum <= sum_next;
         count <= count_next;
         running <= running_next;
-
-        if (count_next==split) begin
+        
+        if (count_next==(split+1)) begin
             if (negative == 1  && sign == 1) begin
                 Hi <= Inverted_sum_next[63:32];
                 Lo <= Inverted_sum_next[31:0];

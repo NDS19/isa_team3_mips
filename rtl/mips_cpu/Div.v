@@ -46,8 +46,17 @@ assign is_neg_A = SrcA[31];
 logic is_neg_B;
 assign is_neg_B = SrcB[31];
 
+logic[31:0] SrcBAdjusted;
+
 
 always_comb begin
+    if (is_neg_B == 1) begin
+        SrcBAdjusted = Inverted_B;
+    end
+    else begin
+        SrcBAdjusted = SrcB;
+    end
+
     if (validIn == 0) begin
         running_next = 0;
     end
@@ -97,21 +106,23 @@ always_comb begin
     end*/
     else if (running) begin
         if(count != 33) begin
-            Divisor_next = Divisor;
+            //Divisor_next = Divisor;
             if (Remainder >= Divisor) begin
                 Remainder_next = (Remainder - Divisor);
                 Quotient_next = (Quotient << 1) + 1;
             end
             else begin
+                Remainder_next = Remainder;
                 Quotient_next = Quotient << 1;
             end
-            count_next = count + 1;
-            running_next = 1;
 
-            if (Divisor > SrcB) begin
+            if (Divisor > SrcBAdjusted) begin
+                count_next = count + 1;
+                running_next = 1;
                 Divisor_next = Divisor >> 1;
             end
             else begin
+                running_next = 0;
                 Divisor_next = Divisor;
                 count_next = 33;
             end
@@ -124,7 +135,9 @@ always_comb begin
 end
 
 always  @(posedge clk) begin
-    //$display("HI=%d, _LO=%d", Quotient_next, Remainder_next);
+    $display("Quotient_next = %b  Remainder_next = %b Divisor_next = %b count = %b running = %b validOut = %b count_next = %b",Quotient_next, Remainder_next, Divisor_next, count, running, validOut, count_next);
+    //$display("Hi = %b  split = %b validOut = %b mc = %b",Hi, split, validOut, mc);
+    $display("HI=%d, _LO=%d", Quotient_next, Remainder_next);
     Divisor <= Divisor_next;
     Remainder <= Remainder_next;
     Quotient <= Quotient_next;
@@ -135,25 +148,25 @@ always  @(posedge clk) begin
         //$display("Hello");
         if (sign == 1) begin
             if (SrcA[31] == 0 && SrcB[31] == 0) begin   //If both inputs are positive
-                Hi <= Quotient_next;
-                Lo <= Remainder_next;
+                Hi <= Remainder_next;
+                Lo <= Quotient_next;
             end
             else if (SrcA[31] == 0) begin   //If A is positive and B is negative
-                Hi <= Inverted_Quotient_next;
-                Lo <= Remainder_next;
+                Hi <= Remainder_next;
+                Lo <= Inverted_Quotient_next;
             end
             else if (SrcB[31] == 0) begin   //If only B is positive and A is negative
-                Hi <= Inverted_Quotient_next;
-                Lo <= Inverted_Remainder_next;
+                Hi <= Inverted_Remainder_next;
+                Lo <= Inverted_Quotient_next;
             end
             else begin  //If both inputs are negative
-                Hi <= Quotient_next;
-                Lo <= Inverted_Remainder_next;
+                Hi <= Inverted_Remainder_next;
+                Lo <= Quotient_next;
             end
         end 
         else begin
-            Hi <= Quotient_next;
-            Lo <= Remainder_next;
+            Hi <= Remainder_next;
+            Lo <= Quotient_next;
         end
         validOut <= 1;
         //running <= 0;
