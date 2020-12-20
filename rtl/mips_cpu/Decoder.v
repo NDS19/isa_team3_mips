@@ -7,6 +7,8 @@ module Decoder(
     input logic PCIs0,
     input logic waitrequest,
     input logic lessthan,
+    output logic stallorpc_sel,
+    output logic pc_stall_en,
     output logic ExtSel,
     output logic IrSel,
    // output logic IrWrite,
@@ -122,6 +124,9 @@ module Decoder(
   assign Link = ( (instr_opcode == JAL) || ((instr_opcode == BLT_TYPE)&&((branch_code == BLTZAL)||(branch_code == BGEZAL))) ) && (state == EXEC_1); 
   assign MemRead = (instr_opcode == LW || instr_opcode == LB || instr_opcode == LBU|| instr_opcode == LH || instr_opcode == LHU || instr_opcode == LWL|| instr_opcode == LWR) && (state == EXEC_2) || (state == FETCH) || (state == STALL);
   assign MemWrite = (instr_opcode == SW) && (state == EXEC_2);
+
+  assign stallorpc_sel = (state == STALL);
+  assign pc_stall_en = (state == FETCH);
 
   assign Active = state != HALTED;
   /* We are targetting an FPGA, which means we can specify the power-on value of the

@@ -1,11 +1,9 @@
-module RAM_8x4096(
+module RAM_8x4096_nostall(
     input logic clk,
     input logic[31:0] a,
     input logic we,
     input logic[31:0] wd,
     input logic[3:0] byteenable,
-    input logic read,
-    output logic waitrequest,
     output logic[31:0] rd
 );
     parameter RAM_INIT_FILE = "";
@@ -15,10 +13,6 @@ module RAM_8x4096(
     reg [7:0] b0, b1, b2, b3;
     
     logic[31:0] A;
-
-    logic waitrequest_;
-
-    assign waitrequest = waitrequest_;
 
     initial begin
         integer i;
@@ -31,8 +25,6 @@ module RAM_8x4096(
             $display("RAM : INIT : Loading RAM contents from %s", RAM_INIT_FILE);
             $readmemh(RAM_INIT_FILE, memory);
         end
-
-        
 
         $display("memory b1 %b",memory[32'b1100]);
         $display("memory b2 %b",memory[32'b1101]);
@@ -55,31 +47,6 @@ module RAM_8x4096(
     assign W1 = wd[15:8];
     assign W2 = wd[23:16];
     assign W3 = wd[31:24];
-
-    integer i;
-
-    initial begin
-        waitrequest_ = 0;
-        $display("INITIAL BLOCK we or read low setting waitrequest to 0       ", waitrequest_, read, we);
-    end
-
-    always@(*) begin
-        if(read==1 || we == 1) begin
-            waitrequest_ = 1;
-            $display("we or read high setting waitrequest to 1             ", waitrequest_, read, we);
-            //This stalls for 4 cycles, change the for loop to however many stalls you want
-            for ( i = 0 ; i<5; i=i+1 ) begin
-                @(posedge clk);
-            end
-            waitrequest_ = !waitrequest_;
-            $display("we or read high setting waitrequest to 0            ", waitrequest_, read, we);
-        end
-        else begin
-            waitrequest_ = 0;
-            $display("ELSE we or read low setting waitrequest to 0         ", waitrequest_, read, we);
-        end
-    end
-
 
     always @(posedge clk) begin
         

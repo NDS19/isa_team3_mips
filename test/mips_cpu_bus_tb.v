@@ -46,7 +46,7 @@ module mips_cpu_bus_tb;
     logic[31:0] readdata;
 
     assign u_register_v0 = register_v0;
-    assign waitrequest = 0;
+    //assign waitrequest = 0;
 
     // instianting everything and making the needed connections
     // might have to make all of the relevant connections including ALU, multiplexers, etc.
@@ -56,6 +56,8 @@ module mips_cpu_bus_tb;
       .we(write),
       .wd(writedata),
       .byteenable(byteenable),
+      .waitrequest(waitrequest),
+      .read(read),
       .rd(readdata)
     );
     // instantiating the RAM

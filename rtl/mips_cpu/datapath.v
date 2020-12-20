@@ -10,6 +10,8 @@ module datapath (input  logic       clk, PcEn, IorD,
                  input  logic       ExtSel,
                  input  logic[4:0]  ALUControl,
                  input  logic[1:0]  MemExt,
+                 input  logic       stallorpc_sel,
+                 input  logic       pc_stall_en,
                 // input  logic       stall,
                  input  logic       ALUsel,
                  input  logic       PCSrc,
@@ -47,6 +49,8 @@ module datapath (input  logic       clk, PcEn, IorD,
     wire [31:0] branchnext;
     wire [31:0] instr;
     wire [31:0] pc;
+    wire [31:0] pc_or_pcstall;
+    wire [31:0] pcstall;
 
     logic signed [31:0] rd1_signed;
     assign rd1_signed = rd1;
@@ -64,7 +68,7 @@ module datapath (input  logic       clk, PcEn, IorD,
 
 
     assign PcIs0 = pc == 0;
-    assign PC = pc;
+    assign PC = pc_or_pcstall;
     assign Result = result;
     assign SrcB = srcb;
     assign SrcA = srca;
@@ -79,7 +83,9 @@ module datapath (input  logic       clk, PcEn, IorD,
     flopr #(32) Brreg(clk, result, branchnext);
     mux2 #(32)  brmux(result, branchnext, PCSrc, pcnext);
     pc          Pcreg(clk, reset, PcEn, pcnext, pc, is_jump);
-    mux2 #(32)  RegMem(pc, result, IorD, memloc);
+    pc_stall    Pcstall(clk,pc_stall_en,pc,pcstall);
+    mux2 #(32)  RegMem(pc_or_pcstall, result, IorD, memloc);
+    mux2 #(32)  Pcstallmux(pc,pcstall,stallorpc_sel,pc_or_pcstall);
     ir #(32)    Irreg(clk, IrWrite, ReadData, irout);
 
     // rigister file logic
@@ -100,7 +106,7 @@ module datapath (input  logic       clk, PcEn, IorD,
 
     // ALU logic
     mux4 #(32)  srcbmux(writedata, 32'b100, signimm, signimmsh, ALUSrcB, srcb);
-    mux2 #(32)  srcamux(pc, rd1, ALUSrcA, srca);
+    mux2 #(32)  srcamux(pc_or_pcstall, rd1, ALUSrcA, srca);
     ALU_all     alu(ALUControl, instr, clk, srca, srcb, ReadData, aluoutnext, stall, SrcADebug);
     flopr #(32) RegALU(clk, aluoutnext, aluout);
 endmodule
