@@ -380,7 +380,7 @@ module Decoder(
                   end
               endcase
 
-              LWL: case (state)
+              LWR: case (state)
                   EXEC_1: begin
                       ALUSrcA = 1;
                       ALUSrcB = 2'b10;
@@ -410,11 +410,11 @@ module Decoder(
                   end
               endcase
 
-              LWR: case (state)
+              LWL: case (state)
                   EXEC_1: begin
                       ALUSrcA = 1;
                       ALUSrcB = 2'b10;
-                      ALUControl = 5'b00010;
+                      ALUControl = 5'b10101;
                       RegWrite = 0;
                       ExtSel = 0;
                       ALUSel = 0;
