@@ -2,6 +2,7 @@ module ALU(
     input logic[4:0] ALUControl,
     input logic[31:0] SrcA,
     input logic[31:0] SrcB,
+    input logic clk,
 
     output logic[31:0] ALUResult
 );
@@ -33,10 +34,23 @@ module ALU(
     assign SrcB_right = SrcB[15:0];
     assign SrcB_left = SrcB[31:16];
 
-    assign LWL_out = {SrcA_left,SrcB_right};
-    assign LWR_out = {SrcB_left,SrcA_right};
+    //assign LWL_out = {SrcA_left,SrcB_right};
+    //assign LWR_out = {SrcB_left,SrcA_right};
     
     //logic signed SrcASigned;
+    logic[31:0] prev_out;
+    logic[31:0] mem_add;
+    logic[2:0] byte_number;
+    logic[31:0] lwl_out;
+    logic[31:0] lwr_out;
+
+    LWRL_mod lwrl_mod(
+        .SrcA(SrcA),
+        .SrcB(SrcB),
+        .byte_number(byte_number),
+        .LWL(lwl_out),
+        .LWR(lwr_out)
+    );
 
 
     always_comb begin
@@ -138,15 +152,24 @@ module ALU(
             end
             5'b10010 : begin
                 //LWR
-                ALUResult = LWR_out;
+                mem_add = prev_out + 3;
+                byte_number = (mem_add % 4) + 1; 
+                ALUResult = lwr_out; ///
             end
             5'b10011 : begin
                 //LWL
-                ALUResult = LWL_out;
+                mem_add = prev_out;
+                byte_number = 4 - (mem_add % 4); 
+                ALUResult = lwl_out;
+                //ALUResult = LWL_out;
             end
             5'b10100 : begin
                 //LUI
                 ALUResult = SrcB << 16;
+            end
+            5'b10101 : begin
+                //LWR MEM
+                ALUResult = SrcB + SrcA - 3;
             end
             default: begin
                 //$display("Unknown alu operand");
@@ -154,4 +177,9 @@ module ALU(
             end
         endcase
     end
+
+    always_ff  @(posedge clk) begin
+        prev_out <= ALUResult;
+    end
+
 endmodule

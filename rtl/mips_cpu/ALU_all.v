@@ -17,6 +17,8 @@ module ALU_all(
 
     
 );
+    logic[31:0] prev_out;
+
     logic[5:0] funct;
     logic[4:0] shamt;
     logic[5:0] opcode;
@@ -34,6 +36,7 @@ module ALU_all(
     ALU alu_(.ALUControl(ALU_OPCODE),
             .SrcA(SrcA_to_ALU),
             .SrcB(SrcB_to_ALU),
+            .clk(clk),
             .ALUResult(ALUResult)
     );
 
