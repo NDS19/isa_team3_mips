@@ -1,0 +1,16 @@
+ADDIU $t0, $zero, 49088
+SLL $t0, $t0, 16
+SW $a2, 52($t0)
+ADDU $V0, $a2, $a2
+SLTI $a0, $V0, 10
+BEQ $a0, $a2, 7
+LUI $a0, 305397760
+ORI $a0, $a0, 0x5678
+SLL $a1, $V0, 2
+ADDU $a0, $a0, $a1
+SW $a2, 0($a0)
+ADDIU $V0, $V0, 1
+BEQ $a2, $a2, -9
+JR $zero
+ADDIU $t0, $t0, 0
+.data 0

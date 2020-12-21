@@ -12,4 +12,3 @@ ADDIU $V, $V, 1
 BEQ $zero, $zero, loop
 end: JR $zero
 ADDIU $t0, $t0, 0
-.data
