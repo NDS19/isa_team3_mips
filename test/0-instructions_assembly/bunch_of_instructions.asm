@@ -7,8 +7,9 @@ LUI $8, 0x1234
 ORI $8, $8, 0x5678
 SLL $9, $V, 2
 ADD $8, $8, $9
-SW $zero, zero($8)
+SW $zero, 0($8)
 ADDIU $V, $V, 1
 BEQ $zero, $zero, loop
 end: JR $zero
 ADDIU $t0, $t0, 0
+.data
