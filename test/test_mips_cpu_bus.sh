@@ -29,10 +29,10 @@ set -eou pipefail
 # 8. Send relative outputs from running the script to stderr rather than stdout
 #     This means things like the output of diff [tick]
 # 9. Might need a stderr output on the compile line (update based on the Friday sanity check) [not needed]
-# 10. Ensure all instructions have a test case with the _0 suffix
-# 11. Fix unsigned output for the link instructions
+# 10. Ensure all instructions have a test case with the _0 suffix [tick]
+# 11. Fix unsigned output for the link instructions [tick]
 # 12. Fix test-case output for when the instruction == and, repeatedely outputting
-#   andi_0 and Pass etc.
+#   andi_0 and Pass etc. [tick]
 
 # Possible future improvements
 # 1. The for loop going through each instruction test case could be summarised
@@ -73,8 +73,8 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         # removing the .asm.txt suffix and directory prefix
         # start assembly for testing a single instruction
         >&2 echo " 1 - Assembling test files for ${TESTNAME}"
-        echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 Assembler/Assembler.py \
-        > test/1-binary/${TESTNAME}.hex.txt
+        echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 test/Assembler/Assembler.py \
+        > test/1-hex/${TESTNAME}.hex.txt
         #>&2 echo " Successfully assembled test files for ${instruction}"
         # instruction assembly files have now been compiled into their hex binary files
 
@@ -89,7 +89,7 @@ if [ $# -eq 2 ] ; then # if there are two input arguments
         ${source_directory}/mips_cpu_*.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
         ${source_directory}/mips_cpu/*.v \
         -s mips_cpu_bus_tb \
-        -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
+        -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-hex/${TESTNAME}.hex.txt\" \
         -P mips_cpu_bus_tb.INSTRUCTION=\"${instruction}\" \
         -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # set the test-bench as top level since this instantiates everything # having the test case file input into the RAM
         # output executable file for this instruction testcase
@@ -171,8 +171,8 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
         # here it is all test case file names
         for i in ${TESTCASES} ; do
             TESTNAME=$(basename ${i} .asm.txt)
-            echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 Assembler/Assembler.py \
-            >test/1-binary/${TESTNAME}.hex.txt
+            echo test/0-instructions_assembly/${TESTNAME}.asm.txt | python3 test/Assembler/Assembler.py \
+            >test/1-hex/${TESTNAME}.hex.txt
             # instruction assembly files have now been compiled into their hex binary files
 
             >&2 echo " 2 - Compiling test-bench for ${TESTNAME}"
@@ -183,7 +183,7 @@ elif [ $# -eq 1 ] ; then  # if nothing is specified for $2, all test-cases shoul
             ${source_directory}/mips_cpu_*.v test/mips_cpu_bus_tb.v test/RAM_8x4096.v \
             ${source_directory}/mips_cpu/*.v \
             -s mips_cpu_bus_tb \
-            -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-binary/${TESTNAME}.hex.txt\" \
+            -P mips_cpu_bus_tb.RAM_INIT_FILE=\"test/1-hex/${TESTNAME}.hex.txt\" \
             -P mips_cpu_bus_tb.INSTRUCTION=\"${instruction}\" \
             -o test/2-simulator/CPU_MU0_bus_tb_${TESTNAME} # output executable file for this instruction testcase
 
