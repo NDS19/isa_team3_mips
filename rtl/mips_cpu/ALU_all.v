@@ -66,7 +66,7 @@ module ALU_all(
     logic Mult_sign;
     logic Div_sign;
 
-    logic shift_variable_bits;
+    logic[4:0] shift_variable_bits;
     assign shift_variable_bits = SrcA[4:0];
 
     Mult mult_(
