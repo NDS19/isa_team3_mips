@@ -6,4 +6,4 @@ SLLV $V0, $a0, $a1
 JR $zero
 ADDIU $t0, $t0, 0
 .data 2147483647
-.data 32
+.data 33
