@@ -1,0 +1,9 @@
+LUI $t0, 49088
+LW $V0, 24($t0)
+LWL $V0, 29($t0)
+LWR $V0, 35($t0)
+JR $zero
+ADDIU $t0, $t0, 0
+.data 2863311530
+.data 235898990
+.data 4278190080

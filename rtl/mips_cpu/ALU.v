@@ -179,7 +179,6 @@ module ALU(
     end
 
     always_ff  @(posedge clk) begin
-        $display("SRCA  = %b, LWL  = %b byte_number  = %b",SrcA,lwl_out, byte_number); 
         prev_out <= ALUResult;
     end
 
