@@ -208,7 +208,7 @@ module Decoder(
         if (is_branch_delay == 1) begin
           PCSrc = 1;
           IorD = 0;
-          Extra = 0;
+          Extra = 0; 
         end
         else begin
           PCSrc = 0;
