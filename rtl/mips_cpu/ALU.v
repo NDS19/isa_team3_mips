@@ -151,16 +151,16 @@ module ALU(
                 ALUResult = JConst;
             end
             5'b10010 : begin
-                //LWR
+                //LWL source A is Ram
                 mem_add = prev_out + 3;
                 byte_number = (mem_add % 4) + 1; 
-                ALUResult = lwr_out; ///
+                ALUResult = lwl_out; ///
             end
             5'b10011 : begin
-                //LWL
+                //LWR source A is Ram
                 mem_add = prev_out;
                 byte_number = 4 - (mem_add % 4); 
-                ALUResult = lwl_out;
+                ALUResult = lwr_out;
                 //ALUResult = LWL_out;
             end
             5'b10100 : begin
@@ -168,7 +168,7 @@ module ALU(
                 ALUResult = SrcB << 16;
             end
             5'b10101 : begin
-                //LWR MEM
+                //LWL MEM
                 ALUResult = SrcB + SrcA - 3;
             end
             default: begin
@@ -179,6 +179,7 @@ module ALU(
     end
 
     always_ff  @(posedge clk) begin
+        $display("SRCA  = %b, LWL  = %b byte_number  = %b",SrcA,lwl_out, byte_number); 
         prev_out <= ALUResult;
     end
 

@@ -422,6 +422,9 @@ module Decoder(
                       extendedmem = 2'b00;
                   end
                   EXEC_2: begin
+                      ALUSrcA = 1;
+                      ALUSrcB = 2'b10;
+                      ALUControl = 5'b10101;
                       IorD = 1;
                       Extra = 1;
                       ALUSel = 1;

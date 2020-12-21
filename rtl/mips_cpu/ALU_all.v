@@ -103,6 +103,7 @@ module ALU_all(
             ALU_OPCODE = ALU_Control;
             validIn_mul = 0;
             validIn_div = 0;
+            //LWL and LWR
             if ((ALU_Control == 5'b10010) || (ALU_Control == 5'b10011)) begin
                 SrcB_to_ALU = SrcB;
                 SrcA_to_ALU = ramdata;
